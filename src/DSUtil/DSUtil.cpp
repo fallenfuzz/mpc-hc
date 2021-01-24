@@ -154,11 +154,16 @@ bool IsAudioWaveRenderer(IBaseFilter* pBF)
 
     return clsid == CLSID_DSoundRender ||
            clsid == CLSID_AudioRender ||
-           clsid == CLSID_ReClock ||
-           clsid == __uuidof(CNullAudioRenderer) ||
-           clsid == __uuidof(CNullUAudioRenderer) ||
            clsid == CLSID_SANEAR_INTERNAL ||
-           clsid == CLSID_SANEAR;
+           clsid == CLSID_SANEAR ||
+           clsid == CLSID_ReClock ||
+           clsid == CLSID_MPCBEAudioRenderer ||
+           clsid == GUIDFromCString(L"{EC9ED6FC-7B03-4cb6-8C01-4EABE109F26B}") || // MediaPortal Audio Renderer
+           clsid == GUIDFromCString(L"{50063380-2B2F-4855-9A1E-40FCA344C7AC}") || // Surodev ASIO Renderer
+           clsid == GUIDFromCString(L"{8DE31E85-10FC-4088-8861-E0EC8E70744A}") || // MultiChannel ASIO Renderer
+           clsid == GUIDFromCString(L"{205F9417-8EEF-40B4-91CF-C7C6A96936EF}") || // MBSE MultiChannel ASIO Renderer
+           clsid == __uuidof(CNullAudioRenderer) ||
+           clsid == __uuidof(CNullUAudioRenderer);
 }
 
 IBaseFilter* GetUpStreamFilter(IBaseFilter* pBF, IPin* pInputPin)
@@ -833,6 +838,28 @@ CString GetDriveLabel(CPath path)
     return label;
 }
 
+bool IsDriveVirtual(CString drive)
+{
+    HKEY hkey;
+    DWORD type = REG_BINARY;
+    TCHAR data[1024] = { 0 };
+    DWORD size = sizeof(data) - 2;
+
+    drive=(drive+_T(":")).Left(2);
+    CString subkey = _T("\\DosDevices\\") + drive;
+
+    RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SYSTEM\\MountedDevices"), 0, KEY_READ, &hkey);
+    if (hkey == INVALID_HANDLE_VALUE) return 0;
+    RegQueryValueEx(hkey, subkey, 0, &type, (BYTE*)data, &size);
+
+    RegCloseKey(hkey);
+    CString sig(data);
+    sig.MakeUpper();
+    return sig.Find(_T("VEN_MSFT&PROD_VIRTUAL_DVD-ROM")) >= 0
+        || sig.Find(_T("VEN_DISCSOFT&")) >= 0
+        || sig.Find(_T("VEN_ELBY&PROD_CLONEDRIVE")) >= 0;
+}
+
 bool GetKeyFrames(CString fn, CUIntArray& kfs)
 {
     kfs.RemoveAll();
@@ -893,9 +920,9 @@ DVD_HMSF_TIMECODE RT2HMSF(REFERENCE_TIME rt, double fps /*= 0.0*/) // use to rem
     return hmsf;
 }
 
-DVD_HMSF_TIMECODE RT2HMS_r(REFERENCE_TIME rt) // used only for information (for display on the screen)
+DVD_HMSF_TIMECODE RT2HMS(REFERENCE_TIME rt) // used only for information (for display on the screen)
 {
-    rt = (rt + 5000000) / 10000000;
+    rt = rt / 10000000;
     DVD_HMSF_TIMECODE hmsf = {
         (BYTE)(rt / 3600),
         (BYTE)(rt / 60 % 60),
@@ -904,6 +931,12 @@ DVD_HMSF_TIMECODE RT2HMS_r(REFERENCE_TIME rt) // used only for information (for 
     };
 
     return hmsf;
+}
+
+DVD_HMSF_TIMECODE RT2HMS_r(REFERENCE_TIME rt) // used only for information (for display on the screen)
+{
+    // round to nearest second
+    return RT2HMS(rt + 5000000);
 }
 
 REFERENCE_TIME HMSF2RT(DVD_HMSF_TIMECODE hmsf, double fps /*= -1.0*/)
@@ -1868,7 +1901,7 @@ CString NormalizeUnicodeStrForSearch(CString srcStr, LANGID langid) {
         _wcslwr_s_l(src, wcslen(src) + 1, locale);
     }
 
-    int dstLen = wcslen(src) * 4;
+    int dstLen = int(wcslen(src) * 4);
     wchar_t* dest = DEBUG_NEW wchar_t[dstLen];
 
     int cchActual = NormalizeString(NormalizationKD, src, -1, dest, dstLen);

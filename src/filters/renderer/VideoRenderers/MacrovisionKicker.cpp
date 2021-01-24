@@ -59,21 +59,28 @@ STDMETHODIMP CMacrovisionKicker::NonDelegatingQueryInterface(REFIID riid, void**
 
 STDMETHODIMP CMacrovisionKicker::Set(REFGUID PropSet, ULONG Id, LPVOID pInstanceData, ULONG InstanceLength, LPVOID pPropertyData, ULONG DataLength)
 {
+    if (PropSet == AM_KSPROPSETID_CopyProt && (Id == AM_PROPERTY_COPY_MACROVISION || Id == AM_PROPERTY_COPY_DIGITAL_CP)) {
+        TRACE(_T("Bypassing macrovision DVD protection\n"));
+        return S_OK;
+    }
     if (CComQIPtr<IKsPropertySet> pKsPS = m_pInner) {
-        if (PropSet == AM_KSPROPSETID_CopyProt && Id == AM_PROPERTY_COPY_MACROVISION
-                /*&& DataLength == 4 && *(DWORD*)pPropertyData*/) {
-            TRACE(_T("Oops, no-no-no, no macrovision please\n"));
-            return S_OK;
-        }
-
         return pKsPS->Set(PropSet, Id, pInstanceData, InstanceLength, pPropertyData, DataLength);
     }
-
     return E_UNEXPECTED;
 }
 
 STDMETHODIMP CMacrovisionKicker::Get(REFGUID PropSet, ULONG Id, LPVOID pInstanceData, ULONG InstanceLength, LPVOID pPropertyData, ULONG DataLength, ULONG* pBytesReturned)
 {
+    if (PropSet == AM_KSPROPSETID_CopyProt) {
+        if (Id == AM_PROPERTY_COPY_ANALOG_COMPONENT) {
+            if (pPropertyData && DataLength >= sizeof(ULONG) && pBytesReturned) {
+                *(ULONG*)pPropertyData = FALSE;
+                *pBytesReturned = sizeof(ULONG);
+                return S_OK;
+            }
+            return E_INVALIDARG;
+        }
+    }
     if (CComQIPtr<IKsPropertySet> pKsPS = m_pInner) {
         return pKsPS->Get(PropSet, Id, pInstanceData, InstanceLength, pPropertyData, DataLength, pBytesReturned);
     }

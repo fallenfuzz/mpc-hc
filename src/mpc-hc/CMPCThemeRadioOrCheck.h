@@ -19,6 +19,7 @@ private:
     };
     RadioOrCheck buttonType;
 protected:
+    bool isFileDialogChild;
     DECLARE_DYNAMIC(CMPCThemeRadioOrCheck)
     DECLARE_MESSAGE_MAP()
     afx_msg void OnSetFocus(CWnd* pOldWnd);
@@ -31,5 +32,6 @@ public:
     afx_msg void OnPaint();
     afx_msg void OnEnable(BOOL bEnable);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+    void setFileDialogChild(bool set) { isFileDialogChild = set; };
 };
 

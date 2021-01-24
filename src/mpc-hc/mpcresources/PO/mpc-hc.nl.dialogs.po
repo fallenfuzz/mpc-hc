@@ -5,13 +5,14 @@
 # MPC HC <adiposegithub@gmail.com>, 2020
 # xknat <321knat@gmail.com>, 2020
 # mark van tilburg <markvantilburg@gmail.com>, 2020
+# Renz Straatman <renz75@outlook.com>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: MPC-HC\n"
-"POT-Creation-Date: 2020-01-10 07:05:47+0000\n"
+"POT-Creation-Date: 2020-09-30 15:29:35+0000\n"
 "PO-Revision-Date: 2020-01-02 07:46+0000\n"
-"Last-Translator: mark van tilburg <markvantilburg@gmail.com>, 2020\n"
+"Last-Translator: Renz Straatman <renz75@outlook.com>, 2020\n"
 "Language-Team: Dutch (https://www.transifex.com/mpchc/teams/106126/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +22,7 @@ msgstr ""
 
 msgctxt "IDD_SELECTMEDIATYPE_CAPTION"
 msgid "Select Media Type"
-msgstr "Media type kiezen"
+msgstr "Mediatype kiezen"
 
 msgctxt "IDD_SELECTMEDIATYPE_IDOK"
 msgid "OK"
@@ -49,7 +50,7 @@ msgstr "Uitgang"
 
 msgctxt "IDD_CAPTURE_DLG_IDC_CHECK1"
 msgid "Record Video"
-msgstr "Video opname"
+msgstr "Video opnemen"
 
 msgctxt "IDD_CAPTURE_DLG_IDC_CHECK2"
 msgid "Preview"
@@ -57,7 +58,7 @@ msgstr "Voorvertoning"
 
 msgctxt "IDD_CAPTURE_DLG_IDC_CHECK3"
 msgid "Record Audio"
-msgstr "geluid opnemen"
+msgstr "Geluid opnemen"
 
 msgctxt "IDD_CAPTURE_DLG_IDC_CHECK4"
 msgid "Preview"
@@ -73,11 +74,11 @@ msgstr "Audio naar WAV"
 
 msgctxt "IDD_CAPTURE_DLG_IDC_BUTTON2"
 msgid "Record"
-msgstr "Opname"
+msgstr "Opnemen"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_CHECK2"
 msgid "Enable built-in audio switcher filter (requires restart)"
-msgstr "Intern audio switcher filter toepassen (vereist herstart)"
+msgstr "Ingebouwde audiofilter inschakelen (vereist herstart)"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_CHECK5"
 msgid "Normalize"
@@ -93,11 +94,11 @@ msgstr "%"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_CHECK6"
 msgid "Regain volume"
-msgstr "Herstel volume"
+msgstr "Volume herstellen"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_STATIC6"
 msgid "Boost:"
-msgstr "Audio versterking"
+msgstr "Audioversterking:"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_CHECK3"
 msgid "Down-sample to 44100 Hz"
@@ -105,31 +106,36 @@ msgstr "Omzetten naar 44100 Hz"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_CHECK4"
 msgid "Audio time shift (ms):"
-msgstr "Audio tijd verschuiving (ms):"
+msgstr "Audiovertraging (ms):"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_CHECK1"
 msgid "Enable custom channel mapping"
-msgstr "Door gebruiker bepaalde kanaal instelling toepassen"
+msgstr "Aangepaste kanaaltoewijzing"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_STATIC1"
 msgid "Speaker configuration for"
-msgstr "Luidspreker instelling voor"
+msgstr "Configureer luidsprekerinstellingen voor"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_STATIC2"
 msgid "input channels:"
-msgstr "ingang kanalen:"
+msgstr "bronkanalen:"
 
 msgctxt "IDD_PPAGEAUDIOSWITCHER_IDC_STATIC3"
 msgid "Hold shift for immediate changes when clicking something"
-msgstr "Druk op shift tijdens het klikken om direct de veranderingen uit te voeren"
+msgstr ""
+"Druk op shift tijdens het klikken om direct de veranderingen uit te voeren"
 
 msgctxt "IDD_GOTO_DLG_CAPTION"
 msgid "Go To..."
 msgstr "Ga naar..."
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
-msgid "Enter a timecode using the format [hh:]mm:ss.ms to jump to a specified time. You do not need to enter the separators explicitly."
-msgstr "Voer een tijdcode in, met een opmaak van [uu:]mm:ss.ms, om naar dat tijdstip te springen. De scheiding tekens hoeven niet expliciet ingevoerd te worden."
+msgid ""
+"Enter a timecode using the format [hh:]mm:ss.ms to jump to a specified time."
+" You do not need to enter the separators explicitly."
+msgstr ""
+"Voer een tijdcode in met een opmaak van [uu:]mm:ss.ms om naar dat tijdstip "
+"te springen. De scheidingstekens zijn optioneel."
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
 msgid "Time"
@@ -140,8 +146,12 @@ msgid "Go!"
 msgstr "Oké"
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
-msgid "Enter two numbers to jump to a specified frame, the first is the frame number, the second is the frame rate."
-msgstr "Geef twee getallen om naar een specifiek beeld te springen, het eerste getal is het beeldnummer, het tweede de beedsnelheid."
+msgid ""
+"Enter two numbers to jump to a specified frame, the first is the frame "
+"number, the second is the frame rate."
+msgstr ""
+"Geef twee getallen om naar een specifiek beeld te springen, het eerste getal"
+" is het beeldnummer, het tweede de beedsnelheid."
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
 msgid "Frame"
@@ -156,8 +166,12 @@ msgid "Open"
 msgstr "Openen"
 
 msgctxt "IDD_OPEN_DLG_IDC_STATIC"
-msgid "Type the address of a movie or audio file (on the Internet or your computer) and the player will open it for you."
-msgstr "Typ het adres van een film  of geluidsbestand (op Internet of op je computer), zodat de speler dit voor je kan openen."
+msgid ""
+"Type the address of a movie or audio file (on the Internet or your computer)"
+" and the player will open it for you."
+msgstr ""
+"Geef de locatie van een film- of geluidsbestand op (van internet of de "
+"lokale computer) om deze te openen."
 
 msgctxt "IDD_OPEN_DLG_IDC_STATIC"
 msgid "Open:"
@@ -192,20 +206,22 @@ msgid "About"
 msgstr "Info"
 
 msgctxt "IDD_ABOUTBOX_IDC_AUTHORS_LINK"
-msgid "Copyright © 2002-2020 see Authors.txt"
-msgstr "Copyright © 2002-2020 zie Authors.txt bestand"
+msgid "Copyright 2002-2021 clsid2 and others"
+msgstr ""
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
-msgid "This program is freeware and released under the GNU General Public License."
-msgstr "Dit programma is gratis en uitgegeven onder de GNU General Public License."
+msgid ""
+"This program is freeware and released under the GNU General Public License."
+msgstr ""
+"Dit programma is gratis en uitgegeven onder de GNU General Public License."
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "English translation made by MPC-HC Team"
-msgstr "Vertaald door René Maassen"
+msgstr "Vertaald door Renz Straatman en René Maassen"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "Build information"
-msgstr "Bouw versie informatie"
+msgstr "Versieinformatie"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "Version:"
@@ -221,7 +237,7 @@ msgstr "Niet gebruikt"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "Build date:"
-msgstr "Datum van bouw versie:"
+msgstr "Datum:"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "Operating system"
@@ -245,11 +261,11 @@ msgstr "Opties voor openen"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_RADIO1"
 msgid "Use the same player for each media file"
-msgstr "Nieuw bestand in huidige speler openen"
+msgstr "Nieuw bestand openen in de huidige speler"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_RADIO2"
 msgid "Open a new player for each media file played"
-msgstr "Elk bestand in nieuwe speler openen"
+msgstr "Elk bestand in een nieuwe speler openen"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_STATIC"
 msgid "Language"
@@ -257,11 +273,11 @@ msgstr "Taal"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_STATIC"
 msgid "Title bar"
-msgstr "Titelbalk"
+msgstr "Toon in titelbalk"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_RADIO3"
 msgid "Display full path"
-msgstr "Volledige pad"
+msgstr "Volledig pad"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_RADIO4"
 msgid "File name only"
@@ -289,15 +305,15 @@ msgstr "Toon OSD (vereist herstart)"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK4"
 msgid "Limit window proportions on resize"
-msgstr "Begrens venster verhoudingen bij formaatwijziging"
+msgstr "Begrens vensterverhoudingen bij wijzigen formaat"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK12"
 msgid "Snap to desktop edges"
-msgstr "Aan bureaubladrand aanpassen"
+msgstr "Venster vastklikken aan schermranden"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK8"
 msgid "Store settings in .ini file"
-msgstr "Instellingen in .ini bestand opslaan"
+msgstr "Instellingen in .ini-bestand opslaan"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK10"
 msgid "Disable \"Open Disc\" menu"
@@ -305,11 +321,11 @@ msgstr "Schakel het \"Open schijf\" menu uit"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK9"
 msgid "Process priority above normal"
-msgstr "Procesprioriteit \"hoger dan normaal\""
+msgstr "Hogere procesprioriteit"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK14"
 msgid "Enable cover-art support"
-msgstr "Schakel albumhoes ondersteuning in"
+msgstr "Schakel ondersteuning voor albumhoes in"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_STATIC"
 msgid "History"
@@ -321,23 +337,23 @@ msgstr "Laatst geopende bestanden onthouden"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK2"
 msgid "Remember last playlist"
-msgstr "Onthoud de laatste afspeellijst"
+msgstr "Onthoud laatste afspeellijst"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_FILE_POS"
 msgid "Remember File position"
-msgstr "Bestandspositie bewaren"
+msgstr "Onthoud afspeelpositie"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_DVD_POS"
 msgid "Remember DVD position"
-msgstr "DVD positie bewaren"
+msgstr "Onthoud DVD positie"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK6"
 msgid "Remember last window position"
-msgstr "Vensterpositie onthouden"
+msgstr "Onthoud vensterpositie"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK7"
 msgid "Remember last window size"
-msgstr "Vensterafmetingen onthouden"
+msgstr "Onthoud vensterafmetingen"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_CHECK11"
 msgid "Remember last Pan && Scan Zoom"
@@ -353,11 +369,11 @@ msgstr "Vraag naar locatie"
 
 msgctxt "IDD_PPAGEDVD_IDC_RADIO2"
 msgid "Always open the default location:"
-msgstr "Open altijd de standaard locatie:"
+msgstr "Open altijd de standaardlocatie:"
 
 msgctxt "IDD_PPAGEDVD_IDC_STATIC"
 msgid "Preferred language for DVD Navigator and the external OGM Splitter"
-msgstr "Voorkeurstaal voor DVD navigatie en de externe OGM Splitter"
+msgstr "Voorkeurstaal voor DVD-navigatie en de externe OGM-splitter"
 
 msgctxt "IDD_PPAGEDVD_IDC_RADIO3"
 msgid "Menu"
@@ -409,23 +425,23 @@ msgstr "R"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "Playback"
-msgstr "Afspelen"
+msgstr "Herhaling"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_RADIO1"
 msgid "Play"
-msgstr "Afspelen"
+msgstr "Speel"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_RADIO2"
 msgid "Repeat forever"
-msgstr "Steeds herhalen"
+msgstr "Oneindig herhalen"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC1"
 msgid "time(s)"
-msgstr "keer(en)"
+msgstr "keer(en) af"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "Repeat mode:"
-msgstr "Herhaal mode:"
+msgstr "Herhaalmodus:"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "After Playback"
@@ -449,11 +465,11 @@ msgstr "%"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "Default track preference"
-msgstr "Standaard nummer voorkeur"
+msgstr "Voorkeur voor standaardspoor"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "Subtitles:"
-msgstr "Ondertitelingen:"
+msgstr "Ondertiteling:"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "Audio:"
@@ -461,7 +477,7 @@ msgstr "Geluid:"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_CHECK4"
 msgid "Allow overriding external splitter choice"
-msgstr "Sta het negeren van de externe splitter keuze toe"
+msgstr "Sta het negeren van de externe splitterkeuze toe"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "Open settings"
@@ -469,7 +485,7 @@ msgstr "Opties voor openen"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_CHECK7"
 msgid "Use worker thread to construct the filter graph"
-msgstr "Filter grafiek in aparte CPU taak samenstellen"
+msgstr "Gebruik worker-thread om filter samen te stellen"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_CHECK6"
 msgid "Report pins which fail to render"
@@ -529,7 +545,7 @@ msgstr "ms"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "Texture settings (open the video again to see the changes)"
-msgstr "Texture instellingen (vereist heropening van de video)"
+msgstr "Texture-instellingen (vereist opnieuw openen van video)"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "Sub pictures to buffer:"
@@ -537,11 +553,11 @@ msgstr "Aantal beeldplaatjes in buffer:"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "Maximum texture resolution:"
-msgstr "Maximale texture resolutie:"
+msgstr "Maximale resolutie van textures:"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_CHECK_NO_SUB_ANIM"
 msgid "Never animate the subtitles"
-msgstr "Animeer de ondertiteling nooit"
+msgstr "Ondertiteling nooit animeren"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC5"
 msgid "Render at"
@@ -557,27 +573,33 @@ msgstr "Animeer op"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC8"
 msgid "% of the video frame rate"
-msgstr "% van de videobeeld verhouding"
+msgstr "% van de video framerate"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_CHECK_ALLOW_DROPPING_SUBPIC"
 msgid "Allow dropping some subpictures if the queue is running late"
-msgstr "Sta het laten vallen van beeldblokken toe wanneer de wachtrij achterloopt"
+msgstr "Sta het overslaan van frames toe wanneer de speler achterloopt."
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "Renderer Layout"
-msgstr "Opbouw sjabloon"
+msgstr "Opbouw layout"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_CHECK_SUB_AR_COMPENSATION"
 msgid "Apply aspect ratio compensation for anamorphic videos"
-msgstr "Pas beeldverhoudingcompensatie toe voor anamorfe videos"
+msgstr "Compenseer beeldverhouding van anamorphische video's"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "Warning"
 msgstr "Waaschuwing"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
-msgid "If you override and enable fullscreen antialiasing somewhere at your videocard's settings, subtitles aren't going to look any better but it will surely eat your CPU."
-msgstr "Als u de ondertitelingspositie aanpast en ergens in de instellingen van uw grafische kaart \"vol scherm\" antialiasing aanzet, zal de ondertiteling er niet beter uitzien, maar de CPU wordt wel zwaarder belast."
+msgid ""
+"If you override and enable fullscreen antialiasing somewhere at your "
+"videocard's settings, subtitles aren't going to look any better but it will "
+"surely eat your CPU."
+msgstr ""
+"Indien je fullscreen antialiasing aanzet in de instellingen van je "
+"videokaart, gaan de ondertitels er niet beter uitzien. Het zorgt wel voor "
+"aanzienlijk meer belasting van de CPU."
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC2"
 msgid "File extensions"
@@ -593,39 +615,19 @@ msgstr "Toepassen"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC3"
 msgid "Association"
-msgstr "Koppeling"
+msgstr "Toewijzing"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_CHECK8"
 msgid "Use the format-specific icons"
-msgstr "Gebruik de formaat-specifieke iconen"
+msgstr "Gebruik formaat-specifieke iconen"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON1"
 msgid "Run as &administrator"
-msgstr "Start als administrateur"
+msgstr "Start als administrator"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON7"
 msgid "Set as &default program"
-msgstr "Gebruik als standaard programma"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
-msgid "Real-Time Streaming Protocol handler (for rtsp://... URLs)"
-msgstr "Werkelijke tijd stroom protocol afhandeling (voor rtsp://... URLs)"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO1"
-msgid "RealMedia"
-msgstr "RealMedia"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO2"
-msgid "QuickTime"
-msgstr "QuickTime"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO3"
-msgid "DirectShow"
-msgstr "DirectShow"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK5"
-msgid "Check file extension first"
-msgstr "Kijk eerst naar extensie"
+msgstr "Gebruik als standaardprogramma"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
 msgid "Explorer Context Menu"
@@ -669,31 +671,36 @@ msgstr "Standaard"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_FASTSEEK_CHECK"
 msgid "Fast seek (on keyframe)"
-msgstr "Snel zoeken (op sleutelbeeld)"
+msgstr "Snelzoeken (op keyframe)"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK2"
 msgid "Show chapter marks in seek bar"
-msgstr "Geef hoofdstukmarkeringen in zoekbalk weer"
+msgstr "Geef hoofdstukken weer in zoekbalk"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK4"
 msgid "Display \"Now Playing\" information in Skype's mood message"
-msgstr "Laat \"Nu afspelen\" informatie zien in Skype's stemmingsbericht"
+msgstr "Laat \"Nu afspelen\" zien in stemmingsbericht van Skype"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK6"
-msgid "Prevent minimizing the player when in fullscreen on a non default monitor"
-msgstr "Verhinder minimalizeren bij volledig scherm op niet-standaard monitor"
+msgid ""
+"Prevent minimizing the player when in fullscreen on a non default monitor"
+msgstr "Verhinder minimaliseren bij volledig scherm op niet-standaard monitor"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK_ENHANCED_TASKBAR"
 msgid "Use enhanced taskbar features"
 msgstr "Gebruik uitgebreide taakbalk mogelijkheden"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK7"
-msgid "Open previous/next file in folder on \"Skip back/forward\" when there is only one item in playlist"
-msgstr "Open het volgende / vorige bestand in de bestandsmap op \"Volgende / Vorige\" wanneer er maar een bestand in de afspeellijst staat"
+msgid ""
+"Open previous/next file in folder on \"Skip back/forward\" when there is "
+"only one item in playlist"
+msgstr ""
+"Bij 'spring vooruit en achteruit', open het vorige of volgende bestand in de"
+" map, indien er maar één bestand in de afspeellijst staat."
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK8"
 msgid "Show time tooltip:"
-msgstr "Gebruik tijd gereedschap tip:"
+msgstr "Laat tijd in tooltip zien:"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_STATIC"
 msgid "OSD font:"
@@ -705,11 +712,19 @@ msgstr "Logitech LCD ondersteuning inschakelen (experimenteel)"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK3"
 msgid "Auto-hide the mouse pointer during playback in windowed mode"
-msgstr "Verberg automatisch de muisaanwijzer tijdens het afspelen in venstermodus"
+msgstr "Muisaanwijzer automatisch verbergen bij afspelen in venster"
+
+msgctxt "IDD_PPAGETWEAKS_IDC_SEEK_PREVIEW"
+msgid "Show preview on seek bar"
+msgstr ""
+
+msgctxt "IDD_PPAGETWEAKS_IDC_STATIC"
+msgid "Preview width (% of screen width)"
+msgstr ""
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON1"
 msgid "Add Filter..."
-msgstr "Filter toevoegen"
+msgstr "Filter toevoegen..."
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON2"
 msgid "Remove"
@@ -717,15 +732,15 @@ msgstr "Verwijderen"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_RADIO1"
 msgid "Prefer"
-msgstr "Prefereer"
+msgstr "Prefereren"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_RADIO2"
 msgid "Block"
-msgstr "Blokkeer"
+msgstr "Blokkeren"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_RADIO3"
 msgid "Set merit:"
-msgstr "Prioriteit:"
+msgstr "Weging:"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON3"
 msgid "Up"
@@ -737,11 +752,11 @@ msgstr "Omlaag"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON5"
 msgid "Add Media Type..."
-msgstr "Media type toevoegen"
+msgstr "Mediatype toevoegen"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON6"
 msgid "Add Sub Type..."
-msgstr "Sub type toevoegen"
+msgstr "Subtype toevoegen"
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON7"
 msgid "Delete"
@@ -765,7 +780,7 @@ msgstr "Tijdsduur:"
 
 msgctxt "IDD_FILEPROPDETAILS_IDC_STATIC"
 msgid "Video size:"
-msgstr "Video grootte:"
+msgstr "Videoafmetingen:"
 
 msgctxt "IDD_FILEPROPDETAILS_IDC_STATIC"
 msgid "Created:"
@@ -845,7 +860,7 @@ msgstr "OK"
 
 msgctxt "IDD_PNSPRESET_DLG_CAPTION"
 msgid "Pan & Scan Presets"
-msgstr "Pan & Scan profielen"
+msgstr "Pan & Scan voorkeuren"
 
 msgctxt "IDD_PNSPRESET_DLG_IDC_BUTTON2"
 msgid "New"
@@ -904,8 +919,12 @@ msgid "Warning"
 msgstr "Waarschuwing"
 
 msgctxt "IDD_MEDIATYPES_DLG_IDC_STATIC1"
-msgid "MPC-HC could not render some of the pins in the graph, you may not have the needed codecs or filters installed on the system."
-msgstr "MPC-HC kon sommige pinnen in de grafiek niet opbouwen. Misschien zijn de nodige codecs of filters niet op het systeem geïnstalleerd."
+msgid ""
+"MPC-HC could not render some of the pins in the graph, you may not have the "
+"needed codecs or filters installed on the system."
+msgstr ""
+"MPC-HC kon sommige pinnen in de grafiek niet opbouwen. Misschien zijn de "
+"nodige codecs of filters niet op het systeem geïnstalleerd."
 
 msgctxt "IDD_MEDIATYPES_DLG_IDC_STATIC2"
 msgid "The following pin(s) failed to find a connectable filter:"
@@ -1080,8 +1099,12 @@ msgid "Link alpha channels"
 msgstr "Alpha kanalen verbinden"
 
 msgctxt "IDD_PPAGEINTERNALFILTERS_IDC_STATIC"
-msgid "If you would like to use the stand-alone versions of these filters or another replacement, disable them here."
-msgstr "Als u een standalone-versie of een ander alternatief van een van deze filters wilt gebruiken, vink het dan hier uit."
+msgid ""
+"If you would like to use the stand-alone versions of these filters or "
+"another replacement, disable them here."
+msgstr ""
+"Als u een standalone-versie of een ander alternatief van een van deze "
+"filters wilt gebruiken, vink het dan hier uit."
 
 msgctxt "IDD_PPAGEINTERNALFILTERS_IDC_STATIC"
 msgid "Source Filters"
@@ -1119,21 +1142,41 @@ msgctxt "IDD_PPAGELOGO_IDC_BUTTON2"
 msgid "Browse..."
 msgstr "Bladeren..."
 
+msgctxt "IDD_PPAGELOGO_IDC_CHECK1"
+msgid "Apply Monitor Color Profile"
+msgstr ""
+
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "DirectShow Video"
 msgstr "DirectShow video"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "RealMedia Video"
-msgstr "RealMedia video"
+msgid "DXVA"
+msgstr "DXVA"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "QuickTime Video"
-msgstr "QuickTime Video"
+msgid "Subtitles"
+msgstr "Ondertitels"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Screenshot"
+msgstr "Screenshot"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Shaders"
+msgstr "Shaders"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Rotation"
+msgstr "Rotatie"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "Audio Renderer"
 msgstr "Geluid Renderer"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Subtitle Renderer"
+msgstr "Ondertitel opbouwer"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "VMR-9 (renderless) and EVR (CP) settings"
@@ -1171,30 +1214,6 @@ msgctxt "IDD_PPAGEOUTPUT_IDC_EVR_BUFFERS_TXT"
 msgid "EVR Buffers:"
 msgstr "EVR buffers:"
 
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "DXVA"
-msgstr "DXVA"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Subtitles"
-msgstr "Ondertitels"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Screenshot"
-msgstr "Beeldopname"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Shaders"
-msgstr "Shaders"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Rotation"
-msgstr "Rotatie"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Subtitle Renderer"
-msgstr "Ondertitel opbouwer"
-
 msgctxt "IDD_PPAGEOUTPUT_IDC_CACHESHADERS"
 msgid "Cache compiled Shaders"
 msgstr "Gecompileerde shaders cachen"
@@ -1205,7 +1224,7 @@ msgstr "Poortnummer:"
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_STATIC1"
 msgid "Launch in web browser..."
-msgstr "Openen in internet programma..."
+msgstr "Openen in webbrowser..."
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_CHECK3"
 msgid "Enable compression"
@@ -1213,19 +1232,19 @@ msgstr "Activeer compressie"
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_CHECK5"
 msgid "Allow access from localhost only"
-msgstr "Geef alleen toegang via localhost"
+msgstr "Alleen toegang vanaf localhost toestaan"
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_CHECK6"
 msgid "Enable preview"
-msgstr "Zet voorbeeld aan"
+msgstr "Laat afspeelvoorbeeld zien"
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_CHECK2"
 msgid "Print debug information"
-msgstr "Print debug informatie"
+msgstr "Debuginformatie laten zien"
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_CHECK4"
 msgid "Serve pages from:"
-msgstr "Geef HTML-pagina's van:"
+msgstr "Serveer pagina's vanuit:"
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_BUTTON1"
 msgid "Browse..."
@@ -1233,7 +1252,7 @@ msgstr "Bladeren..."
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_BUTTON2"
 msgid "Deploy..."
-msgstr "Toepassen..."
+msgstr "Uitrollen..."
 
 msgctxt "IDD_PPAGEWEBSERVER_IDC_STATIC"
 msgid "Default page:"
@@ -1245,19 +1264,19 @@ msgstr "CGI afhandeling: (.ext1=path1;.ext2=path2;...)"
 
 msgctxt "IDD_SUBTITLEDL_DLG_CAPTION"
 msgid "Download subtitles"
-msgstr "Ophalen ondertiteling"
+msgstr "Ondertiteling downloaden"
 
 msgctxt "IDD_SUBTITLEDL_DLG_IDC_CHECK1"
 msgid "Replace currently loaded subtitles"
-msgstr "Vervang huidig geladen ondertiteling"
+msgstr "Vervang huidige ondertiteling"
 
 msgctxt "IDD_SUBTITLEDL_DLG_IDOK"
 msgid "Download"
-msgstr "Ophalen"
+msgstr "Downloaden"
 
 msgctxt "IDD_SUBTITLEDL_DLG_IDC_BUTTON1"
 msgid "Refresh"
-msgstr "Verversen"
+msgstr "Vernieuwen"
 
 msgctxt "IDD_SUBTITLEDL_DLG_IDC_BUTTON2"
 msgid "Abort"
@@ -1273,11 +1292,11 @@ msgstr "Zoeken"
 
 msgctxt "IDD_SUBTITLEUP_DLG_CAPTION"
 msgid "Upload subtitles"
-msgstr "Ondertitel opsturen"
+msgstr "Ondertitel uploaden"
 
 msgctxt "IDD_SUBTITLEUP_DLG_IDOK"
 msgid "Upload"
-msgstr "Opsturen"
+msgstr "Uploaden"
 
 msgctxt "IDD_SUBTITLEUP_DLG_IDC_BUTTON1"
 msgid "Abort"
@@ -1317,11 +1336,11 @@ msgstr "Reset"
 
 msgctxt "IDD_PPAGEMISC_IDC_STATIC"
 msgid "Update check"
-msgstr "Opwaardering controle"
+msgstr "Controleren op updates"
 
 msgctxt "IDD_PPAGEMISC_IDC_CHECK1"
 msgid "Enable automatic update check"
-msgstr "Automatisch op opwaarderingen controleren"
+msgstr "Automatisch op updates controleren"
 
 msgctxt "IDD_PPAGEMISC_IDC_STATIC5"
 msgid "Check every:"
@@ -1333,7 +1352,7 @@ msgstr "dag(en)"
 
 msgctxt "IDD_PPAGEMISC_IDC_STATIC"
 msgid "Settings management"
-msgstr "Instellingen beheer"
+msgstr "Instellingenbeheer"
 
 msgctxt "IDD_PPAGEMISC_IDC_RESET_SETTINGS"
 msgid "Reset"
@@ -1389,11 +1408,11 @@ msgstr "Q"
 
 msgctxt "IDD_TUNER_SCAN_IDC_CHECK_OFFSET"
 msgid "Use an offset"
-msgstr "Gebruik een compensatie"
+msgstr "Gebruik een offset"
 
 msgctxt "IDD_PPAGECAPTURE_IDC_STATIC"
 msgid "Default Device"
-msgstr "Standaard apparaat"
+msgstr "Standaardapparaat"
 
 msgctxt "IDD_PPAGECAPTURE_IDC_RADIO1"
 msgid "Analog"
@@ -1425,7 +1444,7 @@ msgstr "Digital instellingen (BDA)"
 
 msgctxt "IDD_PPAGECAPTURE_IDC_STATIC4"
 msgid "Network Provider"
-msgstr "Netwerk leverancier (ISP)"
+msgstr "Netwerk provider"
 
 msgctxt "IDD_PPAGECAPTURE_IDC_STATIC5"
 msgid "Tuner"
@@ -1497,11 +1516,11 @@ msgstr "ms"
 
 msgctxt "IDD_PPAGESYNC_IDC_STATIC10"
 msgid "Changes take effect after the playback has been closed and restarted."
-msgstr "Vereist heropening van de video."
+msgstr "Vereist opnieuw openen van de video."
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK1"
 msgid "Launch files in fullscreen"
-msgstr "Bestanden met volledig scherm openen"
+msgstr "Bestanden openen in volledig scherm"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK4"
 msgid "Hide controls in fullscreen"
@@ -1517,15 +1536,15 @@ msgstr "Verberg gekoppelde panelen"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK5"
 msgid "Exit fullscreen at the end of playback"
-msgstr "Bij stoppen, volledig scherm verlaten"
+msgstr "Volledig scherm verlaten na afspelen"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_STATIC"
 msgid "Fullscreen monitor"
-msgstr "Volledigscherm monitor"
+msgstr "Monitor voor volledig scherm"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK2"
 msgid "Use autochange fullscreen monitor mode"
-msgstr "Weergavemodus automatisch overschakelen in volledig scherm"
+msgstr "Beeldscherminstellingen automatisch aanpassen bij volledig scherm"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_BUTTON1"
 msgid "Add"
@@ -1545,7 +1564,7 @@ msgstr "Omlaag"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK3"
 msgid "Apply default monitor mode on fullscreen exit"
-msgstr "Standaard monitor modus toepassen bij verlaten volledig scherm"
+msgstr "Beeldscherminstellingen herstellen bij verlaten volledig scherm"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_RESTORERESCHECK"
 msgid "Restore resolution on program exit"
@@ -1573,15 +1592,15 @@ msgstr "Geef de voorkeur aan geforceerde en/of standaard ondertitels"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_CHECK2"
 msgid "Prefer external subtitles over embedded subtitles"
-msgstr "Prefereer externe ondertiteling over interne ondertiteling"
+msgstr "Prefereer externe ondertiteling over bijgevoegde ondertiteling"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_CHECK3"
 msgid "Ignore embedded subtitles"
-msgstr "Geïntegreerde ondertiteling niet laden"
+msgstr "Bijgevoegde ondertiteling negeren"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC"
 msgid "Autoload paths"
-msgstr "Ondertitels uit directory's automatisch inladen"
+msgstr "Ondertitels automatisch laden uit deze mappen"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_BUTTON1"
 msgid "Reset"
@@ -1589,35 +1608,34 @@ msgstr "Reset"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC"
 msgid "Online search, download and upload subtitles"
-msgstr "Online zoeken, ophalen en versturen ondertitels"
+msgstr "Online ondertitels"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_CHECK4"
 msgid "Automatically search and download subtitles if none are found locally"
-msgstr "Automatisch zoeken en ophalen van ondertitels indien lokaal niet gevonden."
+msgstr ""
+"Automatisch zoeken en ophalen van ondertitels indien lokaal niet gevonden."
 
 msgctxt "IDD_PPAGESUBMISC_IDC_CHECK5"
-msgid "Prefer subtitles for hearing impaired (when indicated by subtitles provider)"
-msgstr "Liever ondertitels voor slechthorenden (indien aangegeven)"
+msgid ""
+"Prefer subtitles for hearing impaired (when indicated by subtitles provider)"
+msgstr ""
+"Prefereer ondertitels voor slechthorenden (indien aangegeven door aanbieder)"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC1"
 msgid "Ignore files containing any of the following word(s):"
-msgstr "Negeer bestanden die enige van de volgende woord(en) bevatten:"
+msgstr "Negeer bestanden met de volgende woorden:"
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC"
 msgid "Languages in order of preference:"
-msgstr "Talen in voorkeur volgorde"
-
-msgctxt "IDD_PPAGESUBMISC_IDC_CHECK6"
-msgid "Automatically upload active subtitles at the end of video playback"
-msgstr "Automatisch opsturen van actieve ondertitels na afspelen"
+msgstr "Voorkeursvolgorde van talen:"
 
 msgctxt "IDD_UPDATE_DIALOG_CAPTION"
 msgid "Update Checker"
-msgstr "Opwaardeer controle"
+msgstr "Controleren op updates"
 
 msgctxt "IDD_UPDATE_DIALOG_IDC_UPDATE_DL_BUTTON"
 msgid "&Download now"
-msgstr "&Nu ophalen"
+msgstr "&Nu downloaden"
 
 msgctxt "IDD_UPDATE_DIALOG_IDC_UPDATE_LATER_BUTTON"
 msgid "Remind me &later"
@@ -1625,11 +1643,15 @@ msgstr "Herinner me &later"
 
 msgctxt "IDD_UPDATE_DIALOG_IDC_UPDATE_IGNORE_BUTTON"
 msgid "&Ignore this update"
-msgstr "&Negeer deze opwaardering"
+msgstr "Update overslaan"
 
 msgctxt "IDD_PPAGESHADERS_IDC_STATIC"
-msgid "Shaders contain special effects which can be added to the video rendering process."
-msgstr "Shaders bevatten speciale effecten die aan het video opbouw proces toegevoegd kunnen worden."
+msgid ""
+"Shaders contain special effects which can be added to the video rendering "
+"process."
+msgstr ""
+"Shaders bevatten speciale effecten die aan het video opbouw proces "
+"toegevoegd kunnen worden."
 
 msgctxt "IDD_PPAGESHADERS_IDC_BUTTON12"
 msgid "Add shader file"
@@ -1670,6 +1692,14 @@ msgstr "Actieve pre-resize shaders"
 msgctxt "IDD_PPAGESHADERS_IDC_STATIC"
 msgid "Active post-resize shaders"
 msgstr "Actieve post-resize shaders"
+
+msgctxt "IDD_PPAGESHADERS_IDC_STATIC5"
+msgid ""
+"MPC-VR does not support pre-resize shaders. It will run them after resize, "
+"before the post-resize shaders."
+msgstr ""
+"MPC-VR ondersteund geen pre-resize shaders. Deze worden uitgevoerd na het "
+"resizen, vóór de post-resize shaders."
 
 msgctxt "IDD_DEBUGSHADERS_DLG_CAPTION"
 msgid "Debug Shaders"
@@ -1756,8 +1786,13 @@ msgid "Note"
 msgstr "Opmerking"
 
 msgctxt "IDD_PPAGEAUDIORENDERER_IDC_STATIC"
-msgid "To minimize audio distortion, it is recommended to keep player volume at around 85% when playing loud lossy-encoded content."
-msgstr "Om geluid vervorming te minimaliseren, is het raadzaam om het speler volume rond de 85% te behouden bij het afspelen van luide niet verliesvrije gecodeerde inhoud."
+msgid ""
+"To minimize audio distortion, it is recommended to keep player volume at "
+"around 85% when playing loud lossy-encoded content."
+msgstr ""
+"Om geluid vervorming te minimaliseren, is het raadzaam om het speler volume "
+"rond de 85% te behouden bij het afspelen van luide niet verliesvrije "
+"gecodeerde inhoud."
 
 msgctxt "IDD_SAVEIMAGEDIALOGTEMPL_IDC_STATIC"
 msgid "JPEG quality:"
@@ -1773,7 +1808,7 @@ msgstr "OK"
 
 msgctxt "IDD_CRASH_REPORTER_CAPTION"
 msgid "Crash reporter"
-msgstr "Crash rapporteur"
+msgstr "Crashmelder"
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC"
 msgid "We are sorry, it seems MPC-HC just crashed. :("
@@ -1781,7 +1816,7 @@ msgstr "Het spijt ons, het lijkt er op dat MPC-HC zojuist is gecrasht. :("
 
 msgctxt "IDD_CRASH_REPORTER_IDC_CHECK1"
 msgid "Send a bug report to help us diagnose and fix the problem."
-msgstr "Stuuur ons een foutrapport voor diagnose en foutoplossing"
+msgstr "Stuur een foutrapport voor diagnose en foutoplossing"
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC1"
 msgid "Optional information"
@@ -1792,8 +1827,12 @@ msgid "Email:"
 msgstr "Email:"
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC3"
-msgid "Your email address is optional and will only be used if the developers need to contact you for more information."
-msgstr "Een email adres is optioneel en zal enkel worden gebruikt als de ontwikkelaars contact met u moeten opnemen voor meer informatie."
+msgid ""
+"Your email address is optional and will only be used if the developers need "
+"to contact you for more information."
+msgstr ""
+"Een emailadres is optioneel en wordt alleen gebruikt als de ontwikkelaars "
+"contact met u moeten opnemen voor meer informatie."
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC4"
 msgid "Problem description (use English only):"
@@ -1807,3 +1846,10 @@ msgctxt "IDD_CRASH_REPORTER_IDC_BUTTON2"
 msgid "Quit MPC-HC"
 msgstr "Afsluiten MPC-HC"
 
+msgctxt "IDD_PPAGEDPICALC_IDC_STATIC1"
+msgid "Groupbox"
+msgstr ""
+
+msgctxt "IDD_PPAGEDPICALC_IDC_STATIC2"
+msgid "Autoplay"
+msgstr ""

@@ -293,7 +293,7 @@ STDMETHODIMP CRFSOutputPin::Request (IMediaSample* pSample, DWORD_PTR dwUser)
     CRFSFile::ReadThread *thread = new CRFSFile::ReadThread(m_file, llPosition, lLength, pBuffer);
 
     request->threadHandle = CreateThread(NULL, 0, CRFSFile::ReadThread::ThreadStartStatic, (void*)this, 0, &request->threadID);
-	if (request->threadHandle != S_OK)
+	if (request->threadHandle != static_cast<HANDLE>(S_OK))
 	{
 		DWORD err = GetLastError ();
 		ErrorMsg (err, L"CRFSOutputPin::Request - ReadFile");

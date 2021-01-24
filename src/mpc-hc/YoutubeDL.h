@@ -32,10 +32,26 @@ public:
         CString video_url;
         CString audio_url;
         CString title;
+        CString season;
+        CString series;
+        int season_number = -1;
+        CString season_id;
+        CString episode;
+        int episode_number = -1;
+        CString episode_id;
+        CString webpage_url;
+    };
+
+    struct YDLPlaylistInfo {
+        CString id;
+        CString title;
+        CString uploader;
+        CString uploader_id;
+        CString uploader_url;
     };
 
     bool Run(CString url);
-    bool GetHttpStreams(CAtlList<YDLStreamURL>& streams);
+    bool GetHttpStreams(CAtlList<YDLStreamURL>& streams, YDLPlaylistInfo& info);
 
 private:
     CUtf16JSON* pJSON;

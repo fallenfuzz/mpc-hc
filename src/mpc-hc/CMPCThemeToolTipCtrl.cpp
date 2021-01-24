@@ -86,7 +86,7 @@ void CMPCThemeToolTipCtrl::paintTT(CDC& dc, CMPCThemeToolTipCtrl* tt)
 
 void CMPCThemeToolTipCtrl::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CPaintDC dc(this);
         if (useFlickerHelper) { //helper will paint
             return;
@@ -100,7 +100,7 @@ void CMPCThemeToolTipCtrl::OnPaint()
 
 BOOL CMPCThemeToolTipCtrl::OnEraseBkgnd(CDC* pDC)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         return TRUE;
     } else {
         return __super::OnEraseBkgnd(pDC);
@@ -114,7 +114,7 @@ int CMPCThemeToolTipCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         makeHelper();
     }
     return 0;
@@ -179,7 +179,7 @@ BOOL CMPCThemeToolTipCtrl::CMPCThemeToolTipCtrlHelper::OnEraseBkgnd(CDC* pDC)
 void CMPCThemeToolTipCtrl::OnMove(int x, int y)
 {
     CToolTipCtrl::OnMove(x, y);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         makeHelper();
     }
 }
@@ -189,7 +189,7 @@ void CMPCThemeToolTipCtrl::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 
     CToolTipCtrl::OnShowWindow(bShow, nStatus);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (!bShow) {
             if (helper != nullptr) {
                 delete helper;
@@ -202,7 +202,7 @@ void CMPCThemeToolTipCtrl::OnShowWindow(BOOL bShow, UINT nStatus)
 void CMPCThemeToolTipCtrl::OnSize(UINT nType, int cx, int cy)
 {
     CToolTipCtrl::OnSize(nType, cx, cy);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         makeHelper();
     }
 }
@@ -211,7 +211,7 @@ void CMPCThemeToolTipCtrl::OnSize(UINT nType, int cx, int cy)
 void CMPCThemeToolTipCtrl::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 {
     CToolTipCtrl::OnWindowPosChanging(lpwndpos);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         //hack to make it fit if fonts differ from parent. can be manually avoided
         //if the parent widget is set to same font (see CMPCThemePlayerListCtrl using MessageFont now)
         CString text;

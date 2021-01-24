@@ -48,8 +48,6 @@
 #include "FGFilterLAV.h"
 #include "CMPCThemeMsgBox.h"
 
-#define HOOKS_BUGS_URL _T("https://trac.mpc-hc.org/ticket/3739")
-
 HICON LoadIcon(CString fn, bool bSmallIcon, DpiHelper* pDpiHelper/* = nullptr*/)
 {
     if (fn.IsEmpty()) {
@@ -284,7 +282,8 @@ static bool FindRedir(const CString& fn, CString ct, CAtlList<CString>& fns, con
 
     CTextFile f(CTextFile::UTF8);
     if (f.Open(fn)) {
-        for (CString tmp; f.ReadString(tmp); body += tmp + '\n') {
+        int i = 0;
+        for (CString tmp; i < 10000 && f.ReadString(tmp); body += tmp + '\n', ++i) {
             ;
         }
     }
@@ -326,10 +325,13 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
 {
     CUrl url;
     CString ct, body;
+    BOOL ishttp = false;
+    BOOL parsefile = false;
 
     fn.Trim();
 
-    if (fn.Find(_T("://")) >= 0) {
+    BOOL isurl = PathUtils::IsURL(fn);
+    if (isurl) {
         url.CrackUrl(fn);
 
         if (_tcsicmp(url.GetSchemeName(), _T("pnm")) == 0) {
@@ -340,10 +342,16 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
             return "video/x-ms-asf";
         }
 
-        if (_tcsicmp(url.GetSchemeName(), _T("http")) != 0) {
-            return "";
+        if (_tcsicmp(url.GetSchemeName(), _T("http")) == 0) {
+            ishttp = true;
         }
 
+        if (!ishttp && _tcsicmp(url.GetSchemeName(), _T("https")) != 0) {
+            return "";
+        }
+    }
+
+    if (ishttp) {
         DWORD ProxyEnable = 0;
         CString ProxyServer;
         DWORD ProxyPort = 0;
@@ -484,24 +492,30 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
         CString ext = p.GetExtension().MakeLower();
         if (ext == _T(".mpcpl")) {
             ct = _T("application/x-mpc-playlist");
+        }  else if (ext == _T(".cue")) {
+            ct = _T("application/x-cue-sheet");
         } else if (ext == _T(".pls")) {
             ct = _T("audio/x-scpls");
+            parsefile = true;
         } else if (ext == _T(".m3u") || ext == _T(".m3u8")) {
             ct = _T("audio/x-mpegurl");
         } else if (ext == _T(".bdmv")) {
             ct = _T("application/x-bdmv-playlist");
         } else if (ext == _T(".asx")) {
             ct = _T("video/x-ms-asf");
+            parsefile = true;
         } else if (ext == _T(".swf")) {
             ct = _T("application/x-shockwave-flash");
         } else if (ext == _T(".qtl")) {
             ct = _T("application/x-quicktimeplayer");
-        } else if (ext == _T(".ram") || ext == _T(".ra")) {
+            parsefile = true;
+        } else if (ext == _T(".ram")) {
             ct = _T("audio/x-pn-realaudio");
+            parsefile = true;
         }
     }
 
-    if (redir && !ct.IsEmpty()) {
+    if (redir && !ct.IsEmpty() && (isurl && !body.IsEmpty() || !isurl && parsefile) ) {
         std::vector<std::wregex> res;
         const std::wregex::flag_type reFlags = std::wregex::icase | std::wregex::optimize;
 
@@ -524,12 +538,10 @@ CStringA GetContentType(CString fn, CAtlList<CString>* redir)
             res.emplace_back(_T("http://[^\n]+"), reFlags);
         }
 
-        if (!body.IsEmpty()) {
-            if (fn.Find(_T("://")) >= 0) {
-                FindRedir(url, ct, body, *redir, res);
-            } else {
-                FindRedir(fn, ct, *redir, res);
-            }
+        if (isurl) {
+            FindRedir(url, ct, body, *redir, res);
+        } else {
+            FindRedir(fn, ct, *redir, res);
         }
     }
 
@@ -541,16 +553,29 @@ WORD AssignedToCmd(UINT keyOrMouseValue, bool bIsFullScreen, bool bCheckMouse)
     WORD assignTo = 0;
     const CAppSettings& s = AfxGetAppSettings();
 
+    BYTE mouseVirt = 0;
+    if (bCheckMouse) {
+        if (GetKeyState(VK_SHIFT) & 0x8000) {
+            mouseVirt |= FSHIFT;
+        }
+        if (GetKeyState(VK_MENU) & 0x8000) {
+            mouseVirt |= FALT;
+        }
+        if (GetKeyState(VK_CONTROL) & 0x8000) {
+            mouseVirt |= FCONTROL;
+        }
+    }
+
     POSITION pos = s.wmcmds.GetHeadPosition();
     while (pos && !assignTo) {
         const wmcmd& wc = s.wmcmds.GetNext(pos);
 
         if (bCheckMouse) {
             if (bIsFullScreen) {
-                if (wc.mouseFS == keyOrMouseValue) {
+                if (wc.mouseFS == keyOrMouseValue && (wc.mouseFSVirt & ~FVIRTKEY) == mouseVirt) {
                     assignTo = wc.cmd;
                 }
-            } else if (wc.mouse == keyOrMouseValue) {
+            } else if (wc.mouse == keyOrMouseValue && (wc.mouseVirt & ~FVIRTKEY) == mouseVirt) {
                 assignTo = wc.cmd;
             }
         } else if (wc.key == keyOrMouseValue) {
@@ -602,6 +627,7 @@ CMPlayerCApp::CMPlayerCApp()
     , m_bQueuedProfileFlush(false)
     , m_dwProfileLastAccessTick(0)
     , m_fClosingState(false)
+    , m_bThemeLoaded(false)
 {
     m_strVersion = FileVersionInfo::GetFileVersionStr(PathUtils::GetProgramPath(true));
 
@@ -635,8 +661,7 @@ CMPlayerCApp::~CMPlayerCApp()
 int CMPlayerCApp::DoMessageBox(LPCTSTR lpszPrompt, UINT nType,
                                UINT nIDPrompt)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
-
+    if (AppIsThemeLoaded()) {
         CWnd* pParentWnd = CWnd::GetActiveWindow();
         if (pParentWnd == NULL) {
             pParentWnd = GetMainWnd()->GetLastActivePopup();
@@ -1423,8 +1448,12 @@ BOOL WINAPI Mine_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID l
     BOOL ret = Real_DeviceIoControl(hDevice, dwIoControlCode, lpInBuffer, nInBufferSize, lpOutBuffer, nOutBufferSize, lpBytesReturned, lpOverlapped);
     if (IOCTL_DVD_GET_REGION == dwIoControlCode && lpOutBuffer && nOutBufferSize == sizeof(DVD_REGION)) {
         DVD_REGION* pDVDRegion = (DVD_REGION*)lpOutBuffer;
-        pDVDRegion->SystemRegion = 0;
-        pDVDRegion->RegionData = 0;
+        pDVDRegion->RegionData = 0xff;
+        if (*lpBytesReturned == 0) {
+            pDVDRegion->SystemRegion = 0;
+            *lpBytesReturned = 4;
+        }
+        ret = true;
     }
     return ret;
 }
@@ -1451,6 +1480,22 @@ BOOL WINAPI Mine_LockWindowUpdate(HWND hWndLock)
     }
 }
 
+BOOL RegQueryBoolValue(HKEY hKeyRoot, LPCWSTR lpSubKey, LPCWSTR lpValuename, BOOL defaultvalue) {
+    BOOL result = defaultvalue;
+    HKEY hKeyOpen;
+    DWORD rv = RegOpenKeyEx(hKeyRoot, lpSubKey, 0, KEY_READ, &hKeyOpen);
+    if (rv == ERROR_SUCCESS) {
+        DWORD data;
+        DWORD dwBufferSize = sizeof(DWORD);
+        rv = RegQueryValueEx(hKeyOpen, lpValuename, NULL, NULL, reinterpret_cast<LPBYTE>(&data), &dwBufferSize);
+        if (rv == ERROR_SUCCESS) {
+            result = (data > 0);
+        }
+        RegCloseKey(hKeyOpen);
+    }
+    return result;
+}
+
 BOOL CMPlayerCApp::InitInstance()
 {
     // Remove the working directory from the search path to work around the DLL preloading vulnerability
@@ -1458,9 +1503,13 @@ BOOL CMPlayerCApp::InitInstance()
 
     // At this point we have not hooked this function yet so we get the real result
     if (!IsDebuggerPresent()) {
-#if USE_DRDUMP_CRASH_REPORTER
-        CrashReporter::Enable();
-        if (!CrashReporter::IsEnabled()) {
+#if !defined(_DEBUG) && USE_DRDUMP_CRASH_REPORTER
+        if (RegQueryBoolValue(HKEY_CURRENT_USER, _T("Software\\MPC-HC\\MPC-HC\\Settings"), _T("EnableCrashReporter"), true)) {
+            CrashReporter::Enable();
+            if (!CrashReporter::IsEnabled()) {
+                MPCExceptionHandler::Enable();
+            }
+        } else {
             MPCExceptionHandler::Enable();
         }
 #else
@@ -1498,9 +1547,7 @@ BOOL CMPlayerCApp::InitInstance()
     bHookingSuccessful &= MH_EnableHook(MH_ALL_HOOKS) == MH_OK;
 
     if (!bHookingSuccessful) {
-        if (AfxMessageBox(IDS_HOOKS_FAILED, MB_ICONWARNING | MB_YESNO, 0) == IDYES) {
-            ShellExecute(nullptr, _T("open"), HOOKS_BUGS_URL, nullptr, nullptr, SW_SHOWDEFAULT);
-        }
+        AfxMessageBox(IDS_HOOKS_FAILED);
     }
 
     // If those hooks fail it's annoying but try to run anyway without reporting any error in release mode
@@ -1766,6 +1813,13 @@ BOOL CMPlayerCApp::InitInstance()
     m_s->UpdateSettings(); // update settings
     m_s->LoadSettings(); // read settings
 
+    #if !defined(_DEBUG) && USE_DRDUMP_CRASH_REPORTER
+    if (!m_s->bEnableCrashReporter && CrashReporter::IsEnabled()) {
+        CrashReporter::Disable();
+        MPCExceptionHandler::Enable();
+    }
+    #endif
+
     m_AudioRendererDisplayName_CL = _T("");
 
     if (!__super::InitInstance()) {
@@ -1777,10 +1831,8 @@ BOOL CMPlayerCApp::InitInstance()
 
     CMainFrame* pFrame = DEBUG_NEW CMainFrame;
     m_pMainWnd = pFrame;
-    if (!pFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, nullptr, nullptr)) {
-        if (MessageBox(nullptr, ResStr(IDS_FRAME_INIT_FAILED), m_pszAppName, MB_ICONERROR | MB_YESNO) == IDYES) {
-            ShellExecute(nullptr, _T("open"), TRAC_URL, nullptr, nullptr, SW_SHOWDEFAULT);
-        }
+    if (!pFrame || !pFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, nullptr, nullptr)) {
+        MessageBox(nullptr, ResStr(IDS_FRAME_INIT_FAILED), m_pszAppName, MB_ICONERROR | MB_OK);
         return FALSE;
     }
     pFrame->m_controls.LoadState();
@@ -1838,6 +1890,8 @@ BOOL CMPlayerCApp::InitInstance()
     if (UpdateChecker::IsAutoUpdateEnabled()) {
         UpdateChecker::CheckForUpdate(true);
     }
+
+    if (!m_pMainWnd) return false;
 
     SendCommandLine(m_pMainWnd->m_hWnd);
     RegisterHotkeys();

@@ -29,8 +29,6 @@ class CAboutDlg : public CMPCThemeDialog
     CStatic m_icon;
 
     CString m_appname;
-    CString m_credits;
-    CString m_AuthorsPath;
     CString m_homepage;
 
     CString m_strBuildNumber;
@@ -51,7 +49,6 @@ public:
     virtual BOOL OnInitDialog();
 
     afx_msg void OnHomepage(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnAuthors(NMHDR* pNMHDR, LRESULT* pResult);
 
     // Dialog Data
     //{{AFX_DATA(CAboutDlg)

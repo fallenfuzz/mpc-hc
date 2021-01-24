@@ -22,6 +22,8 @@
 #include "DpiHelper.h"
 
 #include "WinapiFunc.h"
+#include <VersionHelpersInternal.h>
+
 
 namespace
 {
@@ -32,6 +34,7 @@ namespace
         MDT_DEFAULT = MDT_EFFECTIVE_DPI
     } MONITOR_DPI_TYPE;
 
+    typedef int (WINAPI* tpGetSystemMetricsForDpi)(int nIndex, UINT dpi);
     HRESULT WINAPI GetDpiForMonitor(HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY);
 }
 
@@ -63,4 +66,21 @@ void DpiHelper::Override(int dpix, int dpiy)
 {
     m_dpix = dpix;
     m_dpiy = dpiy;
+}
+
+int DpiHelper::GetSystemMetricsDPI(int nIndex) {
+    if (IsWindows10OrGreater()) {
+        static tpGetSystemMetricsForDpi pGetSystemMetricsForDpi = (tpGetSystemMetricsForDpi)GetProcAddress(GetModuleHandleW(L"user32.dll"), "GetSystemMetricsForDpi");
+        if (pGetSystemMetricsForDpi) {
+            return pGetSystemMetricsForDpi(nIndex, m_dpix);
+        }
+    }
+
+    return ScaleSystemToOverrideX(::GetSystemMetrics(nIndex));
+}
+
+bool DpiHelper::CanUsePerMonitorV2() {
+    RTL_OSVERSIONINFOW osvi = GetRealOSVersion();
+    bool ret = (osvi.dwMajorVersion >= 10 && osvi.dwMajorVersion >= 0 && osvi.dwBuildNumber >= 15063); //PerMonitorV2 with common control scaling first available in win 10 1703
+    return ret;
 }

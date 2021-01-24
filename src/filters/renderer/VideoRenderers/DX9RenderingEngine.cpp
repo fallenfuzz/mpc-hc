@@ -20,6 +20,7 @@
 
 #include "stdafx.h"
 #include <algorithm>
+#pragma warning(disable: 5033) // warning C5033: 'register' is no longer a supported storage class
 #include "lcms2/library/include/lcms2.h"
 #include "../../../mpc-hc/resource.h"
 #include "Dither.h"
@@ -954,6 +955,28 @@ HRESULT CDX9RenderingEngine::TextureResizeBicubic2pass(IDirect3DTexture9* pTextu
     return hr;
 }
 */
+
+HRESULT CDX9RenderingEngine::Resize(IDirect3DTexture9* pTexture, const CRect& srcRect, const CRect& destRect)
+{
+    HRESULT hr;
+
+    const CRenderersSettings& r = GetRenderersSettings();
+
+    DWORD iDX9Resizer = r.iDX9Resizer;
+    Vector dst[4];
+    Transform(destRect, dst);
+
+    if (iDX9Resizer == 0 || iDX9Resizer == 1) {
+        D3DTEXTUREFILTERTYPE Filter = iDX9Resizer == 0 ? D3DTEXF_POINT : D3DTEXF_LINEAR;
+        hr = TextureResize(pTexture, dst, Filter, srcRect);
+    } else if (iDX9Resizer == 2) {
+        hr = TextureResizeBilinear(pTexture, dst, srcRect);
+    } else if (iDX9Resizer >= 3) {
+        hr = TextureResizeBicubic1pass(pTexture, dst, srcRect);
+    }
+
+	return hr;
+}
 
 HRESULT CDX9RenderingEngine::InitFinalPass()
 {

@@ -5,6 +5,7 @@
 #endif
 
 #include <windows.h>
+#include <atlbase.h>
 
 #include <streams.h>
 

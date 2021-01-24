@@ -71,8 +71,11 @@ BOOL CDropTarget::OnDrop(CWnd* pWnd, COleDataObject* pDataObject, DROPEFFECT dro
                     UINT nFiles = ::DragQueryFile(hDrop, UINT_MAX, nullptr, 0);
                     for (UINT iFile = 0; iFile < nFiles; iFile++) {
                         CString fn;
-                        fn.ReleaseBuffer(::DragQueryFile(hDrop, iFile, fn.GetBuffer(MAX_PATH), MAX_PATH));
-                        slFiles.AddTail(fn);
+                        UINT res = ::DragQueryFile(hDrop, iFile, fn.GetBuffer(MAX_PATH), MAX_PATH);
+                        if (res) {
+                            fn.ReleaseBuffer(res);
+                            slFiles.AddTail(fn);
+                        }
                     }
                     ::DragFinish(hDrop);
                     pClient->OnDropFiles(slFiles, dropEffect);

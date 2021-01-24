@@ -105,19 +105,19 @@ enum MpcCaptionState {
 }; // flags for Caption & Menu Mode
 
 enum {
-    VIDRNDT_DS_DEFAULT,
-    VIDRNDT_DS_OLDRENDERER,
-    VIDRNDT_DS_OVERLAYMIXER,
-    VIDRNDT_DS_VMR9WINDOWED = 4,
+    VIDRNDT_DS_DEFAULT        = 0,
+    VIDRNDT_DS_OLDRENDERER    = 1,
+    VIDRNDT_DS_OVERLAYMIXER   = 2,
+    VIDRNDT_DS_VMR9WINDOWED   = 4,
     VIDRNDT_DS_VMR9RENDERLESS = 6,
-    VIDRNDT_DS_DXR,
-    VIDRNDT_DS_NULL_COMP,
-    VIDRNDT_DS_NULL_UNCOMP,
-    VIDRNDT_DS_EVR,
-    VIDRNDT_DS_EVR_CUSTOM,
-    VIDRNDT_DS_MADVR,
-    VIDRNDT_DS_SYNC,
-    VIDRNDT_DS_MPCVR,
+    VIDRNDT_DS_DXR            = 7,
+    VIDRNDT_DS_NULL_COMP      = 8,
+    VIDRNDT_DS_NULL_UNCOMP    = 9,
+    VIDRNDT_DS_EVR            = 10,
+    VIDRNDT_DS_EVR_CUSTOM     = 11,
+    VIDRNDT_DS_MADVR          = 12,
+    VIDRNDT_DS_SYNC           = 13,
+    VIDRNDT_DS_MPCVR          = 14,
 };
 
 // Enumeration for MCE remote control (careful : add 0x010000 for all keys!)
@@ -189,6 +189,18 @@ enum DVB_StopFilterGraph {
     DVB_STOP_FG_ALWAYS
 };
 
+struct ShaderC {
+	CString   label;
+	CString   profile;
+	CString   srcdata;
+	ULONGLONG length = 0;
+	FILETIME  ftwrite = {0,0};
+
+	bool Match(LPCWSTR _label, const bool _bD3D11) const {
+		return (label.CompareNoCase(_label) == 0 && (_bD3D11 == (profile == "ps_4_0")));
+	}
+};
+
 struct DisplayMode {
     bool  bValid = false;
     CSize size;
@@ -252,6 +264,8 @@ struct AutoChangeFullscreenMode {
 struct wmcmd_base : public ACCEL {
     BYTE mouse;
     BYTE mouseFS;
+    BYTE mouseVirt;
+    BYTE mouseFSVirt;
     DWORD dwname;
     UINT appcmd;
 
@@ -285,13 +299,17 @@ struct wmcmd_base : public ACCEL {
     })
     , mouse(NONE)
     , mouseFS(NONE)
+    , mouseVirt(0)
+    , mouseFSVirt(0)
     , dwname(0)
     , appcmd(0) {}
 
-    constexpr wmcmd_base(WORD _cmd, WORD _key, BYTE _fVirt, DWORD _dwname, UINT _appcmd = 0, BYTE _mouse = NONE, BYTE _mouseFS = NONE)
+    constexpr wmcmd_base(WORD _cmd, WORD _key, BYTE _fVirt, DWORD _dwname, UINT _appcmd = 0, BYTE _mouse = NONE, BYTE _mouseFS = NONE, BYTE _mouseVirt = 0, BYTE _mouseFSVirt = 0)
         : ACCEL{ _fVirt, _key, _cmd }
         , mouse(_mouse)
         , mouseFS(_mouseFS)
+        , mouseVirt(_mouseVirt)
+        , mouseFSVirt(_mouseFSVirt)
         , dwname(_dwname)
         , appcmd(_appcmd) {}
 
@@ -332,7 +350,9 @@ public:
         *static_cast<ACCEL*>(this) = *static_cast<const ACCEL*>(default_cmd);
         appcmd = default_cmd->appcmd;
         mouse = default_cmd->mouse;
+        mouseVirt = default_cmd->mouseVirt;
         mouseFS = default_cmd->mouseFS;
+        mouseFSVirt = default_cmd->mouseFSVirt;
         rmcmd.Empty();
         rmrepcnt = 5;
     }
@@ -342,7 +362,9 @@ public:
         return memcmp(static_cast<const ACCEL*>(this), static_cast<const ACCEL*>(default_cmd), sizeof(ACCEL)) ||
                appcmd != default_cmd->appcmd ||
                mouse != default_cmd->mouse ||
+               mouseVirt != default_cmd->mouseVirt ||
                mouseFS != default_cmd->mouseFS ||
+               mouseFSVirt != default_cmd->mouseFSVirt ||
                !rmcmd.IsEmpty() ||
                rmrepcnt != 5;
     }
@@ -398,9 +420,39 @@ public:
 
 #define APPSETTINGS_VERSION 8
 
+class RecentFileEntry {
+public:
+    RecentFileEntry() {}
+    RecentFileEntry(const RecentFileEntry &r) {
+        cue = r.cue;
+        title = r.title;
+        fns.RemoveAll();
+        subs.RemoveAll();
+        fns.AddHeadList(&r.fns);
+        subs.AddHeadList(&r.subs);
+    }
+
+    CString title;
+    CAtlList<CString> fns;
+    CString cue;
+    CAtlList<CString> subs;
+
+    BOOL operator==(RecentFileEntry c) {
+        return this->fns.GetHead() == c.fns.GetHead() && cue == c.cue;
+    }
+    void operator=(const RecentFileEntry &r) {
+        cue = r.cue;
+        title = r.title;
+        fns.RemoveAll();
+        subs.RemoveAll();
+        fns.AddHeadList(&r.fns);
+        subs.AddHeadList(&r.subs);
+    }
+};
+
 class CAppSettings
 {
-    bool bInitialized;
+    bool bInitialized = false;
 
     class CRecentFileAndURLList : public CRecentFileList
     {
@@ -411,6 +463,32 @@ class CAppSettings
 
         virtual void Add(LPCTSTR lpszPathName); // we have to override CRecentFileList::Add because the original version can't handle URLs
 
+        void SetSize(int nSize);
+    };
+
+    class CRecentFileListWithMoreInfo
+    {
+    public:
+        CRecentFileListWithMoreInfo(LPCTSTR lpszSection, int nSize) : m_section(lpszSection), m_maxSize(nSize){}
+
+        CAtlArray<RecentFileEntry> rfe_array;
+        int m_maxSize;
+        LPCTSTR m_section;
+
+        int GetSize() {
+            return (int)rfe_array.GetCount();
+        }
+
+        RecentFileEntry& operator[](int nIndex) {
+            ASSERT(nIndex >= 0 && nIndex < rfe_array.GetCount());
+            return rfe_array[nIndex];
+        }
+
+        void Remove(int nIndex);
+        void Add(LPCTSTR fn);
+        void Add(RecentFileEntry r);
+        void ReadList();
+        void WriteList();
         void SetSize(int nSize);
     };
 
@@ -453,7 +531,7 @@ public:
     bool            fTitleBarTextTitle;
     bool            fKeepHistory;
     int             iRecentFilesNumber;
-    CRecentFileAndURLList MRU;
+    CRecentFileListWithMoreInfo MRU;
     CRecentFileAndURLList MRUDub;
     CFilePositionList filePositions;
     CDVDPositionList  dvdPositions;
@@ -487,6 +565,7 @@ public:
     // Logo
     UINT            nLogoId;
     bool            fLogoExternal;
+    BOOL            fLogoColorProfileEnabled;
     CString         strLogoFileName;
 
     // Web Inteface
@@ -547,8 +626,6 @@ public:
     // Output
     CRenderersSettings m_RenderersSettings;
     int             iDSVideoRendererType;
-    int             iRMVideoRendererType;
-    int             iQTVideoRendererType;
 
     CStringW        strAudioRendererDisplayName;
     bool            fD3DFullscreen;
@@ -574,7 +651,7 @@ public:
     CString         strAnalogVideo;
     CString         strAnalogAudio;
     int             iAnalogCountry;
-    CString         strBDANetworkProvider;
+    //CString         strBDANetworkProvider;
     CString         strBDATuner;
     CString         strBDAReceiver;
     //CString           strBDAStandard;
@@ -629,7 +706,8 @@ public:
     CString         strAutoDownloadSubtitlesExclude;
     bool            bAutoUploadSubtitles;
     bool            bPreferHearingImpairedSubtitles;
-    bool            bMPCThemeLoaded;
+    bool            bRenderSubtitlesUsingLibass;
+    CStringA        strOpenTypeLangHint;
     bool            bMPCTheme;
     bool            bWindows10DarkThemeActive;
     bool            bWindows10AccentColorsEnabled;
@@ -658,6 +736,8 @@ public:
     bool            fPreventMinimize;
     bool            bUseEnhancedTaskBar;
     bool            fLCDSupport;
+    bool            fSeekPreview;
+    int             iSeekPreviewSize;
     bool            fUseSearchInFolder;
     bool            fUseTimeTooltip;
     int             nTimeTooltipPosition;
@@ -699,11 +779,15 @@ public:
     bool            bFavRelativeDrive;
     // Save Image...
     CString         strSnapshotPath, strSnapshotExt;
+    bool			bSnapShotSubtitles;
+    bool			bSnapShotKeepVideoExtension;
     // Save Thumbnails...
     int             iThumbRows, iThumbCols, iThumbWidth;
     // Save Subtitle
     bool            bSubSaveExternalStyleFile;
     // Shaders
+    bool            bToggleShader;
+    bool            bToggleShaderScreenSpace;
     ShaderList      m_ShadersExtraList;
     ShaderSelection m_Shaders;
     // Playlist (contex menu)
@@ -777,6 +861,15 @@ public:
     bool bYDLAudioOnly;
     CString sYDLCommandLine;
 
+    bool bEnableCrashReporter;
+
+    int nStreamPosPollerInterval;
+    bool bShowLangInStatusbar;
+    bool bShowFPSInStatusbar;
+
+    bool bAddLangCodeWhenSaveSubtitles;
+    bool bUseTitleInRecentFileList;
+
 private:
     struct FilterKey {
         CString name;
@@ -842,4 +935,7 @@ public:
     bool            GetAllowMultiInst() const;
 
     static bool     IsVSFilterInstalled();
+#if USE_LIBASS
+    SubRendererSettings	GetSubRendererSettings();
+#endif
 };

@@ -23,7 +23,7 @@ namespace SaneAudioRenderer
         if (static_cast<HANDLE>(m_wake) == NULL ||
             static_cast<HANDLE>(m_observeInactivityWake) == NULL)
         {
-            throw E_OUTOFMEMORY;
+            throw HResultException{ E_OUTOFMEMORY };
         }
 
         ThrowIfFailed(backend->audioClient->SetEventHandle(m_wake));
@@ -50,7 +50,7 @@ namespace SaneAudioRenderer
         assert(!m_endOfStream);
 
         if (m_error)
-            throw E_FAIL;
+            throw HResultException{ E_FAIL };
 
         PushChunkToBuffer(chunk);
 
@@ -61,7 +61,7 @@ namespace SaneAudioRenderer
     REFERENCE_TIME AudioDeviceEvent::Finish(CAMEvent* pFilledEvent)
     {
         if (m_error)
-            throw E_FAIL;
+            throw HResultException{ E_FAIL };
 
         if (!m_endOfStream)
         {
@@ -273,7 +273,7 @@ namespace SaneAudioRenderer
                             m_queuedStart = false;
                         }
                     }
-                    catch (HRESULT)
+                    catch (...)
                     {
                         m_error = true;
                     }
@@ -312,7 +312,7 @@ namespace SaneAudioRenderer
                                 if (renewSilence > 0)
                                     m_renewSilenceFrames = TimeToFrames(renewSilence, GetRate());
                             }
-                            catch (HRESULT)
+                            catch (...)
                             {
                                 m_renewSilenceFrames = 0;
                             }
@@ -448,10 +448,10 @@ namespace SaneAudioRenderer
 
             m_receivedFrames += chunkFrames;
         }
-        catch (std::bad_alloc&)
+        catch (...)
         {
             m_error = true;
-            throw E_OUTOFMEMORY;
+            throw HResultException{ E_OUTOFMEMORY };
         }
     }
 }

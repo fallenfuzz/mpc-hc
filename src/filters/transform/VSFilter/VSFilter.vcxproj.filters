@@ -118,6 +118,9 @@
     <ClInclude Include="..\..\..\mpc-hc\ColorButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\..\mpc-hc\CMPCTheme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VSFilter.rc">

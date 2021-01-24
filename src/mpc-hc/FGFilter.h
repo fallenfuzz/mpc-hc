@@ -125,9 +125,10 @@ class CFGFilterVideoRenderer : public CFGFilter
 protected:
     HWND m_hWnd;
     bool m_bHas10BitWorkAround;
+    bool m_bIsPreview;
 
 public:
-    CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CStringW name = L"", UINT64 merit = MERIT64_DO_USE);
+    CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CStringW name = L"", UINT64 merit = MERIT64_DO_USE, bool preview = false);
     virtual ~CFGFilterVideoRenderer();
 
     HRESULT Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &IID_IUnknown>& pUnks);

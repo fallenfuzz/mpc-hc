@@ -111,6 +111,9 @@ STDMETHODIMP CDX9SubPic::CopyTo(ISubPic* pSubPic)
     IDirect3DTexture9* pSrcTex = (IDirect3DTexture9*)GetObject();
     CComPtr<IDirect3DSurface9> pSrcSurf;
     pSrcTex->GetSurfaceLevel(0, &pSrcSurf);
+    if (!pSrcSurf) {
+        return E_FAIL;
+    }
     D3DSURFACE_DESC srcDesc;
     pSrcSurf->GetDesc(&srcDesc);
 
@@ -397,7 +400,7 @@ STDMETHODIMP CDX9SubPicAllocator::ChangeDevice(IUnknown* pDev)
 STDMETHODIMP CDX9SubPicAllocator::SetMaxTextureSize(SIZE maxTextureSize)
 {
     CAutoLock cAutoLock(this);
-    if (m_maxsize != maxTextureSize) {
+    if (maxTextureSize.cx > 0 && maxTextureSize.cy > 0 && m_maxsize != maxTextureSize) {
         if (m_maxsize.cx < maxTextureSize.cx || m_maxsize.cy < maxTextureSize.cy) {
             ClearCache();
         }

@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the MPC-HC package.
 # Translators:
 # MPC HC <adiposegithub@gmail.com>, 2020
+# Gaugg_Markus, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: MPC-HC\n"
 "POT-Creation-Date: 2017-07-30 20:54:11+0000\n"
 "PO-Revision-Date: 2020-01-02 07:46+0000\n"
-"Last-Translator: MPC HC <adiposegithub@gmail.com>, 2020\n"
+"Last-Translator: Gaugg_Markus, 2020\n"
 "Language-Team: German (https://www.transifex.com/mpchc/teams/106126/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,7 +37,7 @@ msgstr "Icon-Bibliothek"
 
 msgctxt "CustomMessages_comp_mpcresources"
 msgid "Translations"
-msgstr "Übersetzungen (u.a. deutsch)"
+msgstr "Übersetzungen (u.a. Deutsch)"
 
 msgctxt "CustomMessages_msg_DeleteSettings"
 msgid ""
@@ -85,4 +86,4 @@ msgstr "Benutzerdefinierte Installation"
 
 msgctxt "CustomMessages_ViewChangelog"
 msgid "View Changelog"
-msgstr "Changelog anzeigen"
+msgstr "Änderungsprotokoll anzeigen"

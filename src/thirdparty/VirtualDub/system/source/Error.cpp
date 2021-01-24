@@ -29,7 +29,6 @@
 
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/Error.h>
-#include <vd2/system/log.h>
 
 MyError::MyError() {
 	buf = NULL;

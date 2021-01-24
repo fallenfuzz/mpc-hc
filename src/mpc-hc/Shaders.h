@@ -38,13 +38,18 @@ struct Shader {
     CStringA GetCode() const;
 };
 
+#define MULTIPASS_SUFFIX _T("_pass")
+#define MULTIPASS_SUFFIX1 _T("_pass1")
+
 class ShaderList : public std::vector<Shader>
 {
 public:
     ShaderList();
     ShaderList(const CString& src);
     CString ToString() const;
+    ShaderList ExpandMultiPassShaderList() const;
     static CString GetShadersDir();
+    static CString GetShadersDir11();
     static ShaderList GetDefaultShaders();
 };
 

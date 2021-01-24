@@ -21,10 +21,16 @@ CMPCThemeResizableDialog::~CMPCThemeResizableDialog()
 {
 }
 
+BOOL CMPCThemeResizableDialog::OnInitDialog() {
+    BOOL ret = CResizableDialog::OnInitDialog();
+    CMPCThemeUtil::enableWindows10DarkFrame(this);
+    return ret;
+}
+
 void CMPCThemeResizableDialog::fulfillThemeReqs()
 {
     CMPCThemeUtil::enableWindows10DarkFrame(this);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         SetSizeGripBkMode(TRANSPARENT); //fix for gripper in mpc theme
     }
     CMPCThemeUtil::fulfillThemeReqs((CWnd*)this);
@@ -37,7 +43,7 @@ END_MESSAGE_MAP()
 
 HBRUSH CMPCThemeResizableDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         return getCtlColor(pDC, pWnd, nCtlColor);
     } else {
         HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);

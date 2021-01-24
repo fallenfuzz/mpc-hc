@@ -30,6 +30,7 @@
 #include "AllocatorCommon.h"
 
 #include "../../../mpc-hc/FGFilterLAV.h"
+#include "Variables.h"
 
 #define DXVA_LOGFILE_A 0 // set to 1 for logging DXVA data to a file
 #define LOG_BITSTREAM  0 // set to 1 for logging DXVA bitstream data to a file
@@ -48,9 +49,12 @@ REFERENCE_TIME g_tSampleStart = 0;
 GUID g_guidDXVADecoder = GUID_NULL;
 int  g_nDXVAVersion = 0;
 
+extern double g_dRate;
+
 IPinCVtbl* g_pPinCVtbl = nullptr;
 IPinCVtbl* g_pPinCVtbl10BitWorkAround = nullptr;
 IMemInputPinCVtbl* g_pMemInputPinCVtbl = nullptr;
+IPinC* g_pPinC = nullptr;
 
 struct D3DFORMAT_TYPE {
     int Format;
@@ -147,7 +151,11 @@ static HRESULT(STDMETHODCALLTYPE* NewSegmentOrg)(IPinC* This, /* [in] */ REFEREN
 
 static HRESULT STDMETHODCALLTYPE NewSegmentMine(IPinC* This, /* [in] */ REFERENCE_TIME tStart, /* [in] */ REFERENCE_TIME tStop, /* [in] */ double dRate)
 {
-    g_tSegmentStart = tStart;
+    if (g_pPinC == This) {
+        g_tSegmentStart = tStart;
+        g_dRate = dRate;
+    }
+
     return NewSegmentOrg(This, tStart, tStop, dRate);
 }
 
@@ -243,6 +251,7 @@ void UnhookNewSegmentAndReceive()
             FlushInstructionCache(GetCurrentProcess(), g_pPinCVtbl, sizeof(IPinCVtbl));
             VirtualProtect(g_pPinCVtbl, sizeof(IPinCVtbl), flOldProtect, &flOldProtect);
             g_pPinCVtbl = nullptr;
+            g_pPinC = nullptr;
             NewSegmentOrg = nullptr;
         } else {
             TRACE(_T("UnhookNewSegmentAndReceive: Could not unhook g_pPinCVtbl VTable"));
@@ -274,6 +283,7 @@ bool HookNewSegmentAndReceive(IPinC* pPinC, IMemInputPinC* pMemInputPinC)
 
     g_tSegmentStart = 0;
     g_tSampleStart = 0;
+    g_dRate = 1.0;
 
     UnhookNewSegmentAndReceive();
 
@@ -288,6 +298,7 @@ bool HookNewSegmentAndReceive(IPinC* pPinC, IMemInputPinC* pMemInputPinC)
             FlushInstructionCache(GetCurrentProcess(), pPinC->lpVtbl, sizeof(IPinCVtbl));
             VirtualProtect(pPinC->lpVtbl, sizeof(IPinCVtbl), flOldProtect, &flOldProtect);
             g_pPinCVtbl = pPinC->lpVtbl;
+            g_pPinC = pPinC;
         } else {
             TRACE(_T("HookNewSegmentAndReceive: Could not unhook g_pPinCVtbl VTable"));
             ASSERT(FALSE);

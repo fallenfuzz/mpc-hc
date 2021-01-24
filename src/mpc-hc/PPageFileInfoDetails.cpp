@@ -29,6 +29,7 @@
 #include <vmr9.h>
 #include "moreuuids.h"
 #include "../SubPic/ISubPic.h"
+#include "PathUtils.h"
 
 
 // CPPageFileInfoDetails dialog
@@ -38,6 +39,7 @@ CPPageFileInfoDetails::CPPageFileInfoDetails(CString path, IFilterGraph* pFG, IS
     : CMPCThemePropertyPage(CPPageFileInfoDetails::IDD, CPPageFileInfoDetails::IDD)
     , m_hIcon(nullptr)
     , m_fn(path)
+    , m_displayFn(path)
     , m_path(path)
     , m_type(StrRes(IDS_AG_NOT_KNOWN))
     , m_size(StrRes(IDS_AG_NOT_KNOWN))
@@ -305,7 +307,7 @@ void CPPageFileInfoDetails::DoDataExchange(CDataExchange* pDX)
 {
     __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_DEFAULTICON, m_icon);
-    DDX_Text(pDX, IDC_EDIT1, m_fn);
+    DDX_Text(pDX, IDC_EDIT1, m_displayFn);
     DDX_Text(pDX, IDC_EDIT4, m_type);
     DDX_Text(pDX, IDC_EDIT3, m_size);
     DDX_Text(pDX, IDC_EDIT2, m_duration);
@@ -339,6 +341,12 @@ BOOL CPPageFileInfoDetails::OnInitDialog()
     m_hIcon = LoadIcon(m_fn, false);
     if (m_hIcon) {
         m_icon.SetIcon(m_hIcon);
+    }
+
+    if (PathUtils::IsURL(m_path)) {
+        m_displayFn = UrlDecodeWithUTF8(ShortenURL(m_fn));
+    } else {
+        m_displayFn = m_fn;
     }
 
     if (!LoadType(ext, m_type)) {

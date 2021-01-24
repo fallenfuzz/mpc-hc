@@ -49,15 +49,6 @@ bool VersionInfo::Is64Bit()
 #endif
 }
 
-bool VersionInfo::IsLite()
-{
-#ifdef MPCHC_LITE
-    return true;
-#else
-    return false;
-#endif
-}
-
 CString VersionInfo::GetVersionString()
 {
     return MPC_VERSION_STR;
@@ -70,7 +61,7 @@ CString VersionInfo::GetFullVersionString()
 
 CString VersionInfo::GetBuildDateString()
 {
-    return _T(__DATE__) _T(" ") _T(__TIME__);
+    return _T(__DATE__);
 }
 
 unsigned VersionInfo::GetMajorNumber()

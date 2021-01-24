@@ -25,7 +25,7 @@
 #include "OuterVMR.h"
 #include "IPinHook.h"
 #include "MacrovisionKicker.h"
-
+#include "Variables.h"
 
 // ISubPicAllocatorPresenter
 

@@ -25,7 +25,8 @@
 
 enum class LogTargets {
     BDA,
-    SUBTITLES
+    SUBTITLES,
+    YDL
 };
 
 namespace
@@ -45,6 +46,12 @@ namespace
         return _T("subtitles.log");
     }
 
+    template<>
+    constexpr LPCTSTR GetFileName<LogTargets::YDL>()
+    {
+        return _T("youtubedl.log");
+    }
+
     void WriteToFile(FILE* f, LPCSTR function, LPCSTR file, int line, _In_z_ _Printf_format_string_ LPCTSTR fmt, va_list& args)
     {
         SYSTEMTIME local_time;
@@ -55,11 +62,21 @@ namespace
         _vftprintf_s(f, fmt, args);
         _ftprintf_s(f, _T(" (%S:%d)\n"), file, line);
     }
+    void WriteToFile2(FILE* f, _In_z_ _Printf_format_string_ LPCTSTR fmt, va_list& args)
+    {
+        SYSTEMTIME local_time;
+        GetLocalTime(&local_time);
+
+        _ftprintf_s(f, _T("%.2hu:%.2hu:%.2hu.%.3hu: "), local_time.wHour, local_time.wMinute,
+            local_time.wSecond, local_time.wMilliseconds);
+        _vftprintf_s(f, fmt, args);
+        _ftprintf_s(f, _T("\n"));
+    }
 }
 
 template<LogTargets TARGET>
 struct Logger final {
-    static void Log(LPCSTR function, LPCSTR file, int line, LPCTSTR fmt...) {
+    static void Log(LPCSTR function, LPCSTR file, int line, LPCTSTR fmt, ...) {
         static Logger logger;
 
         if (!logger.m_file) {
@@ -69,6 +86,18 @@ struct Logger final {
         va_list args;
         va_start(args, fmt);
         WriteToFile(logger.m_file, function, file, line, fmt, args);
+        va_end(args);
+    }
+    static void Log2(LPCTSTR fmt, ...) {
+        static Logger logger;
+
+        if (!logger.m_file) {
+            return;
+        }
+
+        va_list args;
+        va_start(args, fmt);
+        WriteToFile2(logger.m_file, fmt, args);
         va_end(args);
     }
 
@@ -103,6 +132,9 @@ private:
 };
 
 
-#define MPCHC_LOG(TARGET, fmt, ...) Logger<LogTargets::TARGET>::Log(__FUNCTION__, __FILE__, __LINE__, fmt, __VA_ARGS__)
+#define MPCHC_LOG(TARGET, fmt, ...)  Logger<LogTargets::TARGET>::Log(__FUNCTION__, __FILE__, __LINE__, fmt, __VA_ARGS__)
+#define MPCHC_LOG2(TARGET, fmt, ...) Logger<LogTargets::TARGET>::Log2(fmt, __VA_ARGS__)
+
 #define BDA_LOG(...) MPCHC_LOG(BDA, __VA_ARGS__)
 #define SUBTITLES_LOG(...) MPCHC_LOG(SUBTITLES, __VA_ARGS__)
+#define YDL_LOG(fmt, ...) MPCHC_LOG2(YDL, fmt, __VA_ARGS__)

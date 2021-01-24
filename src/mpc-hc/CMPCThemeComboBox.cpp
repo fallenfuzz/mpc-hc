@@ -56,7 +56,7 @@ CMPCThemeComboBox::~CMPCThemeComboBox()
 
 void CMPCThemeComboBox::themeDropDown()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (CMPCThemeUtil::canUseWin10DarkTheme() && !isThemedDropDown) {
             COMBOBOXINFO info = { sizeof(COMBOBOXINFO) };
             if (GetComboBoxInfo(&info)) {
@@ -118,7 +118,7 @@ void CMPCThemeComboBox::drawComboArrow(CDC& dc, COLORREF arrowClr, CRect arrowRe
 
 void CMPCThemeComboBox::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CPaintDC dc(this);
         CRect r, rBorder, rText, rBG, rSelect, rDownArrow;
         GetClientRect(r);

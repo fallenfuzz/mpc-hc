@@ -63,6 +63,7 @@ public:
     UpdateChecker(CString versionFileURL);
     ~UpdateChecker();
 
+    Update_Status IsUpdateAvailable(const Version& currentVersion, bool useBackupURL);
     Update_Status IsUpdateAvailable(const Version& currentVersion);
     Update_Status IsUpdateAvailable();
     const Version& GetLatestVersion() const { return latestVersion; };

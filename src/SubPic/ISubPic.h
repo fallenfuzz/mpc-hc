@@ -173,13 +173,15 @@ public IUnknown {
 //
 // ISubPicAllocatorPresenter
 //
+#define TARGET_FRAME 0
+#define TARGET_SCREEN 1
 
 interface __declspec(uuid("CF75B1F0-535C-4074-8869-B15F177F944E"))
 ISubPicAllocatorPresenter :
 public IUnknown {
     STDMETHOD(CreateRenderer)(IUnknown** ppRenderer) PURE;
 
-    STDMETHOD_(SIZE, GetVideoSize)(bool bCorrectAR = true) const PURE;
+    STDMETHOD_(SIZE, GetVideoSize)(bool bCorrectAR) const PURE;
     STDMETHOD_(void, SetPosition)(RECT w, RECT v) PURE;
     STDMETHOD_(bool, Paint)(bool bAll) PURE;
 
@@ -192,6 +194,7 @@ public IUnknown {
     STDMETHOD_(void, Invalidate)(REFERENCE_TIME rtInvalidate = -1) PURE;
 
     STDMETHOD(GetDIB)(BYTE * lpDib, DWORD * size) PURE;
+	STDMETHOD (GetDisplayedImage) (LPVOID* dibImage) PURE;
 
     STDMETHOD(SetVideoAngle)(Vector v) PURE;
     STDMETHOD(SetPixelShader)(LPCSTR pSrcData, LPCSTR pTarget) PURE;
@@ -212,6 +215,22 @@ public ISubPicAllocatorPresenter {
     STDMETHOD(SetDefaultVideoAngle)(Vector v) PURE;
 };
 
+
+interface __declspec(uuid("AD863F43-83F9-4B8E-962C-426F2BDBEAEF"))
+ISubPicAllocatorPresenter3 :
+public ISubPicAllocatorPresenter2 {
+	STDMETHOD (SetRotation) (int rotation) PURE;
+	STDMETHOD_(int, GetRotation) () PURE;
+	STDMETHOD (SetFlip) (bool flip) PURE;
+	STDMETHOD_(bool, GetFlip) () PURE;
+	STDMETHOD (GetVideoFrame) (BYTE* lpDib, DWORD* size) PURE;
+	STDMETHOD_(int, GetPixelShaderMode) () PURE;
+	STDMETHOD (ClearPixelShaders) (int target) PURE;
+	STDMETHOD (AddPixelShader) (int target, LPCWSTR name, LPCSTR profile, LPCSTR sourceCode) PURE;
+	STDMETHOD_(bool, ResizeDevice) () PURE;
+    STDMETHOD_(bool, ToggleStats) () PURE;
+};
+
 //
 // ISubStream
 //
@@ -225,6 +244,7 @@ public IPersist {
     STDMETHOD(SetStream)(int iStream) PURE;
     STDMETHOD(Reload)() PURE;
     STDMETHOD(SetSourceTargetInfo)(CString yuvMatrix, int targetBlackLevel, int targetWhiteLevel) PURE;
+    virtual CString GetPath() { return _T(""); }
 
     // TODO: get rid of IPersist to identify type and use only
     // interface functions to modify the settings of the substream

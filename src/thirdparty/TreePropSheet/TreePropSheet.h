@@ -286,7 +286,6 @@ protected:
     virtual CTreeCtrl* CreatePageTreeObject();
 
     //added for mpc-hc theming
-    virtual void SetTabCtrlFont(CTabCtrl* ctrl);
     virtual void SetTreeCtrlTheme(CTreeCtrl* ctrl);
 
     /**
@@ -303,7 +302,6 @@ protected:
 
 // Implementation helpers
 protected:
-    //CFont tabFont; //mpc-hc to allow scaled fonts in tab--used in classic mode as well
     /**
     Moves all childs by the specified amount of pixels.
 
@@ -439,9 +437,11 @@ private:
     /** The tree control */
     CTreeCtrl *m_pwndPageTree;
 
+protected:
     /** The frame around the pages */
     CPropPageFrame *m_pFrame;
 
+private:
     /**
     TRUE, if a tree item selection by OnPageTreeSelChanged() is
     performed currently.

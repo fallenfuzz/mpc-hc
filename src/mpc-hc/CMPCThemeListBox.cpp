@@ -74,8 +74,7 @@ void CMPCThemeListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CMPCThemeListBox::OnNcPaint()
 {
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (nullptr != themedSBHelper) {
             themedSBHelper->themedNcPaintWithSB();
         } else {
@@ -88,7 +87,7 @@ void CMPCThemeListBox::OnNcPaint()
 
 BOOL CMPCThemeListBox::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.RelayEvent(pMsg);
     }
     return CListBox::PreTranslateMessage(pMsg);
@@ -97,7 +96,7 @@ BOOL CMPCThemeListBox::PreTranslateMessage(MSG* pMsg)
 void CMPCThemeListBox::PreSubclassWindow()
 {
     CListBox::PreSubclassWindow();
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (CMPCThemeUtil::canUseWin10DarkTheme()) {
             SetWindowTheme(GetSafeHwnd(), L"DarkMode_Explorer", NULL);
         } else {
@@ -141,7 +140,7 @@ BOOL CMPCThemeListBox::OnLbnSelchange()
 
 void CMPCThemeListBox::updateToolTip(CPoint point)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded && nullptr != themedToolTip) {
+    if (AppIsThemeLoaded() && nullptr != themedToolTip) {
         TOOLINFO ti = { 0 };
         UINT_PTR tid = OnToolHitTest(point, &ti);
         //OnToolHitTest returns -1 on failure but doesn't update uId to match
@@ -189,4 +188,19 @@ void CMPCThemeListBox::setIntegralHeight()
 void CMPCThemeListBox::OnSize(UINT nType, int cx, int cy)
 {
     CListBox::OnSize(nType, cx, cy);
+}
+
+void CMPCThemeListBox::EnsureVisible(int index) {
+    CRect r;
+    GetClientRect(&r);
+    int lbHeight = r.Height();
+
+    int height=0;
+    for (int i = index; i >= 0; i--) {
+        height += GetItemHeight(i);
+        if (height > lbHeight) {
+            SetTopIndex(i + 1);
+            return;
+        }
+    }
 }

@@ -55,7 +55,7 @@ bool CVolumeCtrl::Create(CWnd* pParentWnd)
     SetPageSize(s.nVolumeStep);
     SetLineSize(0);
 
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CToolTipCtrl* pTip = GetToolTips();
         if (NULL != pTip) {
             themedToolTip.SubclassWindow(pTip->m_hWnd);
@@ -120,7 +120,8 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 
     LRESULT lr = CDRF_DODEFAULT;
 
-    const CAppSettings& s = AfxGetAppSettings();
+    bool usetheme = AppIsThemeLoaded();
+
     if (m_fSelfDrawn)
         switch (pNMCD->dwDrawStage) {
             case CDDS_PREPAINT:
@@ -133,7 +134,7 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
                     CDC dc;
                     dc.Attach(pNMCD->hdc);
 
-                    if (s.bMPCThemeLoaded) {
+                    if (usetheme) {
                         CRect rect;
                         GetClientRect(rect);
                         dc.FillSolidRect(&rect, CMPCTheme::PlayerBGColor);
@@ -141,7 +142,7 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 
                     getCustomChannelRect(&pNMCD->rc);
 
-                    if (s.bMPCThemeLoaded) {
+                    if (usetheme) {
                         DpiHelper dpiWindow;
                         dpiWindow.Override(GetSafeHwnd());
 
@@ -193,7 +194,7 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 
                     COLORREF shadow = GetSysColor(COLOR_3DSHADOW);
                     COLORREF light = GetSysColor(COLOR_3DHILIGHT);
-                    if (s.bMPCThemeLoaded) {
+                    if (usetheme) {
                         if (!modernStyle) {
                             CBrush fb;
                             if (m_bDrag) {
@@ -240,8 +241,7 @@ void CVolumeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
     int start, stop;
     GetRange(start, stop);
 
-    const CAppSettings& s = AfxGetAppSettings();
-    if (!(s.bMPCThemeLoaded && modernStyle)) {
+    if (!(AppIsThemeLoaded() && modernStyle)) {
         r.left += 3;
         r.right -= 4;
     }
@@ -253,7 +253,7 @@ void CVolumeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
     } else {
         int w = r.right - r.left;
         if (start < stop) {
-            if (!(s.bMPCThemeLoaded && modernStyle)) {
+            if (!(AppIsThemeLoaded() && modernStyle)) {
                 SetPosInternal(start + ((stop - start) * (point.x - r.left) + (w / 2)) / w);
             } else {
                 SetPosInternal(start + lround((stop - start) * float(point.x - r.left) / w));
@@ -261,7 +261,7 @@ void CVolumeCtrl::OnLButtonDown(UINT nFlags, CPoint point)
         }
     }
     m_bDrag = true;
-    if (s.bMPCThemeLoaded && modernStyle) {
+    if (AppIsThemeLoaded() && modernStyle) {
         if (themedToolTip.m_hWnd) {
             TOOLINFO ti = { sizeof(TOOLINFO) };
             ti.uFlags = TTF_TRACK | TTF_IDISHWND | TTF_ABSOLUTE;
@@ -331,8 +331,7 @@ BOOL CVolumeCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint point)
 
 void CVolumeCtrl::invalidateThumb()
 {
-    const CAppSettings& s = AfxGetAppSettings();
-    if (!(s.bMPCThemeLoaded && modernStyle)) {
+    if (!(AppIsThemeLoaded() && modernStyle)) {
         SetRangeMax(100, TRUE);
     }
 }
@@ -398,9 +397,7 @@ void CVolumeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
     checkHover(point);
 
-    const CAppSettings& s = AfxGetAppSettings();
-
-    if (s.bMPCThemeLoaded && modernStyle && m_bDrag) {
+    if (AppIsThemeLoaded() && modernStyle && m_bDrag) {
         updateModernVolCtrl(point);
     } else {
         CSliderCtrl::OnMouseMove(nFlags, point);
@@ -410,8 +407,7 @@ void CVolumeCtrl::OnMouseMove(UINT nFlags, CPoint point)
 
 void CVolumeCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded && modernStyle) {
+    if (AppIsThemeLoaded() && modernStyle) {
         if (m_bDrag) {
             ReleaseCapture();
         }

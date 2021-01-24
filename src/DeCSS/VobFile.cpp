@@ -612,12 +612,18 @@ bool CVobFile::Open(CString fn, CAtlList<CString>& vobs, ULONG nProgNum /*= 1*/,
         vob.Format(_T("%s%d.vob"), fn.GetString(), i);
 
         CFileStatus status;
-        if (!CFile::GetStatus(vob, status)) {
-            if (i == 0) {
-                continue;
-            } else {
-                break;
+        try {
+            if (!CFile::GetStatus(vob, status)) {
+                if (i == 0) {
+                    continue;
+                }
+                else {
+                    break;
+                }
             }
+        }
+        catch (...) {
+            break;
         }
 
         if (status.m_size & 0x7ff) {
@@ -799,7 +805,11 @@ int CVobFile::Seek(int pos)
     m_pos = pos;
 
     pos -= (size - m_files[i].size);
-    m_file.Seek(pos);
+    try {
+        m_file.Seek(pos);
+    } catch (...) {
+        return -1;
+    }
 
     return GetPosition();
 }

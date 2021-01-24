@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{7da47a09-76fe-42bf-b051-429d8cb50d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libiconv-1.16">
+      <UniqueIdentifier>{ea5c62c9-5751-41a6-9491-60a9287b9188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libiconv-1.16\lib">
+      <UniqueIdentifier>{ab4db024-2dff-4d80-8f08-7c441f821273}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libiconv-1.16\libcharset">
+      <UniqueIdentifier>{6227dc88-5e8e-4700-9fe1-10a898b5107e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="libiconv-1.16\include">
+      <UniqueIdentifier>{cddf6ef1-6edd-4397-9cb7-a65d29fa5d10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libiconv-1.16\libcharset\include">
+      <UniqueIdentifier>{9055e35b-e34a-4711-bd66-ddcbf6a8e26e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\aliases.gperf" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_sysaix.gperf" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_syshpux.gperf" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_sysosf1.gperf" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_syssolaris.gperf" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\encodings.def" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\encodings_aix.def" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\encodings_dos.def" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\encodings_extra.def" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\encodings_local.def" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\encodings_osf1.def" />
+    <None Include="libiconv-for-Windows\libiconv-1.16\lib\translit.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="libiconv-for-Windows\libiconv-1.16\libcharset\lib\localcharset.c" />
+    <ClCompile Include="libiconv-for-Windows\libiconv-1.16\libcharset\lib\relocatable-stub.c" />
+    <ClCompile Include="libiconv-for-Windows\libiconv-1.16\lib\iconv.c" />
+    <ClCompile Include="libiconv-for-Windows\libiconv-1.16\lib\relocatable.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="libiconv-for-Windows\include\iconv.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\include\iconv.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\libcharset\include\libcharset.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\libcharset\include\localcharset.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_aix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_aix_sysaix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_dos.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_extra.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_osf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_osf1_sysosf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_sysaix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_syshpux.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_sysosf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\aliases_syssolaris.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\armscii_8.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ascii.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\atarist.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\big5.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\big5hkscs1999.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\big5hkscs2001.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\big5hkscs2004.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\big5hkscs2008.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\big5_2003.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\c99.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_aix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_aix_sysaix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_dos.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_extra.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_local.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_local_sysaix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_local_syshpux.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_local_sysosf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_local_syssolaris.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_osf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_osf1_sysosf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_sysaix.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_syshpux.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_sysosf1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\canonical_syssolaris.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ces_big5.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ces_gbk.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cjk_variants.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_15.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_3.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_4.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_4a.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_4b.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_5.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_6.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_7.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cns11643_inv.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\config.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\converters.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1046.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1124.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1125.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1129.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1131.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1133.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1161.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1162.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1163.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1250.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1251.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1252.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1253.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1254.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1255.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1256.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1257.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp1258.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp437.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp50221_0208_ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp50221_0212_ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp737.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp775.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp850.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp852.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp853.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp855.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp856.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp857.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp858.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp860.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp861.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp862.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp863.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp864.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp865.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp866.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp869.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp874.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp922.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp932.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp932ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp936.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp936ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp943.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp949.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp950.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\cp950ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\dec_hanyu.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\dec_kanji.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\euc_cn.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\euc_jisx0213.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\euc_jp.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\euc_kr.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\euc_tw.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\flags.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\flushwc.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gb12345.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gb12345ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gb18030.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gb18030ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gb18030uni.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gb2312.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gbk.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gbkext1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gbkext2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\gbkext_inv.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\georgian_academy.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\georgian_ps.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\hkscs1999.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\hkscs2001.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\hkscs2004.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\hkscs2008.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\hp_roman8.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\hz.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iconv_open1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iconv_open2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_cn.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_cnext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_jp.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_jp1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_jp2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_jp3.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_jpms.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso2022_kr.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso646_cn.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso646_jp.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_10.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_11.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_13.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_14.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_15.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_16.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_3.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_4.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_5.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_6.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_7.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_8.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\iso8859_9.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\isoir165.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\isoir165ext.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\java.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\jisx0201.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\jisx0208.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\jisx0212.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\jisx0213.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\johab.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\johab_hangul.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\koi8_r.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\koi8_ru.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\koi8_t.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\koi8_u.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ksc5601.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\loops.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\loop_unicode.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\loop_wchar.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_arabic.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_centraleurope.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_croatian.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_cyrillic.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_greek.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_hebrew.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_iceland.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_roman.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_romania.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_thai.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_turkish.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mac_ukraine.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\mulelao.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\nextstep.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\pt154.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\relocatable.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\riscos1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\rk1048.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\shift_jisx0213.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\sjis.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\tcvn.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\tds565.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\tis620.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\translit.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs2be.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs2internal.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs2le.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs2swapped.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs4.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs4be.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs4internal.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs4le.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\ucs4swapped.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\uhc_1.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\uhc_2.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf16.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf16be.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf16le.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf32.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf32be.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf32le.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf7.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\utf8.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\vietcomb.h" />
+    <ClInclude Include="libiconv-for-Windows\libiconv-1.16\lib\viscii.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libiconv-for-Windows\res\libiconv.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -3,11 +3,16 @@
 #include "CMPCTheme.h"
 #include "CMPCThemeButton.h"
 #include "CMPCThemeUtil.h"
+#include "VersionHelpersInternal.h"
+#include "DpiHelper.h"
 
 CMPCThemeRadioOrCheck::CMPCThemeRadioOrCheck()
 {
     isHover = false;
-    buttonType = unknownType;
+    buttonType = RadioOrCheck::unknownType;
+    isFileDialogChild = false;
+    buttonStyle = 0;
+    isAuto = false;
 }
 
 
@@ -47,7 +52,7 @@ END_MESSAGE_MAP()
 
 void CMPCThemeRadioOrCheck::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CPaintDC dc(this);
         CRect   rectItem;
         GetClientRect(rectItem);
@@ -71,8 +76,17 @@ void CMPCThemeRadioOrCheck::OnPaint()
             dc.SelectObject(oFont);
         } else {
             CRect rectCheck;
-            int cbWidth = GetSystemMetrics(SM_CXMENUCHECK);
-            int cbHeight = GetSystemMetrics(SM_CYMENUCHECK);
+            int cbWidth;
+            int cbHeight;
+            if (IsWindows8OrGreater()) {
+                DpiHelper dpiWindow;
+                dpiWindow.Override(this->GetSafeHwnd());
+                cbWidth = dpiWindow.GetSystemMetricsDPI(SM_CXMENUCHECK);
+                cbHeight = dpiWindow.GetSystemMetricsDPI(SM_CYMENUCHECK);
+            } else {
+                cbWidth = ::GetSystemMetrics(SM_CXMENUCHECK);
+                cbHeight = ::GetSystemMetrics(SM_CYMENUCHECK);
+            }
 
             if (buttonStyle & BS_LEFTTEXT) {
                 rectCheck.left = rectItem.right - cbWidth;
@@ -88,11 +102,11 @@ void CMPCThemeRadioOrCheck::OnPaint()
             rectCheck.bottom = rectCheck.top + cbHeight;
 
             if (buttonType == checkType) {
-                CMPCThemeUtil::drawCheckBox(checkState, isHover, true, rectCheck, &dc);
+                CMPCThemeUtil::drawCheckBox(GetParent(), checkState, isHover, true, rectCheck, &dc);
             } else if (buttonType == threeStateType) {
-                CMPCThemeUtil::drawCheckBox(checkState, isHover, true, rectCheck, &dc);
+                CMPCThemeUtil::drawCheckBox(GetParent(), checkState, isHover, true, rectCheck, &dc);
             } else if (buttonType == radioType) {
-                CMPCThemeUtil::drawCheckBox(checkState, isHover, true, rectCheck, &dc, true);
+                CMPCThemeUtil::drawCheckBox(GetParent(), checkState, isHover, true, rectCheck, &dc, true);
             }
 
             if (!sTitle.IsEmpty()) {
@@ -127,7 +141,11 @@ void CMPCThemeRadioOrCheck::OnPaint()
                     rectItem.OffsetRect(0, (centerRect.Height() - rectItem.Height()) / 2);
                 }
 
-                dc.SetBkColor(CMPCTheme::WindowBGColor);
+                if (isFileDialogChild) {
+                    CMPCThemeUtil::getCtlColorFileDialog(dc.GetSafeHdc(), CTLCOLOR_BTN);
+                } else {
+                    dc.SetBkColor(CMPCTheme::WindowBGColor);
+                }
                 if (isDisabled) {
                     dc.SetTextColor(CMPCTheme::ButtonDisabledFGColor);
                     dc.DrawText(sTitle, -1, &rectItem, uFormat);
@@ -212,7 +230,7 @@ void CMPCThemeRadioOrCheck::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CMPCThemeRadioOrCheck::OnEnable(BOOL bEnable)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         SetRedraw(FALSE);
         __super::OnEnable(bEnable);
         SetRedraw(TRUE);
@@ -227,6 +245,11 @@ BOOL CMPCThemeRadioOrCheck::OnEraseBkgnd(CDC* pDC)
 {
     CRect r;
     GetClientRect(r);
-    pDC->FillSolidRect(r, CMPCTheme::CMPCTheme::WindowBGColor);
+    if (isFileDialogChild) {
+        HBRUSH hBrush = CMPCThemeUtil::getCtlColorFileDialog(pDC->GetSafeHdc(), CTLCOLOR_BTN);
+        ::FillRect(pDC->GetSafeHdc(), r, hBrush);
+    } else {
+        CMPCThemeUtil::drawParentDialogBGClr(this, pDC, r);
+    }
     return TRUE;
 }

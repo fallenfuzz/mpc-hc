@@ -38,9 +38,9 @@ namespace SaneAudioRenderer
                 if (m_renderer.CheckFormat(CopyWaveFormat(*pFormat), m_live))
                     return S_OK;
             }
-            catch (std::bad_alloc&)
+            catch (...)
             {
-                return E_OUTOFMEMORY;
+                return exception_to_hresult();
             }
         }
 
@@ -65,9 +65,9 @@ namespace SaneAudioRenderer
         {
             m_renderer.SetFormat(CopyWaveFormat(*pFormat), m_live);
         }
-        catch (std::bad_alloc&)
+        catch (...)
         {
-            return E_OUTOFMEMORY;
+            return exception_to_hresult();
         }
 
         return S_OK;

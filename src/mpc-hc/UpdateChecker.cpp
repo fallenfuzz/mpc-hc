@@ -53,6 +53,13 @@ UpdateChecker::~UpdateChecker()
 
 Update_Status UpdateChecker::IsUpdateAvailable(const Version& currentVersion)
 {
+    Update_Status update_status = IsUpdateAvailable(currentVersion, false);
+    if (update_status == UPDATER_ERROR) update_status = IsUpdateAvailable(currentVersion, true);
+    return update_status;
+}
+
+Update_Status UpdateChecker::IsUpdateAvailable(const Version& currentVersion, bool useBackupURL)
+{
     Update_Status updateAvailable = UPDATER_LATEST_STABLE;
 
     try {
@@ -90,7 +97,11 @@ Update_Status UpdateChecker::IsUpdateAvailable(const Version& currentVersion)
         CString headers;
         headers.Format(headersFmt, osVersionStr.GetString());
 
-        CHttpFile* versionFile = (CHttpFile*) internet.OpenURL(versionFileURL,
+        CString fileURL;
+        if (useBackupURL) fileURL = BACKUP_UPDATE_URL;
+        else fileURL = versionFileURL;
+
+        CHttpFile* versionFile = (CHttpFile*) internet.OpenURL(fileURL,
                                                                1,
                                                                INTERNET_FLAG_TRANSFER_ASCII | INTERNET_FLAG_DONT_CACHE | INTERNET_FLAG_RELOAD,
                                                                headers,

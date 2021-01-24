@@ -27,6 +27,7 @@
 #include "WebServer.h"
 #include "WebClientSocket.h"
 #include "text.h"
+#include "PathUtils.h"
 
 #define MAX_HEADER_SIZE 512 * 1024
 #define MAX_DATA_SIZE 2 * 1024 * 1024
@@ -523,7 +524,7 @@ bool CWebClientSocket::OnBrowser(CStringA& hdr, CStringA& body, CStringA& mime)
         }
     }
 
-    if (path.Find(_T("://")) >= 0) {
+    if (PathUtils::IsURL(path)) {
         path.Empty();
     }
 

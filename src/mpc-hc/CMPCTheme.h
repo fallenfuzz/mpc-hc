@@ -14,6 +14,7 @@ public:
 
     static const COLORREF MenuSelectedColor;
     static const COLORREF MenuItemDisabledColor;
+    static const COLORREF MainMenuBorderColor;
     static const COLORREF MenuSeparatorColor;
 
     static const COLORREF ShadowColor;
@@ -89,6 +90,7 @@ public:
 
     static const COLORREF ListCtrlDisabledBGColor;
     static const COLORREF ListCtrlGridColor;
+    static const COLORREF ListCtrlErrorColor;
     static const COLORREF HeaderCtrlGridColor;
     static const COLORREF AudioSwitcherGridColor;
 

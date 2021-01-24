@@ -577,19 +577,11 @@ void CRealMediaPlayerWindowed::DestroySite(IRMASite* pSite)
 CRealMediaPlayerWindowless::CRealMediaPlayerWindowless(HWND hWndParent, CRealMediaGraph* pRMG)
     : CRealMediaPlayer(hWndParent, pRMG)
 {
-    const CAppSettings& s = AfxGetAppSettings();
-
     CComPtr<ISubPicAllocatorPresenter> pRMAP;
     bool bFullscreen = (AfxGetApp()->m_pMainWnd != nullptr) && (((CMainFrame*)AfxGetApp()->m_pMainWnd)->IsD3DFullScreenMode());
-    switch (s.iRMVideoRendererType) {
-        default:
-        case VIDRNDT_RM_DX9:
-            if (FAILED(CreateAP9(CLSID_RM9AllocatorPresenter, hWndParent, bFullscreen, &pRMAP))) {
-                return;
-            }
-            break;
+    if (FAILED(CreateAP9(CLSID_RM9AllocatorPresenter, hWndParent, bFullscreen, &pRMAP))) {
+        return;
     }
-
     m_pRMAP = pRMAP;
     ASSERT(m_pRMAP);
 }
@@ -680,9 +672,7 @@ CRealMediaGraph::CRealMediaGraph(HWND hWndParent, HRESULT& hr)
 {
     hr = S_OK;
 
-    m_pRMP = AfxGetAppSettings().iRMVideoRendererType == VIDRNDT_RM_DEFAULT
-             ? (CRealMediaPlayer*)DEBUG_NEW CRealMediaPlayerWindowed(hWndParent, this)
-             : (CRealMediaPlayer*)DEBUG_NEW CRealMediaPlayerWindowless(hWndParent, this);
+    m_pRMP = (CRealMediaPlayer*)DEBUG_NEW CRealMediaPlayerWindowless(hWndParent, this);
 
     if (!m_pRMP) {
         hr = E_OUTOFMEMORY;

@@ -226,6 +226,7 @@ HRESULT CVTSStream::Read(PBYTE pbBuffer, DWORD dwBytesToRead, BOOL bAlign, LPDWO
     DWORD len = dwBytesToRead;
     BYTE* ptr = pbBuffer;
 
+    TRY
     while (len > 0) {
         BYTE buff[2048];
         if (!m_vob->Read(buff)) {
@@ -249,6 +250,9 @@ HRESULT CVTSStream::Read(PBYTE pbBuffer, DWORD dwBytesToRead, BOOL bAlign, LPDWO
     if (pdwBytesRead) {
         *pdwBytesRead = DWORD(ptr - pbBuffer);
     }
+    CATCH(CFileException, e)
+    return S_FALSE;
+    END_CATCH
 
     return S_OK;
 }

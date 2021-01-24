@@ -47,6 +47,7 @@ CPlayerSeekBar::CPlayerSeekBar(CMainFrame* pMainFrame)
     , m_bHoverThumb(false)
     , m_tooltipState(TOOLTIP_HIDDEN)
     , m_bIgnoreLastTooltipPoint(true)
+    , m_lastDragSeekTickCount(0)
 {
     ZeroMemory(&m_ti, sizeof(m_ti));
     m_ti.cbSize = sizeof(m_ti);
@@ -67,8 +68,8 @@ BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
         return FALSE;
     }
 
-    if (!AfxGetAppSettings().bMPCThemeLoaded) {
-        if (CMPCThemeUtil::getFontByType(mpcThemeFont, GetWindowDC(), CMPCThemeUtil::MessageFont)) {
+    if (!AppIsThemeLoaded()) {
+        if (CMPCThemeUtil::getFontByType(mpcThemeFont, GetWindowDC(), GetParent(), CMPCThemeUtil::MessageFont)) {
             SetFont(&mpcThemeFont);
         }
     }
@@ -121,7 +122,7 @@ CSize CPlayerSeekBar::CalcFixedLayout(BOOL bStretch, BOOL bHorz)
 {
     CSize ret = __super::CalcFixedLayout(bStretch, bHorz);
     const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded && s.bModernSeekbar) {
+    if (s.bMPCTheme && s.bModernSeekbar) {
         ret.cy = m_pMainFrame->m_dpi.ScaleY(5 + s.iModernSeekbarHeight); //expand the toolbar if using "fill" mode
     } else {
         ret.cy = m_pMainFrame->m_dpi.ScaleY(20);
@@ -150,9 +151,18 @@ void CPlayerSeekBar::SyncVideoToThumb()
     GetParent()->PostMessage(WM_HSCROLL, NULL, reinterpret_cast<LPARAM>(m_hWnd));
 }
 
-void CPlayerSeekBar::CheckScrollDistance(CPoint point, REFERENCE_TIME minimum_time_change)
+void CPlayerSeekBar::CheckScrollDistance(CPoint point, REFERENCE_TIME minimum_duration_change)
 {
-    if (m_rtPos != m_rtHoverPos && abs(m_rtHoverPos - m_rtPos) >= minimum_time_change) {
+    ULONGLONG tickcount = GetTickCount64();
+    ULONGLONG ticks_since_last_seek = tickcount - m_lastDragSeekTickCount;
+    REFERENCE_TIME posdiff = m_rtHoverPos > m_rtPos ? m_rtHoverPos - m_rtPos : m_rtPos - m_rtHoverPos;
+
+    // While dragging m_rtPos doesn't get updated. So in that case seek after 5 seconds if mouse isn't moving.
+    // If mouse pointer has moved, seek after 200ms and if at least minimum duration change.
+    // Or after 1000ms if 1/5th of minimum duration change
+    // If minimum_duration_change == 0 (left mousebutton down) then seek after 400ms
+    if (ticks_since_last_seek >= 5000ULL || minimum_duration_change == 0 && ticks_since_last_seek >= 400ULL || posdiff > 0 && (ticks_since_last_seek >= 200ULL && posdiff >= minimum_duration_change || ticks_since_last_seek >= 1000ULL && posdiff >= minimum_duration_change/5)) {
+        m_lastDragSeekTickCount = tickcount;
         m_rtHoverPos = m_rtPos;
         m_hoverPoint = point;
         SyncVideoToThumb();
@@ -172,6 +182,16 @@ long CPlayerSeekBar::ChannelPointFromPosition(REFERENCE_TIME rtPos) const
     }
     return ret;
 }
+
+void CPlayerSeekBar::SetPosInternalPreview(const REFERENCE_TIME pos)
+{
+	if (m_pos_preview == pos) {
+		return;
+	}
+
+	m_pos_preview = std::clamp(pos, 0LL, m_rtStop);
+}
+
 
 REFERENCE_TIME CPlayerSeekBar::PositionFromClientPoint(const CPoint& point) const
 {
@@ -223,8 +243,7 @@ void CPlayerSeekBar::CreateThumb(bool bEnabled, CDC& parentDC)
         VERIFY(bmp.CreateCompatibleBitmap(&parentDC, r.Width(), r.Height()));
         VERIFY(pThumb->SelectObject(bmp));
 
-        const CAppSettings& s = AfxGetAppSettings();
-        if (s.bMPCThemeLoaded) {
+        if (AppIsThemeLoaded()) {
             //just a rectangle, we will draw from scratch
         } else {
             pThumb->Draw3dRect(&r, light, 0);
@@ -264,9 +283,9 @@ CRect CPlayerSeekBar::GetChannelRect() const
     if (m_pMainFrame->m_controls.ControlChecked(CMainFrameControls::Toolbar::CONTROLS)) {
         r.bottom += ADD_TO_BOTTOM_WITHOUT_CONTROLBAR;
     }
-    const CAppSettings& s = AfxGetAppSettings();
 
-    if (s.bMPCThemeLoaded && s.bModernSeekbar) { //no thumb so we can use all the space
+    const CAppSettings& s = AfxGetAppSettings();
+    if (s.bMPCTheme && s.bModernSeekbar) { //no thumb so we can use all the space
         r.DeflateRect(m_pMainFrame->m_dpi.ScaleFloorX(2), m_pMainFrame->m_dpi.ScaleFloorX(2));
     } else {
         CSize sz(m_pMainFrame->m_dpi.ScaleFloorX(8), m_pMainFrame->m_dpi.ScaleFloorY(7) + 1);
@@ -330,9 +349,11 @@ void CPlayerSeekBar::UpdateTooltip(const CPoint& point)
             ASSERT(!m_bIgnoreLastTooltipPoint);
             if (point != m_tooltipPoint) {
                 m_tooltipPoint = point;
-                UpdateToolTipPosition();
                 UpdateToolTipText();
-                VERIFY(SetTimer(TIMER_SHOWHIDE_TOOLTIP, TOOLTIP_HIDE_TIMEOUT, nullptr));
+                if (!m_pMainFrame->CanPreviewUse()) {
+                    UpdateToolTipPosition(point);
+                }
+                VERIFY(SetTimer(TIMER_SHOWHIDE_TOOLTIP, m_pMainFrame->CanPreviewUse() ? 10 : TOOLTIP_HIDE_TIMEOUT, nullptr));
             }
             break;
         default:
@@ -340,24 +361,55 @@ void CPlayerSeekBar::UpdateTooltip(const CPoint& point)
     }
 }
 
-void CPlayerSeekBar::UpdateToolTipPosition()
+void CPlayerSeekBar::UpdateToolTipPosition(CPoint point)
 {
-    CSize bubbleSize(m_tooltip.GetBubbleSize(&m_ti));
-    CRect windowRect;
-    GetWindowRect(windowRect);
-    CPoint point(m_tooltipPoint);
+    if (m_pMainFrame->CanPreviewUse()) {
+        if (!m_pMainFrame->m_wndPreView.IsWindowVisible()) {
+            m_pMainFrame->m_wndPreView.SetWindowSize();
+        }
 
-    if (AfxGetAppSettings().nTimeTooltipPosition == TIME_TOOLTIP_ABOVE_SEEKBAR) {
-        point.x -= bubbleSize.cx / 2 - 2;
-        point.y = GetChannelRect().TopLeft().y - (bubbleSize.cy + m_pMainFrame->m_dpi.ScaleY(13));
+        CRect rc;
+        m_pMainFrame->m_wndPreView.GetWindowRect(&rc);
+        const int r_width = rc.Width();
+        const int r_height = rc.Height();
+
+        MONITORINFO mi = { sizeof(mi) };
+        GetMonitorInfoW(MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+
+        point.x -= r_width / 2 - 2;
+        point.y = GetChannelRect().TopLeft().y - (r_height + 13);
+        ClientToScreen(&point);
+        point.x = std::max(mi.rcWork.left + 5, std::min(point.x, mi.rcWork.right - r_width - 5));
+
+        if (point.y <= 5) {
+            const CRect r = mi.rcWork;
+            if (!r.PtInRect(point)) {
+                CPoint p(point);
+                p.y = GetChannelRect().TopLeft().y + 30;
+                ClientToScreen(&p);
+
+                point.y = p.y;
+            }
+        }
+
+        m_pMainFrame->m_wndPreView.SetWindowPos(&wndTopMost, point.x, point.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
     } else {
-        point.x += m_pMainFrame->m_dpi.ScaleX(10);
-        point.y += m_pMainFrame->m_dpi.ScaleY(20);
-    }
-    point.x = std::max(0l, std::min(point.x, windowRect.Width() - bubbleSize.cx));
-    ClientToScreen(&point);
+        CSize bubbleSize(m_tooltip.GetBubbleSize(&m_ti));
+        CRect windowRect;
+        GetWindowRect(windowRect);
 
-    m_tooltip.SendMessage(TTM_TRACKPOSITION, 0, MAKELPARAM(point.x, point.y));
+        if (AfxGetAppSettings().nTimeTooltipPosition == TIME_TOOLTIP_ABOVE_SEEKBAR) {
+            point.x -= bubbleSize.cx / 2 - 2;
+            point.y = GetChannelRect().TopLeft().y - (bubbleSize.cy + m_pMainFrame->m_dpi.ScaleY(13));
+        } else {
+            point.x += m_pMainFrame->m_dpi.ScaleX(10);
+            point.y += m_pMainFrame->m_dpi.ScaleY(20);
+        }
+        point.x = std::max(0l, std::min(point.x, windowRect.Width() - bubbleSize.cx));
+        ClientToScreen(&point);
+
+        m_tooltip.SendMessage(TTM_TRACKPOSITION, 0, MAKELPARAM(point.x, point.y));
+    }
 }
 
 void CPlayerSeekBar::UpdateToolTipText()
@@ -395,8 +447,12 @@ void CPlayerSeekBar::UpdateToolTipText()
         m_tooltipText.Format(_T("%s - %s"), time.GetString(), static_cast<LPCTSTR>(chapterName));
     }
 
-    m_ti.lpszText = (LPTSTR)(LPCTSTR)m_tooltipText;
-    m_tooltip.SetToolInfo(&m_ti);
+    if (!m_pMainFrame->CanPreviewUse()) {
+        m_ti.lpszText = (LPTSTR)(LPCTSTR)m_tooltipText;
+        m_tooltip.SetToolInfo(&m_ti);
+    } else {
+        m_pMainFrame->m_wndPreView.SetWindowTextW(m_tooltipText);
+    }
 }
 
 void CPlayerSeekBar::Enable(bool bEnable)
@@ -495,6 +551,7 @@ BEGIN_MESSAGE_MAP(CPlayerSeekBar, CDialogBar)
     ON_WM_XBUTTONDOWN()
     ON_WM_XBUTTONUP()
     ON_WM_XBUTTONDBLCLK()
+    ON_WM_MBUTTONDOWN()
     ON_WM_MOUSEMOVE()
     ON_WM_ERASEBKGND()
     ON_WM_SETCURSOR()
@@ -528,7 +585,7 @@ void CPlayerSeekBar::OnPaint()
     };
 
     const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (s.bMPCTheme) {
         // Thumb
         if (!s.bModernSeekbar) { //no thumb while showing seek progress
             CRect r(GetThumbRect());
@@ -687,7 +744,7 @@ void CPlayerSeekBar::OnLButtonDown(UINT nFlags, CPoint point)
         SetCapture();
         m_bDraggingThumb = true;
         MoveThumb(point);
-        SyncVideoToThumb();
+        CheckScrollDistance(point, 0);
         invalidateThumb();
     } else {
         if (!m_pMainFrame->m_fFullScreen) {
@@ -775,7 +832,21 @@ void CPlayerSeekBar::OnMouseMove(UINT nFlags, CPoint point)
     if (AfxGetAppSettings().fUseTimeTooltip) {
         UpdateTooltip(point);
     }
+
+    if (m_pMainFrame->CanPreviewUse()) {
+        UpdateTooltip(point);
+    }
+
     checkHover(point);
+    const OAFilterState fs = m_pMainFrame->GetMediaState();
+    if (fs != -1) {
+        if (m_pMainFrame->CanPreviewUse()) {
+            MoveThumbPreview(point);
+            UpdateToolTipPosition(point);
+        }
+    } else {
+        m_pMainFrame->PreviewWindowHide();
+    }
 }
 
 BOOL CPlayerSeekBar::OnEraseBkgnd(CDC* pDC)
@@ -804,12 +875,15 @@ void CPlayerSeekBar::OnTimer(UINT_PTR nIDEvent)
             if (m_tooltipState == TOOLTIP_TRIGGERED && m_bHasDuration) {
                 m_tooltipPoint = point;
                 UpdateToolTipText();
-                m_tooltip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
-                UpdateToolTipPosition();
+                if (!m_pMainFrame->CanPreviewUse()) {
+                    m_tooltip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
+                }
+                UpdateToolTipPosition(point);
                 m_tooltipState = TOOLTIP_VISIBLE;
-                VERIFY(SetTimer(TIMER_SHOWHIDE_TOOLTIP, TOOLTIP_HIDE_TIMEOUT, nullptr));
+                VERIFY(SetTimer(TIMER_SHOWHIDE_TOOLTIP, m_pMainFrame->CanPreviewUse() ? 10 : TOOLTIP_HIDE_TIMEOUT, nullptr));
             } else if (m_tooltipState == TOOLTIP_VISIBLE) {
                 HideToolTip();
+                PreviewWindowShow();
                 ASSERT(!m_bIgnoreLastTooltipPoint);
                 KillTimer(TIMER_SHOWHIDE_TOOLTIP);
             } else {
@@ -824,6 +898,7 @@ void CPlayerSeekBar::OnTimer(UINT_PTR nIDEvent)
 void CPlayerSeekBar::OnMouseLeave()
 {
     HideToolTip();
+    m_pMainFrame->PreviewWindowHide();
     m_bIgnoreLastTooltipPoint = true;
     checkHover(CPoint(0, 0));
 }
@@ -842,5 +917,60 @@ void CPlayerSeekBar::OnCaptureChanged(CWnd* pWnd)
     if (!pWnd) {
         // HACK: windowed (not renderless) video renderers may not produce WM_MOUSEMOVE message here
         m_pMainFrame->UpdateControlState(CMainFrame::UPDATE_CHILDVIEW_CURSOR_HACK);
+    }
+}
+
+REFERENCE_TIME CPlayerSeekBar::CalculatePosition(const CPoint point) {
+    REFERENCE_TIME pos = -1;
+    const CRect r = GetChannelRect();
+
+    if (point.x < r.left) {
+        pos = 0;
+    } else if (point.x >= r.right) {
+        pos = m_rtStop;
+    } else if (m_rtStop > 0) {
+        const LONG w = r.right - r.left;
+        pos = (m_rtStop * (point.x - r.left) + (w / 2)) / w;
+    }
+
+    return pos;
+}
+
+void CPlayerSeekBar::MoveThumbPreview(const CPoint point) {
+    REFERENCE_TIME pos = CalculatePosition(point);
+
+    if (pos >= 0) {
+        if (GetKeyState(VK_SHIFT) >= 0) {
+            pos = m_pMainFrame->GetClosestKeyFramePreview(pos);
+        }
+
+        SetPosInternalPreview(pos);
+    }
+}
+
+void CPlayerSeekBar::PreviewWindowShow() {
+    if (m_pMainFrame->CanPreviewUse()) {
+        if (!m_pMainFrame->m_wndPreView.IsWindowVisible()) {
+            CPoint point;
+            GetCursorPos(&point);
+            ScreenToClient(&point);
+            MoveThumbPreview(point);
+            CRect r;
+            m_pMainFrame->m_wndPreView.GetClientRect(r);
+            m_pMainFrame->m_wndPreView.InvalidateRect(r);
+        }
+        m_pMainFrame->PreviewWindowShow(m_pos_preview);
+    }
+}
+
+//adipose: code came from mpc-be; seems to be a hidden way to
+//disable seek preview permanently by middle clicking on the seekbar
+//cannot be used to re-enable it, so perhaps a safety option if
+//preview is misbehaving? leave in for now
+void CPlayerSeekBar::OnMButtonDown(UINT nFlags, CPoint point) {
+    if (m_pMainFrame->m_wndPreView.IsWindowVisible()) {
+        m_pMainFrame->PreviewWindowHide();
+        AfxGetAppSettings().fSeekPreview = !AfxGetAppSettings().fSeekPreview;
+        OnMouseMove(nFlags, point);
     }
 }

@@ -90,6 +90,38 @@ ShaderList::ShaderList(const CString& src)
     } while (pos != -1);
 }
 
+ShaderList ShaderList::ExpandMultiPassShaderList() const {
+    ShaderList ret;
+    for (const auto& shader : *this) {
+        bool multiPass = false, morePasses = true;
+        int pass = 1;
+        CString prefix = shader.filePath;
+        prefix.Replace(SHADERS_EXT, _T(""));
+
+        if (prefix.Right(6) == MULTIPASS_SUFFIX1) {
+            prefix.Replace(MULTIPASS_SUFFIX1, _T(""));
+            multiPass = true;
+        }
+
+        while (morePasses) {
+            if (multiPass) {
+                CString fpath;
+                fpath.Format(_T("%s_pass%d")SHADERS_EXT, static_cast<LPCWSTR>(prefix), pass++);
+                if (PathUtils::IsFile(fpath)) {
+                    Shader t(fpath);
+                    ret.push_back(t);
+                } else {
+                    morePasses = false;
+                }
+            } else {
+                ret.push_back(shader);
+                morePasses = false;
+            }
+        }
+    }
+    return ret;
+}
+
 CString ShaderList::ToString() const
 {
     CString ret, tok, dir = GetShadersDir();
@@ -115,6 +147,11 @@ CString ShaderList::GetShadersDir()
     return PathUtils::CombinePaths(PathUtils::GetProgramPath(false), SHADERS_DIR);
 }
 
+CString ShaderList::GetShadersDir11()
+{
+    return PathUtils::CombinePaths(PathUtils::GetProgramPath(false), SHADERS_DIR11);
+}
+
 ShaderList ShaderList::GetDefaultShaders()
 {
     ShaderList ret;
@@ -133,7 +170,11 @@ ShaderList ShaderList::GetDefaultShaders()
                 if (finder.IsDirectory()) {
                     dirs.insert(PathUtils::CombinePaths(path, mask));
                 } else if (PathUtils::FileExt(path).CompareNoCase(SHADERS_EXT) == 0) {
-                    files.insert(path);
+                    CString prefix = path;
+                    prefix.Replace(SHADERS_EXT, _T(""));
+                    if (prefix.Find(MULTIPASS_SUFFIX) == -1 || prefix.Right(6) == MULTIPASS_SUFFIX1) {
+                        files.insert(path);
+                    }
                 }
             }
         }

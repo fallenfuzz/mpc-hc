@@ -14,7 +14,7 @@ CMPCThemeStatusBar::~CMPCThemeStatusBar()
 
 void CMPCThemeStatusBar::PreSubclassWindow()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         ModifyStyleEx(WS_BORDER, WS_EX_STATICEDGE, 0);
     } else {
         __super::PreSubclassWindow();
@@ -31,7 +31,7 @@ void CMPCThemeStatusBar::SetText(LPCTSTR lpszText, int nPane, int nType)
 {
     CStatusBarCtrl& ctrl = GetStatusBarCtrl();
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         ctrl.SetText(_T(""), nPane, SBT_OWNERDRAW);
         texts[nPane] = lpszText;
         Invalidate();
@@ -70,7 +70,7 @@ void CMPCThemeStatusBar::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
     dc.SetBkColor(CMPCTheme::StatusBarBGColor);
     dc.SetTextColor(CMPCTheme::TextFGColor);
     CFont font;
-    if (CMPCThemeUtil::getFontByType(font, &dc, CMPCThemeUtil::MessageFont)) {
+    if (CMPCThemeUtil::getFontByType(font, &dc, this, CMPCThemeUtil::MessageFont)) {
         dc.SelectObject(&font);
     }
     dc.FillSolidRect(rect, CMPCTheme::StatusBarBGColor);
@@ -86,7 +86,7 @@ void CMPCThemeStatusBar::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CMPCThemeStatusBar::OnNcPaint()
 {
-    if (!AfxGetAppSettings().bMPCThemeLoaded) {
+    if (!AppIsThemeLoaded()) {
         return __super::OnNcPaint();
     } else {
         CWindowDC dc(this);
@@ -102,7 +102,7 @@ void CMPCThemeStatusBar::OnNcPaint()
 
 BOOL CMPCThemeStatusBar::OnEraseBkgnd(CDC* pDC)
 {
-    if (!AfxGetAppSettings().bMPCThemeLoaded) {
+    if (!AppIsThemeLoaded()) {
         return __super::OnEraseBkgnd(pDC);
     } else {
         return TRUE;

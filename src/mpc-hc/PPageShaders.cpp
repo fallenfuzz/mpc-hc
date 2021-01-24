@@ -158,6 +158,16 @@ bool CShaderListBox::DeleteCurrentShader()
 CString CShaderListBox::GetTitle(const Shader& shader)
 {
     CString ret = PathUtils::FileName(shader.filePath);
+    if (shader.filePath.Find(MULTIPASS_SUFFIX1) != -1) {
+        ShaderList sl;
+        CString passStr;
+        sl.push_back(shader);
+        size_t passes = sl.ExpandMultiPassShaderList().size();
+        if (passes > 1) {
+            passStr.Format(_T(" (%dP)"), passes);
+            ret.Replace(MULTIPASS_SUFFIX1, passStr);
+        }
+    }
     if (!PathUtils::IsFile(shader.filePath)) {
         ret += _T(" <not found!>"); // TODO: externalize this string and merge it with the one in PPageExternalFilters
     }
@@ -167,7 +177,7 @@ CString CShaderListBox::GetTitle(const Shader& shader)
 void CShaderListBox::PreSubclassWindow()
 {
     CMPCThemeListBox::PreSubclassWindow();
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         EnableToolTips(FALSE);
     } else {
         EnableToolTips(TRUE);
@@ -230,7 +240,18 @@ void CPPageShaders::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_LIST2, m_PreResize);
     DDX_Control(pDX, IDC_LIST3, m_PostResize);
     DDX_Control(pDX, IDC_COMBO1, m_PresetsBox);
+    DDX_Control(pDX, IDC_STATIC5, mpcvrNote);
 }
+
+void CPPageShaders::CheckRenderer()
+{
+    if (AfxGetAppSettings().iDSVideoRendererType == VIDRNDT_DS_MPCVR) {
+        mpcvrNote.ShowWindow(TRUE);
+    } else {
+        mpcvrNote.ShowWindow(FALSE);
+    }
+}
+
 
 BOOL CPPageShaders::OnInitDialog()
 {
@@ -266,9 +287,17 @@ BOOL CPPageShaders::OnInitDialog()
 
     m_bCurrentPresetChanged = false;
 
+    CheckRenderer();
     fulfillThemeReqs();
     return TRUE;
 }
+
+BOOL CPPageShaders::OnSetActive() {
+    BOOL ret = __super::OnSetActive();
+    CheckRenderer();
+    return ret;
+}
+
 
 BOOL CPPageShaders::OnApply()
 {

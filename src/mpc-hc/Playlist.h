@@ -44,6 +44,10 @@ public:
     int m_vinput, m_vchannel;
     int m_ainput;
     long m_country;
+    bool m_cue;
+    CString m_cue_filename;
+    int m_cue_index;
+    CString m_cover;
 
     bool m_fInvalid;
 
@@ -86,6 +90,7 @@ public:
     using CAtlList<CPlaylistItem>::IsEmpty;
     using CAtlList<CPlaylistItem>::MoveToHead;
     using CAtlList<CPlaylistItem>::MoveToTail;
+    using CAtlList<CPlaylistItem>::SetAt;
 
     CPlaylist(bool bShuffle = false);
     virtual ~CPlaylist();

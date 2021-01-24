@@ -171,6 +171,7 @@ public:
     bool GetAppDataPath(CString& path);
 
     bool m_fClosingState;
+    bool m_bThemeLoaded;
     CRenderersData m_Renderers;
     CString     m_strVersion;
     CString     m_AudioRendererDisplayName_CL;
@@ -206,3 +207,5 @@ public:
 #define AfxGetMyApp()       static_cast<CMPlayerCApp*>(AfxGetApp())
 
 #define GetEventd() AfxGetMyApp()->m_eventd
+
+#define AppIsThemeLoaded() (static_cast<CMPlayerCApp*>(AfxGetApp())->m_bThemeLoaded)

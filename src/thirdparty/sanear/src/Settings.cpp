@@ -20,7 +20,7 @@ namespace SaneAudioRenderer
         return m_serial;
     }
 
-    STDMETHODIMP Settings::SetOuputDevice(LPCWSTR pDeviceId, BOOL bExclusive, UINT32 uBufferMS)
+    STDMETHODIMP Settings::SetOutputDevice(LPCWSTR pDeviceId, BOOL bExclusive, UINT32 uBufferMS)
     {
         if (uBufferMS < OUTPUT_DEVICE_BUFFER_MIN_MS || uBufferMS > OUTPUT_DEVICE_BUFFER_MAX_MS)
             return E_INVALIDARG;
@@ -48,7 +48,7 @@ namespace SaneAudioRenderer
         return S_OK;
     }
 
-    STDMETHODIMP Settings::GetOuputDevice(LPWSTR* ppDeviceId, BOOL* pbExclusive, UINT32* puBufferMS)
+    STDMETHODIMP Settings::GetOutputDevice(LPWSTR* ppDeviceId, BOOL* pbExclusive, UINT32* puBufferMS)
     {
         CAutoLock lock(this);
 

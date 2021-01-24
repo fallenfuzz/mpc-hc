@@ -39,7 +39,7 @@ private:
     CStatic m_icon;
     CMPCThemePlayerListCtrl m_list;
 
-    CString m_fn;
+    CString m_fn, m_displayFn;
     std::vector<CDSMResource> m_res;
 
 public:

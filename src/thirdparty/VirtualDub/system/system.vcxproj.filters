@@ -36,16 +36,10 @@
     <ClCompile Include="source\cpuaccel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\date.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\debugx86.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\error_win32.cpp">
@@ -54,19 +48,7 @@
     <ClCompile Include="source\event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\file.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\fileasync.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClInclude Include="source\filestream.cpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClCompile Include="source\filesys.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\filewatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Fraction.cpp">
@@ -87,16 +69,10 @@
     <ClCompile Include="source\list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\memory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\profile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\progress.cpp">
@@ -123,9 +99,6 @@
     <ClCompile Include="source\thunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\tls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,17 +123,11 @@
     <ClCompile Include="source\w32assist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\zip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\stdaccel.cpp">
       <Filter>Precompiled Header Support</Filter>
     </ClCompile>
     <ClCompile Include="source\stdafx.cpp">
       <Filter>Precompiled Header Support</Filter>
-    </ClCompile>
-    <ClCompile Include="source\process.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\h\vd2\system\source\registrymemory.cpp">
       <Filter>Source Files</Filter>
@@ -169,6 +136,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\vdstl_hashtable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,9 +161,6 @@
     <ClInclude Include="..\h\vd2\system\cpuaccel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\date.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\h\vd2\system\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -206,13 +173,7 @@
     <ClInclude Include="..\h\vd2\system\event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\file.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\h\vd2\system\fileasync.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\h\vd2\system\filesys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\filewatcher.h">
@@ -233,16 +194,10 @@
     <ClInclude Include="..\h\vd2\system\list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h\vd2\system\log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\h\vd2\system\math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\h\vd2\system\profile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\progress.h">
@@ -318,9 +273,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\w32assist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\h\vd2\system\zip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\h\vd2\system\win32\intrin.h">

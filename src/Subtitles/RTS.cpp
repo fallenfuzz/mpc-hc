@@ -26,6 +26,7 @@
 #include "ColorConvTable.h"
 #include "RTS.h"
 #include "../DSUtil/PathUtils.h"
+#include <ppl.h>
 
 // WARNING: this isn't very thread safe, use only one RTS a time. We should use TLS in future.
 static HDC g_hDC;
@@ -61,7 +62,7 @@ CMyFont::CMyFont(const STSStyle& style)
     lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 
     if (!CreateFontIndirect(&lf)) {
-        _tcscpy_s(lf.lfFaceName, _T("Tahoma"));
+        _tcscpy_s(lf.lfFaceName, _T("Calibri"));
         VERIFY(CreateFontIndirect(&lf));
     }
 
@@ -1686,6 +1687,7 @@ void CRenderedTextSubtitle::Empty()
 void CRenderedTextSubtitle::OnChanged()
 {
     __super::OnChanged();
+    CAutoLock cAutoLock(&renderLock);
 
     POSITION pos = m_subtitleCache.GetStartPosition();
     while (pos) {
@@ -1714,6 +1716,7 @@ bool CRenderedTextSubtitle::Init(CSize size, const CRect& vidrect)
 
 void CRenderedTextSubtitle::Deinit()
 {
+    CAutoLock cAutoLock(&renderLock);
     POSITION pos = m_subtitleCache.GetStartPosition();
     while (pos) {
         int i;
@@ -2661,6 +2664,7 @@ double CRenderedTextSubtitle::CalcAnimation(double dst, double src, bool fAnimat
 
 CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
 {
+    CAutoLock cAutoLock(&renderLock);
     CSubtitle* sub;
     if (m_subtitleCache.Lookup(entry, sub)) {
         if (sub->m_fAnimated) {
@@ -2896,6 +2900,11 @@ STDMETHODIMP_(POSITION) CRenderedTextSubtitle::GetStartPosition(REFERENCE_TIME r
     return GetNext((POSITION)(INT_PTR)iSegment);
 }
 
+CString CRenderedTextSubtitle::GetPath() {
+    if (m_provider == _T("Local") && !m_path.IsEmpty()) return m_path;
+    else return _T("");
+}
+
 STDMETHODIMP_(POSITION) CRenderedTextSubtitle::GetNext(POSITION pos)
 {
     __assume((INT_PTR)pos >= INT_MIN && (INT_PTR)pos <= INT_MAX);
@@ -2948,8 +2957,89 @@ struct LSub {
     }
 };
 
+namespace {
+    inline POINT GetRectPos(RECT rect) {
+        return { rect.left, rect.top };
+    }
+
+    inline SIZE GetRectSize(RECT rect) {
+        return { rect.right - rect.left, rect.bottom - rect.top };
+    }
+}
+
+#if USE_LIBASS
+void AssFlatten(ASS_Image* image, SubPicDesc& spd, CRect &rcDirty) {
+    if (image) {
+        RECT pRect = { 0 };
+        for (auto i = image; i != nullptr; i = i->next) {
+            RECT rect1 = pRect;
+            RECT rect2 = { i->dst_x, i->dst_y, i->dst_x + i->w, i->dst_y + i->h };
+            UnionRect(&pRect, &rect1, &rect2);
+        }
+
+        const POINT pixelsPoint = GetRectPos(pRect);
+        const SIZE pixelsSize = GetRectSize(pRect);
+        rcDirty.IntersectRect(CRect(pixelsPoint, pixelsSize), CRect(0, 0, spd.w, spd.h));
+
+        BYTE* pixelBytes = (BYTE*)(spd.bits + spd.pitch * rcDirty.top + rcDirty.left * 4);
+
+        for (auto i = image; i != nullptr; i = i->next) {
+            concurrency::parallel_for(0, i->h, [&](int y)
+                {
+                    for (int x = 0; x < i->w; ++x) {
+                        BYTE* dst = &pixelBytes[((ptrdiff_t)i->dst_y + y - pixelsPoint.y) * spd.pitch + ((ptrdiff_t)i->dst_x + x - pixelsPoint.x) * 4];
+
+                        uint32_t srcA = (i->bitmap[y * i->stride + x] * (0xff - (i->color & 0x000000ff))) >> 8;
+                        uint32_t compA = 0xff - srcA;
+
+
+                        dst[3] = 0xff - (srcA + (((0xff-dst[3]) * compA) >> 8)); //A.  this is inverted alpha, so we invert it before multiplying and then invert it again
+                        dst[2] = (((i->color & 0xff000000) >> 24) * srcA + (dst[2]) * compA) >> 8; //R
+                        dst[1] = (((i->color & 0x00ff0000) >> 16) * srcA + dst[1] * compA) >> 8; //G
+                        dst[0] = (((i->color & 0x0000ff00) >> 8) * srcA + dst[0] * compA) >> 8; //B
+
+                    }
+                }, concurrency::static_partitioner());
+        }
+    }
+}
+#endif
+
 STDMETHODIMP CRenderedTextSubtitle::Render(SubPicDesc& spd, REFERENCE_TIME rt, double fps, RECT& bbox)
 {
+    CAutoLock cAutoLock(&renderLock);
+    //TRACE(_T("render sub start: %lld\n"), rt);
+
+#if USE_LIBASS
+    if (m_assloaded) {
+        if (spd.bpp != 32) {
+            ASSERT(FALSE);
+            return E_INVALIDARG;
+        }
+
+        if (!m_assfontloaded && m_pPin) {
+            LoadASSFont(m_pPin, m_ass.get(), m_renderer.get());
+        }
+
+        m_size = CSize(spd.w, spd.h);
+        m_vidrect = CRect(spd.vidrect.left, spd.vidrect.top, spd.vidrect.right, spd.vidrect.bottom);
+        ass_set_frame_size(m_renderer.get(), spd.w, spd.h);
+
+        int changed = 1;
+        ASS_Image* image = ass_render_frame(m_renderer.get(), m_track.get(), rt / 10000, &changed);
+
+        if (!image) {
+            return E_FAIL;
+        }
+
+        CRect rcDirty;
+        AssFlatten(image, spd, rcDirty);
+
+        bbox = rcDirty;
+        return S_OK;
+    }
+#endif
+
     CRect bbox2(0, 0, 0, 0);
 
     if (m_size != CSize(spd.w * 8, spd.h * 8) || m_vidrect != CRect(spd.vidrect.left * 8, spd.vidrect.top * 8, spd.vidrect.right * 8, spd.vidrect.bottom * 8)) {
@@ -2959,6 +3049,7 @@ STDMETHODIMP CRenderedTextSubtitle::Render(SubPicDesc& spd, REFERENCE_TIME rt, d
     int segment;
     const STSSegment* stss = SearchSubs(rt, fps, &segment);
     if (!stss) {
+        //TRACE(_T("render sub skipped: %lld\n"), rt);
         return S_FALSE;
     }
 
@@ -3231,6 +3322,7 @@ STDMETHODIMP CRenderedTextSubtitle::Render(SubPicDesc& spd, REFERENCE_TIME rt, d
 
     bbox = bbox2;
 
+    //TRACE(_T("render sub done: %lld\n"), rt);
     return (subs.GetCount() && !bbox2.IsRectEmpty()) ? S_OK : S_FALSE;
 }
 
@@ -3294,10 +3386,10 @@ STDMETHODIMP CRenderedTextSubtitle::SetStream(int iStream)
 
 STDMETHODIMP CRenderedTextSubtitle::Reload()
 {
-    if (!PathUtils::Exists(m_path)) {
+    if (m_path.IsEmpty() || !PathUtils::Exists(m_path)) {
         return E_FAIL;
     }
-    return !m_path.IsEmpty() && Open(m_path, DEFAULT_CHARSET, m_name) ? S_OK : E_FAIL;
+    return Open(m_path, DEFAULT_CHARSET, m_name) ? S_OK : E_FAIL;
 }
 
 STDMETHODIMP CRenderedTextSubtitle::SetSourceTargetInfo(CString yuvVideoMatrix, int targetBlackLevel, int targetWhiteLevel)

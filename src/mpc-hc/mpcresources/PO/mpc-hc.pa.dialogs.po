@@ -10,10 +10,10 @@ msgstr ""
 "PO-Revision-Date: 2017-08-01 20:56+0000\n"
 "Last-Translator: kasper93\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/mpc-hc/mpc-hc/language/pa/)\n"
+"Language: pa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pa\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "IDD_SELECTMEDIATYPE_CAPTION"
@@ -125,7 +125,9 @@ msgid "Go To..."
 msgstr "...ਉੱਤੇ ਜਾਓ"
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
-msgid "Enter a timecode using the format [hh:]mm:ss.ms to jump to a specified time. You do not need to enter the separators explicitly."
+msgid ""
+"Enter a timecode using the format [hh:]mm:ss.ms to jump to a specified time."
+" You do not need to enter the separators explicitly."
 msgstr ""
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
@@ -137,7 +139,9 @@ msgid "Go!"
 msgstr "ਜਾਓ!"
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
-msgid "Enter two numbers to jump to a specified frame, the first is the frame number, the second is the frame rate."
+msgid ""
+"Enter two numbers to jump to a specified frame, the first is the frame "
+"number, the second is the frame rate."
 msgstr ""
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
@@ -153,7 +157,9 @@ msgid "Open"
 msgstr "ਖੋਲ੍ਹੋ"
 
 msgctxt "IDD_OPEN_DLG_IDC_STATIC"
-msgid "Type the address of a movie or audio file (on the Internet or your computer) and the player will open it for you."
+msgid ""
+"Type the address of a movie or audio file (on the Internet or your computer)"
+" and the player will open it for you."
 msgstr ""
 
 msgctxt "IDD_OPEN_DLG_IDC_STATIC"
@@ -189,11 +195,12 @@ msgid "About"
 msgstr "ਇਸ ਬਾਰੇ"
 
 msgctxt "IDD_ABOUTBOX_IDC_AUTHORS_LINK"
-msgid "Copyright © 2002-2020 see Authors.txt"
-msgstr "Copyright © 2002-2020 Authors.txt ਦੇਖੋ"
+msgid "Copyright 2002-2021 clsid2 and others"
+msgstr ""
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
-msgid "This program is freeware and released under the GNU General Public License."
+msgid ""
+"This program is freeware and released under the GNU General Public License."
 msgstr "ਇਹ ਮੁਫ਼ਤ ਪ੍ਰੋਗਰਾਮ ਹੈ ਅਤੇ ਗਨੂਮ ਜਰਨਲ ਪਬਲਿਕ ਲਸੰਸ ਅਧੀਨ ਜਾਰੀ ਕੀਤਾ ਗਿਆ ਹੈ।"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
@@ -573,7 +580,10 @@ msgid "Warning"
 msgstr "ਚੇਤਾਵਨੀ"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
-msgid "If you override and enable fullscreen antialiasing somewhere at your videocard's settings, subtitles aren't going to look any better but it will surely eat your CPU."
+msgid ""
+"If you override and enable fullscreen antialiasing somewhere at your "
+"videocard's settings, subtitles aren't going to look any better but it will "
+"surely eat your CPU."
 msgstr ""
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC2"
@@ -603,26 +613,6 @@ msgstr "ਪਰਸ਼ਾਸ਼ਕ ਵਜੋਂ ਚਲਾਓ(&a)"
 msgctxt "IDD_PPAGEFORMATS_IDC_BUTTON7"
 msgid "Set as &default program"
 msgstr "ਡਿਫਾਲਟ ਪਰੋਗਰਾਮ ਵਜੋਂ ਸੈਟ ਕਰੋ(&d)"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
-msgid "Real-Time Streaming Protocol handler (for rtsp://... URLs)"
-msgstr ""
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO1"
-msgid "RealMedia"
-msgstr "RealMedia"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO2"
-msgid "QuickTime"
-msgstr "QuickTime"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO3"
-msgid "DirectShow"
-msgstr "DirectShow"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK5"
-msgid "Check file extension first"
-msgstr ""
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
 msgid "Explorer Context Menu"
@@ -677,7 +667,8 @@ msgid "Display \"Now Playing\" information in Skype's mood message"
 msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK6"
-msgid "Prevent minimizing the player when in fullscreen on a non default monitor"
+msgid ""
+"Prevent minimizing the player when in fullscreen on a non default monitor"
 msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK_ENHANCED_TASKBAR"
@@ -685,7 +676,9 @@ msgid "Use enhanced taskbar features"
 msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK7"
-msgid "Open previous/next file in folder on \"Skip back/forward\" when there is only one item in playlist"
+msgid ""
+"Open previous/next file in folder on \"Skip back/forward\" when there is "
+"only one item in playlist"
 msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK8"
@@ -702,6 +695,14 @@ msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK3"
 msgid "Auto-hide the mouse pointer during playback in windowed mode"
+msgstr ""
+
+msgctxt "IDD_PPAGETWEAKS_IDC_SEEK_PREVIEW"
+msgid "Show preview on seek bar"
+msgstr ""
+
+msgctxt "IDD_PPAGETWEAKS_IDC_STATIC"
+msgid "Preview width (% of screen width)"
 msgstr ""
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON1"
@@ -901,7 +902,9 @@ msgid "Warning"
 msgstr "ਚੇਤਾਵਨੀ"
 
 msgctxt "IDD_MEDIATYPES_DLG_IDC_STATIC1"
-msgid "MPC-HC could not render some of the pins in the graph, you may not have the needed codecs or filters installed on the system."
+msgid ""
+"MPC-HC could not render some of the pins in the graph, you may not have the "
+"needed codecs or filters installed on the system."
 msgstr ""
 
 msgctxt "IDD_MEDIATYPES_DLG_IDC_STATIC2"
@@ -1077,7 +1080,9 @@ msgid "Link alpha channels"
 msgstr ""
 
 msgctxt "IDD_PPAGEINTERNALFILTERS_IDC_STATIC"
-msgid "If you would like to use the stand-alone versions of these filters or another replacement, disable them here."
+msgid ""
+"If you would like to use the stand-alone versions of these filters or "
+"another replacement, disable them here."
 msgstr ""
 
 msgctxt "IDD_PPAGEINTERNALFILTERS_IDC_STATIC"
@@ -1116,21 +1121,41 @@ msgctxt "IDD_PPAGELOGO_IDC_BUTTON2"
 msgid "Browse..."
 msgstr "...ਝਲਕ"
 
+msgctxt "IDD_PPAGELOGO_IDC_CHECK1"
+msgid "Apply Monitor Color Profile"
+msgstr ""
+
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "DirectShow Video"
 msgstr "DirectShow ਵਿਡੀਓ"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "RealMedia Video"
-msgstr "RealMedia ਵਿਡੀਓ"
+msgid "DXVA"
+msgstr "DXVA"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "QuickTime Video"
-msgstr "QuickTime ਵਿਡੀਓ"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Screenshot"
+msgstr "ਸਕਰੀਨਸ਼ਾਟ"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Shaders"
+msgstr "ਸ਼ੇਡਰ"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Rotation"
+msgstr "ਘੁੰਮਾਉਣਾ"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "Audio Renderer"
 msgstr "ਆਡੀਓ ਰੈਂਡਰਰ"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Subtitle Renderer"
+msgstr ""
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "VMR-9 (renderless) and EVR (CP) settings"
@@ -1166,30 +1191,6 @@ msgstr ""
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_EVR_BUFFERS_TXT"
 msgid "EVR Buffers:"
-msgstr ""
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "DXVA"
-msgstr "DXVA"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Subtitles"
-msgstr ""
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Screenshot"
-msgstr "ਸਕਰੀਨਸ਼ਾਟ"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Shaders"
-msgstr "ਸ਼ੇਡਰ"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Rotation"
-msgstr "ਘੁੰਮਾਉਣਾ"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Subtitle Renderer"
 msgstr ""
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_CACHESHADERS"
@@ -1593,7 +1594,8 @@ msgid "Automatically search and download subtitles if none are found locally"
 msgstr ""
 
 msgctxt "IDD_PPAGESUBMISC_IDC_CHECK5"
-msgid "Prefer subtitles for hearing impaired (when indicated by subtitles provider)"
+msgid ""
+"Prefer subtitles for hearing impaired (when indicated by subtitles provider)"
 msgstr ""
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC1"
@@ -1602,10 +1604,6 @@ msgstr ""
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC"
 msgid "Languages in order of preference:"
-msgstr ""
-
-msgctxt "IDD_PPAGESUBMISC_IDC_CHECK6"
-msgid "Automatically upload active subtitles at the end of video playback"
 msgstr ""
 
 msgctxt "IDD_UPDATE_DIALOG_CAPTION"
@@ -1625,7 +1623,9 @@ msgid "&Ignore this update"
 msgstr "ਇਹ ਅੱਪਡੇਟ ਅਣਡਿੱਠਾ ਕਰੋ(I)"
 
 msgctxt "IDD_PPAGESHADERS_IDC_STATIC"
-msgid "Shaders contain special effects which can be added to the video rendering process."
+msgid ""
+"Shaders contain special effects which can be added to the video rendering "
+"process."
 msgstr ""
 
 msgctxt "IDD_PPAGESHADERS_IDC_BUTTON12"
@@ -1668,6 +1668,12 @@ msgctxt "IDD_PPAGESHADERS_IDC_STATIC"
 msgid "Active post-resize shaders"
 msgstr ""
 
+msgctxt "IDD_PPAGESHADERS_IDC_STATIC5"
+msgid ""
+"MPC-VR does not support pre-resize shaders. It will run them after resize, "
+"before the post-resize shaders."
+msgstr ""
+
 msgctxt "IDD_DEBUGSHADERS_DLG_CAPTION"
 msgid "Debug Shaders"
 msgstr ""
@@ -1694,7 +1700,9 @@ msgstr "PS 3.0"
 
 msgctxt "IDD_PPAGEADVANCED_IDC_STATIC"
 msgid "Advanced Settings, do not edit unless you know what you are doing."
-msgstr "ਤਕਨੀਕੀ ਸੈਟਿੰਗਾਂ, ਉਦੋਂ ਤੱਕ ਨਾ ਸੋਧੋ, ਜਦੋਂ ਤੱਕ ਕਿ ਤੁਸੀਂ ਜਾਣਦੇ ਨਹੀਂ ਹੋ ਕਿ ਤੁਸੀਂ ਕੀ ਕਰ ਰਹੇ ਹੋ।"
+msgstr ""
+"ਤਕਨੀਕੀ ਸੈਟਿੰਗਾਂ, ਉਦੋਂ ਤੱਕ ਨਾ ਸੋਧੋ, ਜਦੋਂ ਤੱਕ ਕਿ ਤੁਸੀਂ ਜਾਣਦੇ ਨਹੀਂ ਹੋ ਕਿ ਤੁਸੀਂ "
+"ਕੀ ਕਰ ਰਹੇ ਹੋ।"
 
 msgctxt "IDD_PPAGEADVANCED_IDC_RADIO1"
 msgid "True"
@@ -1753,7 +1761,9 @@ msgid "Note"
 msgstr "ਨੋਟ"
 
 msgctxt "IDD_PPAGEAUDIORENDERER_IDC_STATIC"
-msgid "To minimize audio distortion, it is recommended to keep player volume at around 85% when playing loud lossy-encoded content."
+msgid ""
+"To minimize audio distortion, it is recommended to keep player volume at "
+"around 85% when playing loud lossy-encoded content."
 msgstr ""
 
 msgctxt "IDD_SAVEIMAGEDIALOGTEMPL_IDC_STATIC"
@@ -1789,7 +1799,9 @@ msgid "Email:"
 msgstr "ਈਮੇਲ:"
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC3"
-msgid "Your email address is optional and will only be used if the developers need to contact you for more information."
+msgid ""
+"Your email address is optional and will only be used if the developers need "
+"to contact you for more information."
 msgstr ""
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC4"
@@ -1804,3 +1816,10 @@ msgctxt "IDD_CRASH_REPORTER_IDC_BUTTON2"
 msgid "Quit MPC-HC"
 msgstr "MPC-HC ਬੰਦ ਕਰੋ"
 
+msgctxt "IDD_PPAGEDPICALC_IDC_STATIC1"
+msgid "Groupbox"
+msgstr ""
+
+msgctxt "IDD_PPAGEDPICALC_IDC_STATIC2"
+msgid "Autoplay"
+msgstr ""

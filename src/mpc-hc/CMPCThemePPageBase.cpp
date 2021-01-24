@@ -24,7 +24,7 @@ BOOL CMPCThemePPageBase::OnInitDialog()
 
 void CMPCThemePPageBase::SetMPCThemeButtonIcon(UINT nIDButton, UINT nIDIcon, ImageGrayer::mpcColorStyle colorStyle)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (!m_buttonIcons.count(nIDIcon)) {
             CImage img, imgEnabled, imgDisabled;
             img.LoadFromResource(AfxGetInstanceHandle(), nIDIcon);

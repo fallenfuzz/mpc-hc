@@ -31,6 +31,7 @@ namespace SaneAudioRenderer
         HRESULT Inactive() override;
 
         bool StateTransitionFinished(uint32_t timeoutMilliseconds);
+        CBaseFilter* GetFilter() { return m_pFilter; };
 
     private:
 

@@ -155,7 +155,7 @@ void Subtitle::GetSubFileNames(CString fn, const CAtlArray<CString>& paths, CAtl
         CWebTextFile wtf; // :)
         if (wtf.Open(orgpath + title + _T(".wse"))) {
             CString fn2;
-            while (wtf.ReadString(fn2) && fn2.Find(_T("://")) >= 0) {
+            while (wtf.ReadString(fn2) && fn2.Find(_T("://")) > 1) {
                 SubFile f;
                 f.fn = fn2;
                 ret.Add(f);

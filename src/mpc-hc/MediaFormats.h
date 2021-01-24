@@ -73,28 +73,17 @@ public:
 
 class CMediaFormats : public CAtlArray<CMediaFormatCategory>
 {
-protected:
-    engine_t m_iRtspHandler;
-    bool m_fRtspFileExtFirst;
-
 public:
     CMediaFormats();
     virtual ~CMediaFormats();
 
     //CMediaFormats(const CMediaFormats& mf) { *this = mf; }
     CMediaFormats& operator=(const CMediaFormats& mf) {
-        m_iRtspHandler = mf.m_iRtspHandler;
-        m_fRtspFileExtFirst = mf.m_fRtspFileExtFirst;
-
         Copy(mf);
-
         return *this;
     }
 
     void UpdateData(bool fSave);
-
-    engine_t GetRtspHandler(bool& fRtspFileExtFirst) const;
-    void SetRtspHandler(engine_t e, bool fRtspFileExtFirst);
 
     bool IsUsingEngine(CString path, engine_t e) const;
     engine_t GetEngine(CString path) const;

@@ -22,7 +22,7 @@ END_MESSAGE_MAP()
 
 void CMPCThemeGroupBox::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
 
         CPaintDC dc(this);
 

@@ -34,7 +34,7 @@ END_MESSAGE_MAP()
 
 void CMPCThemeEdit::PreSubclassWindow()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (WS_EX_CLIENTEDGE == (GetStyle() & WS_EX_CLIENTEDGE)) {
             ModifyStyleEx(WS_EX_CLIENTEDGE, WS_EX_STATICEDGE, SWP_FRAMECHANGED);
         }
@@ -54,7 +54,7 @@ void CMPCThemeEdit::PreSubclassWindow()
 
 void CMPCThemeEdit::OnNcPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (0 != (GetStyle() & (WS_VSCROLL | WS_HSCROLL))) {  //scrollable edit will be treated like a window, not a field
             if (nullptr != themedSBHelper) {
                 themedSBHelper->themedNcPaintWithSB();
@@ -95,9 +95,9 @@ void CMPCThemeEdit::OnNcPaint()
 
 void CMPCThemeEdit::SetFixedWidthFont(CFont& f)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CWindowDC dc(this);
-        if (CMPCThemeUtil::getFixedFont(font, &dc)) {
+        if (CMPCThemeUtil::getFixedFont(font, &dc, this)) {
             SetFont(&font);
         } else {
             SetFont(&f);

@@ -11,6 +11,7 @@ public:
     CMPCThemeResizableDialog(UINT nIDTemplate, CWnd* pParent = nullptr);
     CMPCThemeResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParent = nullptr);
     virtual ~CMPCThemeResizableDialog();
+    BOOL OnInitDialog();
     void fulfillThemeReqs();
     DECLARE_MESSAGE_MAP()
 public:

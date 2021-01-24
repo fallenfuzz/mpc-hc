@@ -29,6 +29,7 @@
 #include "mplayerc.h"
 #include "MainFrm.h"
 #include "DSUtil.h"
+#include "PathUtils.h"
 
 using namespace DSObjects;
 
@@ -51,11 +52,9 @@ CQuicktimeGraph::CQuicktimeGraph(HWND hWndParent, HRESULT& hr)
     const CAppSettings& s = AfxGetAppSettings();
 
     CComPtr<ISubPicAllocatorPresenter> pQTAP;
-    if (s.iQTVideoRendererType == VIDRNDT_QT_DX9) {
-        bool bFullscreen = (AfxGetApp()->m_pMainWnd != nullptr) && (((CMainFrame*)AfxGetApp()->m_pMainWnd)->IsD3DFullScreenMode());
-        if (SUCCEEDED(hr = CreateAP9(CLSID_QT9AllocatorPresenter, hWndParent, bFullscreen, &pQTAP))) {
-            dwStyle &= ~WS_VISIBLE;
-        }
+    bool bFullscreen = (AfxGetApp()->m_pMainWnd != nullptr) && (((CMainFrame*)AfxGetApp()->m_pMainWnd)->IsD3DFullScreenMode());
+    if (SUCCEEDED(hr = CreateAP9(CLSID_QT9AllocatorPresenter, hWndParent, bFullscreen, &pQTAP))) {
+        dwStyle &= ~WS_VISIBLE;
     }
     m_pQTAP = pQTAP;
 
@@ -488,7 +487,7 @@ bool CQuicktimeWindow::OpenMovie(CString fn)
         SetGWorld((CGrafPtr)GetHWNDPort(m_hWnd), nullptr);
     }
 
-    if (fn.Find(_T("://")) > 0) {
+    if (PathUtils::IsURL(fn)) {
         Size mySize = fn.GetLength() + 1;
         Handle myHandle = NewHandleClear(mySize);
         if (!myHandle) {

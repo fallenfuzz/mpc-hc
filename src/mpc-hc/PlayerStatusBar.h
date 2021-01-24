@@ -40,7 +40,7 @@ private:
     CStatusLabel m_status, m_time;
     CBitmap m_bm;
     UINT m_bmid;
-    CString m_typeExt, timerOSD;
+    CString m_typeExt;
     HICON m_hIcon;
 
     CRect m_time_rect;
@@ -68,7 +68,6 @@ public:
                         const GUID& timeFormat = TIME_FORMAT_MEDIA_TIME);
 
     CString GetStatusTimer() const;
-    CString GetTimerOSD() const;
     CString GetStatusMessage() const;
 
     CString PreparePathStatusMessage(CPath path);

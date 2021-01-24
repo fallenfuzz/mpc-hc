@@ -43,7 +43,7 @@ CPlayerInfoBar::~CPlayerInfoBar()
 
 bool CPlayerInfoBar::SetLine(CString label, CString info)
 {
-    const CAppSettings& s = AfxGetAppSettings();
+    bool usetheme = AppIsThemeLoaded();
     info.Trim();
     if (info.IsEmpty()) {
         return RemoveLine(label);
@@ -56,7 +56,7 @@ bool CPlayerInfoBar::SetLine(CString label, CString info)
             m_info[idx]->GetWindowText(tmp);
             if (info != tmp) {
                 m_info[idx]->SetWindowText(info);
-                if (s.bMPCThemeLoaded) {
+                if (usetheme) {
                     themedToolTip.UpdateTipText(info, m_info[idx]);
                 } else {
                     m_tooltip.UpdateTipText(info, m_info[idx]);
@@ -72,7 +72,7 @@ bool CPlayerInfoBar::SetLine(CString label, CString info)
 
     CAutoPtr<CStatusLabel> i(DEBUG_NEW CStatusLabel(m_pMainFrame->m_dpi, false, true));
     i->Create(info, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SS_OWNERDRAW | SS_NOTIFY, CRect(0, 0, 0, 0), this);
-    if (s.bMPCThemeLoaded) {
+    if (usetheme) {
         themedToolTip.AddTool(i, info);
     } else {
         m_tooltip.AddTool(i, info);
@@ -101,12 +101,12 @@ void CPlayerInfoBar::GetLine(CString label, CString& info)
 
 bool CPlayerInfoBar::RemoveLine(CString label)
 {
-    const CAppSettings& s = AfxGetAppSettings();
+    bool usetheme = AppIsThemeLoaded();
     for (size_t i = 0; i < m_label.GetCount(); i++) {
         CString tmp;
         m_label[i]->GetWindowText(tmp);
         if (label == tmp) {
-            if (s.bMPCThemeLoaded) {
+            if (usetheme) {
                 themedToolTip.DelTool(m_info[i]);
             } else {
                 m_tooltip.DelTool(m_info[i]);
@@ -134,7 +134,7 @@ BOOL CPlayerInfoBar::Create(CWnd* pParentWnd)
 {
     BOOL res = CDialogBar::Create(pParentWnd, IDD_PLAYERINFOBAR, WS_CHILD | WS_VISIBLE | CBRS_ALIGN_BOTTOM, IDD_PLAYERINFOBAR);
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.Create(this, TTS_NOPREFIX);
         themedToolTip.Activate(TRUE);
         themedToolTip.SetMaxTipWidth(m_pMainFrame->m_dpi.ScaleX(500));
@@ -200,8 +200,10 @@ void CPlayerInfoBar::Relayout()
         CDC* pDC = m_label[i]->GetDC();
         CString str;
         m_label[i]->GetWindowText(str);
-        w = std::max<int>(w, pDC->GetTextExtent(str).cx);
-        m_label[i]->ReleaseDC(pDC);
+        if (pDC) {
+            w = std::max<int>(w, pDC->GetTextExtent(str).cx);
+            m_label[i]->ReleaseDC(pDC);
+        }
     }
 
     const int sep = m_pMainFrame->m_dpi.ScaleX(10);
@@ -221,7 +223,7 @@ END_MESSAGE_MAP()
 
 BOOL CPlayerInfoBar::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (IsWindow(themedToolTip)) {
             themedToolTip.RelayEvent(pMsg);
         }
@@ -235,6 +237,8 @@ BOOL CPlayerInfoBar::PreTranslateMessage(MSG* pMsg)
 
 BOOL CPlayerInfoBar::OnEraseBkgnd(CDC* pDC)
 {
+    if (!pDC) return FALSE;
+
     for (CWnd* pChild = GetWindow(GW_CHILD); pChild; pChild = pChild->GetNextWindow()) {
         CRect r;
         pChild->GetClientRect(&r);
@@ -255,8 +259,7 @@ BOOL CPlayerInfoBar::OnEraseBkgnd(CDC* pDC)
         r.InflateRect(1, 0, 1, 0);
     }
 
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         pDC->FillSolidRect(&r, CMPCTheme::NoBorderColor);
     } else {
         pDC->Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT));

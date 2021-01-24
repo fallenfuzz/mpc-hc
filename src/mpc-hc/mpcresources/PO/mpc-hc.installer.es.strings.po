@@ -30,7 +30,7 @@ msgstr ""
 
 msgctxt "Messages_WinVersionTooLowError"
 msgid "[name] requires Windows Vista or newer to run."
-msgstr "[nombre] Se requiere Windows Vista o superior"
+msgstr "[nombre] Para ejecutar se requiere Windows Vista o superior"
 
 msgctxt "CustomMessages_comp_mpciconlib"
 msgid "Icon Library"

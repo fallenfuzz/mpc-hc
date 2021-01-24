@@ -107,6 +107,7 @@
     <Link>
       <AdditionalLibraryDirectories Condition="'$(PlatformToolsetVersion)'!='140'">$(SolutionDir)bin\lib\Release_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(PlatformToolsetVersion)'=='140'">$(SolutionDir)bin15\lib\Release_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;vcruntime.lib;ucrt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="$(Configuration.Contains('Debug'))">
@@ -132,7 +133,7 @@
       <AdditionalDependencies>RARFileSource.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\thirdparty\ZenLib\library\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     <ClCompile Include="CMPCThemeButton.cpp" />
     <ClCompile Include="CMPCThemeFrameUtil.cpp" />
     <ClCompile Include="CMPCThemeFrameWnd.cpp" />
+    <ClCompile Include="CMPCThemeInternalPropertyPageWnd.cpp" />
     <ClCompile Include="CMPCThemeMiniDockFrameWnd.cpp" />
     <ClCompile Include="CMPCThemeTitleBarControlButton.cpp" />
     <ClCompile Include="CMPCThemeUtil.cpp" />
@@ -238,6 +240,7 @@
     <ClCompile Include="PlayerNavigationBar.cpp" />
     <ClCompile Include="PlayerNavigationDialog.cpp" />
     <ClCompile Include="PlayerPlaylistBar.cpp" />
+    <ClCompile Include="PlayerPreView.cpp" />
     <ClCompile Include="PlayerSeekBar.cpp" />
     <ClCompile Include="PlayerStatusBar.cpp" />
     <ClCompile Include="PlayerSubresyncBar.cpp" />
@@ -327,6 +330,7 @@
     <ClInclude Include="CMPCThemeButton.h" />
     <ClInclude Include="CMPCThemeFrameUtil.h" />
     <ClInclude Include="CMPCThemeFrameWnd.h" />
+    <ClInclude Include="CMPCThemeInternalPropertyPageWnd.h" />
     <ClInclude Include="CMPCThemeMiniDockFrameWnd.h" />
     <ClInclude Include="CMPCThemeTitleBarControlButton.h" />
     <ClInclude Include="CMPCThemeUtil.h" />
@@ -426,6 +430,7 @@
     <ClInclude Include="PlayerNavigationBar.h" />
     <ClInclude Include="PlayerNavigationDialog.h" />
     <ClInclude Include="PlayerPlaylistBar.h" />
+    <ClInclude Include="PlayerPreView.h" />
     <ClInclude Include="PlayerSeekBar.h" />
     <ClInclude Include="PlayerStatusBar.h" />
     <ClInclude Include="PlayerSubresyncBar.h" />

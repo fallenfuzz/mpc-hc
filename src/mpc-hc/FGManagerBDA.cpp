@@ -226,6 +226,19 @@ static const AM_MEDIA_TYPE mt_Eac3 = {
     AC3AudioFormat,                 // pbFormat
 };
 
+/// Media type, Audio AAC ADTS
+static const AM_MEDIA_TYPE mt_adts = {
+    MEDIATYPE_Audio,                // majortype
+    MEDIASUBTYPE_MPEG_ADTS_AAC,     // subtype
+    TRUE,                           // bFixedSizeSamples
+    FALSE,                          // bTemporalCompression
+    0,                              // lSampleSize
+    FORMAT_WaveFormatEx,            // formattype
+    nullptr,                        // pUnk
+    sizeof(AACAudioFormat),         // cbFormat
+    AACAudioFormat,                 // pbFormat
+};
+
 /// Media type, Audio AAC LATM
 static const AM_MEDIA_TYPE mt_latm = {
     MEDIATYPE_Audio,                // majortype
@@ -369,6 +382,7 @@ CFGManagerBDA::CFGManagerBDA(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd)
     m_DVBStreams[BDA_MPA]  = CDVBStream(L"mpa",  &mt_Mpa);
     m_DVBStreams[BDA_AC3]  = CDVBStream(L"ac3",  &mt_Ac3);
     m_DVBStreams[BDA_EAC3] = CDVBStream(L"eac3", &mt_Eac3);
+    m_DVBStreams[BDA_ADTS] = CDVBStream(L"adts", &mt_adts);
     m_DVBStreams[BDA_LATM] = CDVBStream(L"latm", &mt_latm);
     m_DVBStreams[BDA_PSI]  = CDVBStream(L"psi",  &mt_Psi, true, MEDIA_MPEG2_PSI);
     if (tunerIsATSC) {
@@ -411,6 +425,30 @@ CFGManagerBDA::~CFGManagerBDA()
     LOG(_T("CFGManagerBDA object destroyed."));
     LOG(_T("<----------------------------------------------------------------\n\n"));
 }
+
+HRESULT CFGManagerBDA::CreateKSFilterFN(IBaseFilter** ppBF, CLSID KSCategory, const CStringW& FriendlyName) {
+    HRESULT hr = VFW_E_NOT_FOUND;
+    BeginEnumSysDev(KSCategory, pMoniker) {
+        CComPtr<IPropertyBag> pPB;
+        CComVariant var;
+        if (SUCCEEDED(pMoniker->BindToStorage(0, 0, IID_PPV_ARGS(&pPB))) && SUCCEEDED(pPB->Read(_T("FriendlyName"), &var, nullptr))) {
+            CStringW fName = CStringW(var.bstrVal);
+            if (fName != FriendlyName) {
+                continue;
+            }
+
+            hr = pMoniker->BindToObject(nullptr, nullptr, IID_PPV_ARGS(ppBF));
+            if (SUCCEEDED(hr)) {
+                hr = AddFilter(*ppBF, fName);
+            }
+            break;
+        }
+    }
+    EndEnumSysDev;
+
+    return hr;
+}
+
 
 HRESULT CFGManagerBDA::CreateKSFilter(IBaseFilter** ppBF, CLSID KSCategory, const CStringW& DisplayName)
 {
@@ -524,7 +562,7 @@ STDMETHODIMP CFGManagerBDA::RenderFile(LPCWSTR lpcwstrFile, LPCWSTR lpcwstrPlayL
     CComPtr<IBaseFilter> pReceiver;
 
     LOG(_T("Creating BDA filters..."));
-    CheckAndLogBDA(CreateKSFilter(&pNetwork, KSCATEGORY_BDA_NETWORK_PROVIDER, s.strBDANetworkProvider), _T("Network provider creation"));
+    CheckAndLogBDA(CreateKSFilterFN(&pNetwork, KSCATEGORY_BDA_NETWORK_PROVIDER, _T("Microsoft Network Provider")), _T("Network provider creation"));
     if (FAILED(hr = CreateKSFilter(&pTuner, KSCATEGORY_BDA_NETWORK_TUNER, s.strBDATuner))) {
         MessageBox(AfxGetMyApp()->GetMainWnd()->m_hWnd, ResStr(IDS_BDA_ERROR_CREATE_TUNER), ResStr(IDS_BDA_ERROR), MB_ICONERROR | MB_OK);
         TRACE(_T("BDA: Network tuner creation: 0x%08x\n"), hr);
@@ -729,6 +767,9 @@ HRESULT CFGManagerBDA::ClearMaps()
     }
     if (m_DVBStreams[BDA_EAC3].GetMappedPID()) {
         CheckNoLog(m_DVBStreams[BDA_EAC3].Unmap(m_DVBStreams[BDA_EAC3].GetMappedPID()));
+    }
+    if (m_DVBStreams[BDA_ADTS].GetMappedPID()) {
+        CheckNoLog(m_DVBStreams[BDA_ADTS].Unmap(m_DVBStreams[BDA_ADTS].GetMappedPID()));
     }
     if (m_DVBStreams[BDA_LATM].GetMappedPID()) {
         CheckNoLog(m_DVBStreams[BDA_LATM].Unmap(m_DVBStreams[BDA_LATM].GetMappedPID()));
@@ -976,6 +1017,7 @@ HRESULT CFGManagerBDA::CreateMicrosoftDemux(CComPtr<IBaseFilter>& pMpeg2Demux)
     bool bAudioMPA = false;
     bool bAudioAC3 = false;
     bool bAudioEAC3 = false;
+    bool bAudioADTS = false;
     bool bAudioLATM = false;
 
     CheckNoLog(pMpeg2Demux->QueryInterface(IID_PPV_ARGS(&pDemux)));
@@ -995,6 +1037,9 @@ HRESULT CFGManagerBDA::CreateMicrosoftDemux(CComPtr<IBaseFilter>& pMpeg2Demux)
                 case BDA_EAC3:
                     bAudioEAC3 = true;
                     break;
+                case BDA_ADTS:
+                    bAudioADTS = true;
+                    break;
                 case BDA_LATM:
                     bAudioLATM = true;
                     break;
@@ -1004,6 +1049,7 @@ HRESULT CFGManagerBDA::CreateMicrosoftDemux(CComPtr<IBaseFilter>& pMpeg2Demux)
         bAudioMPA = true;
         bAudioAC3 = true;
         bAudioEAC3 = true;
+        bAudioADTS = true;
         bAudioLATM = true;
     }
 
@@ -1048,9 +1094,10 @@ HRESULT CFGManagerBDA::CreateMicrosoftDemux(CComPtr<IBaseFilter>& pMpeg2Demux)
             case BDA_MPA:
             case BDA_AC3:
             case BDA_EAC3:
+            case BDA_ADTS:
             case BDA_LATM:
                 if ((bAudioMPA && (nType == BDA_MPA)) || (bAudioAC3 && (nType == BDA_AC3)) ||
-                        (bAudioEAC3 && (nType == BDA_EAC3)) || (bAudioLATM && (nType == BDA_LATM))) {
+                        (bAudioEAC3 && (nType == BDA_EAC3)) || (bAudioADTS && (nType == BDA_ADTS)) || (bAudioLATM && (nType == BDA_LATM))) {
                     if (!Stream.GetFindExisting() ||
                             (pPin = FindPin(pMpeg2Demux, PINDIR_OUTPUT, Stream.GetMediaType())) == nullptr) {
                         CheckNoLog(pDemux->CreateOutputPin(const_cast<AM_MEDIA_TYPE*>(Stream.GetMediaType()), const_cast<LPWSTR>(Stream.GetName()), &pPin));
@@ -1160,8 +1207,8 @@ HRESULT CFGManagerBDA::SetChannelInternal(CBDAChannel* pChannel)
     LOG(_T("Stream maps:"));
     LOG(_T("Mapped PID MPEG-2: %u, Mapped PID H.264: %u, Mapped PID HEVC: %u."),
         m_DVBStreams[BDA_MPV].GetMappedPID(), m_DVBStreams[BDA_H264].GetMappedPID(), m_DVBStreams[BDA_HEVC].GetMappedPID());
-    LOG(_T("Mapped PID MPA: %u, Mapped PID AC3: %u, Mapped PID EAC3: %u, Mapped PID AAC-LATM: %u."), m_DVBStreams[BDA_MPA].GetMappedPID(),
-        m_DVBStreams[BDA_AC3].GetMappedPID(), m_DVBStreams[BDA_EAC3].GetMappedPID(), m_DVBStreams[BDA_LATM].GetMappedPID());
+    LOG(_T("Mapped PID MPA: %u, Mapped PID AC3: %u, Mapped PID EAC3: %u, Mapped PID AAC-ADTS: %u, Mapped PID AAC-LATM: %u.")
+        , m_DVBStreams[BDA_MPA].GetMappedPID(), m_DVBStreams[BDA_AC3].GetMappedPID(), m_DVBStreams[BDA_EAC3].GetMappedPID(), m_DVBStreams[BDA_ADTS].GetMappedPID(), m_DVBStreams[BDA_LATM].GetMappedPID());
     LOG(_T("Mapped PID Subtitles: %u."), m_DVBStreams[BDA_SUB].GetMappedPID());
 
     if (bRadioToTV) {
@@ -1230,6 +1277,9 @@ HRESULT CFGManagerBDA::SwitchStream(BDA_STREAM_TYPE nOldType, BDA_STREAM_TYPE nN
                     break;
                 case BDA_EAC3:
                     hr = pDemux->SetOutputPinMediaType(const_cast<LPWSTR>(L"eac3"), const_cast<AM_MEDIA_TYPE*>(&mt_Eac3));
+                    break;
+                case BDA_ADTS:
+                    hr = pDemux->SetOutputPinMediaType(const_cast<LPWSTR>(L"adts"), const_cast<AM_MEDIA_TYPE*>(&mt_latm));
                     break;
                 case BDA_LATM:
                     hr = pDemux->SetOutputPinMediaType(const_cast<LPWSTR>(L"latm"), const_cast<AM_MEDIA_TYPE*>(&mt_latm));
@@ -1348,9 +1398,10 @@ HRESULT CFGManagerBDA::ChangeState(FILTER_STATE nRequested)
         CMainFrame* pMainFrame = AfxGetMainFrame();
         switch (nRequested) {
             case State_Stopped: {
-                if (SUCCEEDED(hr = pMC->Stop()) && pMainFrame) {
+                if (pMainFrame) {
                     pMainFrame->KillTimersStop();
                 }
+                hr = pMC->Stop();
                 LOG(_T("IMediaControl stop: 0x%08x."), hr);
                 return hr;
             }

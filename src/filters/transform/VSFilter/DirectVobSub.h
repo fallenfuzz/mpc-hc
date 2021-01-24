@@ -60,6 +60,11 @@ protected:
     CComPtr<ISubClock> m_pSubClock;
     bool m_fForced;
 
+#if USE_LIBASS
+    bool            bRenderSubtitlesUsingLibass;
+    CStringA        strOpenTypeLangHint;
+    SubRendererSettings	GetSubRendererSettings();
+#endif
 public:
 
     // IDirectVobSub

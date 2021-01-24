@@ -79,6 +79,7 @@ BEGIN_MESSAGE_MAP(CPlayerNavigationDialog, CMPCThemeResizableDialog)
     ON_UPDATE_COMMAND_UI(IDC_NAVIGATION_INFO, OnUpdateShowChannelInfoButton)
     ON_BN_CLICKED(IDC_NAVIGATION_SCAN, OnTunerScan)
     ON_BN_CLICKED(IDC_NAVIGATION_FILTERSTATIONS, OnTvRadioStations)
+    ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -338,3 +339,10 @@ void CPlayerNavigationDialog::OnContextMenu(CWnd* pWnd, CPoint point)
     }
 }
 
+void CPlayerNavigationDialog::OnSize(UINT nType, int cx, int cy) {
+    CMPCThemeResizableDialog::OnSize(nType, cx, cy);
+    if (m_channelList.m_hWnd) {
+        int nItem = m_channelList.GetCurSel();
+        m_channelList.EnsureVisible(nItem);
+    }
+}

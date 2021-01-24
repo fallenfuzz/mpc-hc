@@ -36,11 +36,22 @@ END_MESSAGE_MAP()
 void CSubtitleDlDlgListCtrl::PreSubclassWindow()
 {
     __super::PreSubclassWindow();
-    GetToolTips()->SetWindowPos(&wndTopMost, 0, 0, 0, 0, SWP_NOREDRAW | SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOOWNERZORDER);
 }
 
 BOOL CSubtitleDlDlgListCtrl::OnToolNeedText(UINT id, NMHDR* pNMHDR, LRESULT*)
 {
+    auto pTTT = reinterpret_cast<TOOLTIPTEXT*>(pNMHDR);
+    UINT_PTR nID = pNMHDR->idFrom;
+
+    if (pTTT->uFlags & TTF_IDISHWND) {
+        // idFrom is actually the HWND of the tool
+        nID = ::GetDlgCtrlID((HWND)nID);
+    }
+
+    if (nID == 0) {   // Notification in NT from automatically
+        return FALSE; // created tooltip
+    }
+
     CPoint pt(GetMessagePos());
     ScreenToClient(&pt);
 
@@ -61,11 +72,10 @@ BOOL CSubtitleDlDlgListCtrl::OnToolNeedText(UINT id, NMHDR* pNMHDR, LRESULT*)
     tooltipText = SubtitlesProvidersUtils::JoinContainer(subtitleInfo->releaseNames, "\n").c_str();
     ASSERT(!tooltipText.IsEmpty());
 
-    auto pTTT = reinterpret_cast<TOOLTIPTEXT*>(pNMHDR);
     pTTT->lpszText = tooltipText.GetBuffer();
 
     // Needed for multiline tooltips.
-    GetToolTips()->SetMaxTipWidth(1000);
+    ::SendMessage(pNMHDR->hwndFrom, TTM_SETMAXTIPWIDTH, 0, 1000);
 
     // Force ListView internal variables related to LABELTIP to invalidate. This is needed to use both custom tooltip and LABELTIP.
     // When LABELTIP is enabled ListView internally changes tooltip to be draw in-place of text. Unfortunately it doesn't
@@ -185,7 +195,7 @@ BOOL CSubtitleDlDlg::OnInitDialog()
 {
     __super::OnInitDialog();
     m_progress.SetParent(&m_status);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         SetWindowTheme(m_progress.GetSafeHwnd(), _T(""), _T(""));
         m_progress.SetBarColor(CMPCTheme::ProgressBarColor);
         m_progress.SetBkColor(CMPCTheme::ProgressBarBGColor);
@@ -496,7 +506,7 @@ void CSubtitleDlDlg::OnRightClick(NMHDR* pNMHDR, LRESULT* pResult)
         m.AppendMenu(MF_SEPARATOR);
         m.AppendMenu(MF_STRING | (!subtitlesInfo.url.empty() ? MF_ENABLED : MF_DISABLED), OPEN_URL, ResStr(IDS_SUBMENU_OPENURL));
         m.AppendMenu(MF_STRING | (!subtitlesInfo.url.empty() ? MF_ENABLED : MF_DISABLED), COPY_URL, ResStr(IDS_SUBMENU_COPYURL));
-        if (AfxGetAppSettings().bMPCThemeLoaded) {
+        if (AppIsThemeLoaded()) {
             m.fulfillThemeReqs();
         }
 

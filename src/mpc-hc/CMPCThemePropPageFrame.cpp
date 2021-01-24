@@ -5,7 +5,7 @@
 #include "TreePropSheet/PropPageFrameDefault.h"
 #include "../DSUtil/WinAPIUtils.h"
 
-CBrush CMPCThemePropPageFrame::mpcThemeBorderBrush = CBrush();
+CBrush CMPCThemePropPageFrame::mpcThemeBorderBrush;
 
 CMPCThemePropPageFrame::CMPCThemePropPageFrame() : CPropPageFrameDefault()
 {
@@ -51,7 +51,7 @@ void CMPCThemePropPageFrame::DrawCaption(CDC* pDC, CRect rect, LPCTSTR lpszCapti
 
     LOGFONT lf;
     GetMessageFont(&lf);
-    lf.lfHeight = -.8f * rect.Height();
+    lf.lfHeight = static_cast<long>(-.8f * rect.Height());
     lf.lfWeight = FW_BOLD;
     CFont f;
     f.CreateFontIndirect(&lf);

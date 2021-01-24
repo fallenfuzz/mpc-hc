@@ -44,4 +44,7 @@ namespace PathUtils
     CString ResolveLinkFile(LPCTSTR path);
     void RecurseAddDir(LPCTSTR path, CAtlList<CString>& sl);
     void ParseDirs(CAtlList<CString>& pathsList);
+
+    bool IsURL(CString& fn);
+    bool IsFullFilePath(CString& fn);
 }

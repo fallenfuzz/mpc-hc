@@ -23,6 +23,7 @@
 
 #include "CMPCThemePPageBase.h"
 #include "CMPCThemeComboBox.h"
+#include "CMPCThemeSpinButtonCtrl.h"
 
 // CPPageTweaks dialog
 
@@ -55,6 +56,9 @@ public:
 
     BOOL m_fFastSeek;
     BOOL m_fShowChapters;
+    BOOL m_fSeekPreview;
+    int m_iSeekPreviewSize;
+    CMPCThemeSpinButtonCtrl m_SeekPreviewSizeCtrl;
 
     BOOL m_fLCDSupport;
 

@@ -40,6 +40,9 @@
     <ProjectToBuild Include="mpcresources.vcxproj">
       <AdditionalProperties>Configuration=Release Bosnian</AdditionalProperties>
     </ProjectToBuild>
+     <ProjectToBuild Include="mpcresources.vcxproj">
+      <AdditionalProperties>Configuration=Release Bulgarian</AdditionalProperties>
+    </ProjectToBuild>
     <ProjectToBuild Include="mpcresources.vcxproj">
       <AdditionalProperties>Configuration=Release Catalan</AdditionalProperties>
     </ProjectToBuild>
@@ -108,6 +111,9 @@
     </ProjectToBuild>
     <ProjectToBuild Include="mpcresources.vcxproj">
       <AdditionalProperties>Configuration=Release Portuguese (Brazil)</AdditionalProperties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="mpcresources.vcxproj">
+      <AdditionalProperties>Configuration=Release Portuguese (Portugal)</AdditionalProperties>
     </ProjectToBuild>
     <ProjectToBuild Include="mpcresources.vcxproj">
       <AdditionalProperties>Configuration=Release Polish</AdditionalProperties>

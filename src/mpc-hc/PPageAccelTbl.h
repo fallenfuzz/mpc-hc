@@ -34,13 +34,16 @@
 // CPPageAccelTbl dialog
 
 class CPPageAccelTbl : public CMPCThemePPageBase
+    , public CMPCThemeListCtrlCustomInterface
 {
 private:
     enum {
         COL_CMD,
         COL_KEY,
         COL_ID,
+        COL_MOUSE_MODIFIER,
         COL_MOUSE,
+        COL_MOUSE_FS_MODIFIER,
         COL_MOUSE_FS,
         COL_APPCMD,
         COL_RMCMD,
@@ -50,8 +53,22 @@ private:
     enum { APPCOMMAND_LAST = APPCOMMAND_DWM_FLIP3D };
 
     CList<wmcmd> m_wmcmds;
-    int m_counter;
 
+	void UpdateKeyDupFlags();
+	void UpdateMouseDupFlags();
+	void UpdateMouseFSDupFlags();
+	void UpdateAppcmdDupFlags();
+	void UpdateRmcmdDupFlags();
+	void UpdateAllDupFlags();
+
+    int m_counter;
+	struct ITEMDATA
+	{
+		POSITION index = 0;
+		DWORD flag = 0;
+	};
+	std::vector<std::unique_ptr<ITEMDATA>> m_pItemsData;
+	
     CMPCThemePlayerListCtrl m_list;
     int sortColumn = -1;
     int sortDirection;
@@ -95,6 +112,9 @@ protected:
     virtual BOOL OnKillActive();
     void UpdateHeaderSort(int column, int sort);
     void FilterList();
+    virtual void GetCustomTextColors(INT_PTR nItem, int iSubItem, COLORREF& clrText, COLORREF& clrTextBk, bool& overrideSelectedBG);
+    virtual void DoCustomPrePaint() {}
+    virtual void GetCustomGridColors(int nItem, COLORREF& horzGridColor, COLORREF& vertGridColor);
 
     DECLARE_MESSAGE_MAP()
 
@@ -107,6 +127,7 @@ protected:
     afx_msg void OnChangeFilterEdit();
     afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
     afx_msg void OnTimer(UINT_PTR nIDEvent);
+    afx_msg void OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult);
 
     virtual void OnCancel();
 };

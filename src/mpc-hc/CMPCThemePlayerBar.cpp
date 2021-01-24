@@ -20,8 +20,7 @@ END_MESSAGE_MAP()
 
 BOOL CMPCThemePlayerBar::OnEraseBkgnd(CDC* pDC)
 {
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CRect rect;
         pDC->GetClipBox(&rect);
         pDC->FillSolidRect(rect.left, rect.top, rect.Width(), rect.Height(), CMPCTheme::WindowBGColor);
@@ -66,8 +65,7 @@ void paintHideButton(CDC* pDC, CSCBButton b) //derived from CSCBButton::Paint
 
 void CMPCThemePlayerBar::NcPaintGripper(CDC* pDC, CRect rcClient)   //derived from CSizingControlBarG base implementation
 {
-    const CAppSettings& s = AfxGetAppSettings();
-    if (!s.bMPCThemeLoaded) {
+    if (!AppIsThemeLoaded()) {
         __super::NcPaintGripper(pDC, rcClient);
         return;
     }
@@ -115,8 +113,7 @@ void CMPCThemePlayerBar::NcPaintGripper(CDC* pDC, CRect rcClient)   //derived fr
 
 void CMPCThemePlayerBar::mpc_fillNcBG(CDC* mdc, CRect rcDraw)
 {
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (IsFloating()) {
             rcDraw.DeflateRect(1, 1);
         }

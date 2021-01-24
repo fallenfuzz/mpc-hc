@@ -37,6 +37,7 @@
 #include <afxinet.h>
 #include <WinCrypt.h>
 #include <sstream>
+#include <cstdlib>
 
 int SubtitlesProvidersUtils::LevenshteinDistance(std::string s, std::string t)
 {
@@ -774,7 +775,16 @@ std::list<std::string> SubtitlesProvidersUtils::LanguagesISO6391()
 {
     std::list<std::string> result;
     for (const auto& iter : StringTokenize(UTF16To8(AfxGetAppSettings().strSubtitlesLanguageOrder).GetString(), ",; ")) {
-        result.push_back(iter.length() > 2 ? CStringA(ISOLang::ISO6392To6391(iter.c_str())).GetString() : iter);
+        if (iter.length() > 2) {
+            std::string lang = CStringA(ISOLang::ISO6392To6391(iter.c_str())).GetString();
+            if (!lang.empty()) {
+                result.push_back(lang);
+            }
+        } else if (iter.length() == 2) {
+            if (ISOLang::IsISO6391(iter.c_str())) {
+                result.push_back(iter);
+            }
+        }
     }
     return result;
 }
@@ -783,7 +793,17 @@ std::list<std::string> SubtitlesProvidersUtils::LanguagesISO6392()
 {
     std::list<std::string> result;
     for (const auto& iter : StringTokenize(UTF16To8(AfxGetAppSettings().strSubtitlesLanguageOrder).GetString(), ",; ")) {
-        result.push_back(iter.length() < 3 ? ISOLang::ISO6391To6392(iter.c_str()).GetString() : iter);
+        if (iter.length() == 2) {
+            std::string lang = ISOLang::ISO6391To6392(iter.c_str()).GetString();
+            if (!lang.empty()) {
+                result.push_back(lang);
+            }
+        } else if (iter.length() == 3) {
+            if (ISOLang::IsISO6392(iter.c_str())) {
+                result.push_back(iter);
+            }
+        }
+        
     }
     return result;
 }
@@ -791,23 +811,40 @@ std::list<std::string> SubtitlesProvidersUtils::LanguagesISO6392()
 UINT64 SubtitlesProvidersUtils::GenerateOSHash(SubtitlesInfo& pFileInfo)
 {
     UINT64 fileHash = pFileInfo.fileSize;
+    UINT64 errval = 0x123456789; // random value that should not give any search results
+
+    UINT64* buffer = (UINT64*)std::malloc(PROBE_SIZE);
+    if (!buffer) return errval;
+
     if (pFileInfo.pAsyncReader) {
         UINT64 position = 0;
-        for (UINT64 tmp = 0, i = 0;
-                i < PROBE_SIZE / sizeof(tmp) && SUCCEEDED(pFileInfo.pAsyncReader->SyncRead(position, sizeof(tmp), (BYTE*)&tmp));
-                fileHash += tmp, position += sizeof(tmp), ++i);
+        if (SUCCEEDED(pFileInfo.pAsyncReader->SyncRead(position, PROBE_SIZE, (BYTE*)buffer))) {
+            for (int i = 0; i < PROBE_SIZE / sizeof(UINT64); ++i) {
+                fileHash += buffer[i];
+            }
+        } else { return errval; }
         position = std::max(0ui64, pFileInfo.fileSize - PROBE_SIZE);
-        for (UINT64 tmp = 0, i = 0;
-                i < PROBE_SIZE / sizeof(tmp) && SUCCEEDED(pFileInfo.pAsyncReader->SyncRead(position, sizeof(tmp), (BYTE*)&tmp));
-                fileHash += tmp, position += sizeof(tmp), ++i);
+        if (SUCCEEDED(pFileInfo.pAsyncReader->SyncRead(position, PROBE_SIZE, (BYTE*)buffer))) {
+            for (int i = 0; i < PROBE_SIZE / sizeof(UINT64); ++i) {
+                fileHash += buffer[i];
+            }
+        } else { return errval; }
     } else {
         CFile file;
         CFileException fileException;
         if (file.Open(CString(pFileInfo.filePathW.c_str()),
                       CFile::modeRead | CFile::osSequentialScan | CFile::shareDenyNone | CFile::typeBinary, &fileException)) {
-            for (UINT64 tmp = 0, i = 0; i < PROBE_SIZE / sizeof(tmp) && file.Read(&tmp, sizeof(tmp)); fileHash += tmp, ++i);
+            if (file.Read(buffer, PROBE_SIZE)) {
+                for (int i = 0; i < PROBE_SIZE / sizeof(UINT64); ++i) {
+                    fileHash += buffer[i];
+                }
+            } else { return errval; }
             file.Seek(std::max(0ui64, pFileInfo.fileSize - PROBE_SIZE), CFile::begin);
-            for (UINT64 tmp = 0, i = 0; i < PROBE_SIZE / sizeof(tmp) && file.Read(&tmp, sizeof(tmp)); fileHash += tmp, ++i);
+            if (file.Read(buffer, PROBE_SIZE)) {
+                for (int i = 0; i < PROBE_SIZE / sizeof(UINT64); ++i) {
+                    fileHash += buffer[i];
+                }
+            } else { return errval; }
         }
     }
     return fileHash;

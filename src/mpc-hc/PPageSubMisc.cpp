@@ -37,7 +37,6 @@ CPPageSubMisc::CPPageSubMisc()
     , m_fDisableInternalSubtitles(FALSE)
     , m_bAutoDownloadSubtitles(FALSE)
     , m_strAutoDownloadSubtitlesExclude()
-    , m_bAutoUploadSubtitles(FALSE)
     , m_bPreferHearingImpairedSubtitles(FALSE)
     , m_strSubtitlesProviders()
     , m_strSubtitlesLanguageOrder()
@@ -57,7 +56,6 @@ void CPPageSubMisc::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_CHECK3, m_fDisableInternalSubtitles);
     DDX_Check(pDX, IDC_CHECK4, m_bAutoDownloadSubtitles);
     DDX_Check(pDX, IDC_CHECK5, m_bPreferHearingImpairedSubtitles);
-    DDX_Check(pDX, IDC_CHECK6, m_bAutoUploadSubtitles);
     DDX_Text(pDX, IDC_EDIT1, m_strAutoloadPaths);
     DDX_Text(pDX, IDC_EDIT2, m_strAutoDownloadSubtitlesExclude);
     DDX_Text(pDX, IDC_EDIT3, m_strSubtitlesLanguageOrder);
@@ -76,7 +74,6 @@ BOOL CPPageSubMisc::OnInitDialog()
     m_strAutoloadPaths = s.strSubtitlePaths;
     m_bAutoDownloadSubtitles = s.bAutoDownloadSubtitles;
     m_strAutoDownloadSubtitlesExclude = s.strAutoDownloadSubtitlesExclude;
-    m_bAutoUploadSubtitles = s.bAutoUploadSubtitles;
     m_bPreferHearingImpairedSubtitles = s.bPreferHearingImpairedSubtitles;
     m_strSubtitlesLanguageOrder = s.strSubtitlesLanguageOrder;
     m_strSubtitlesProviders = s.strSubtitlesProviders;
@@ -134,10 +131,6 @@ BOOL CPPageSubMisc::OnInitDialog()
         PostMessage(WM_SUPPORTED_LANGUAGES_READY); // Notify the window that languages have been fetched
     });
 
-    //TODO: Remove when Auto Upload is finalised
-    CheckDlgButton(IDC_CHECK6, FALSE);
-    GetDlgItem(IDC_CHECK6)->EnableWindow(FALSE);
-
     //    EnableToolTips(TRUE);
     CreateToolTip();
     m_wndToolTip.AddTool(GetDlgItem(IDC_EDIT2), ResStr(IDS_SUB_AUTODL_IGNORE_TOOLTIP));
@@ -160,7 +153,6 @@ BOOL CPPageSubMisc::OnApply()
     s.strSubtitlePaths = m_strAutoloadPaths;
     s.bAutoDownloadSubtitles = !!m_bAutoDownloadSubtitles;
     s.strAutoDownloadSubtitlesExclude = m_strAutoDownloadSubtitlesExclude;
-    s.bAutoUploadSubtitles = !!m_bAutoUploadSubtitles;
     s.bPreferHearingImpairedSubtitles = !!m_bPreferHearingImpairedSubtitles;
     s.strSubtitlesLanguageOrder = m_strSubtitlesLanguageOrder;
 
@@ -339,7 +331,7 @@ int CALLBACK CPPageSubMisc::SortCompare(LPARAM lParam1, LPARAM lParam2, LPARAM l
 
 BOOL CPPageSubMisc::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (IsWindow(themedToolTip)) {
             themedToolTip.RelayEvent(pMsg);
         }

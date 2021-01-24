@@ -29,7 +29,11 @@
 #include "USFSubtitles.h"
 
 #include "../DSUtil/PathUtils.h"
+#include "../DSUtil/DSMPropertyBag.h"
+#include "../DSUtil/DSUtil.h"
+#include  <comutil.h>
 #include <regex>
+#include "SSASub.h"
 
 struct htmlcolor {
     LPCTSTR name;
@@ -244,6 +248,15 @@ const int CharSetLen = _countof(CharSetList);
 
 //
 
+static size_t CountLines(CTextFile* f, ULONGLONG from, ULONGLONG to, CString s = _T("")) {
+    size_t n = 0;
+    f->Seek(from, CFile::begin);
+    while (f->ReadString(s) && f->GetPosition() < to) {
+        n++;
+    }
+    return n;
+}
+
 static int FindChar(CStringW str, WCHAR c, int pos, bool fUnicode, int CharSet)
 {
     if (fUnicode) {
@@ -452,15 +465,37 @@ static CStringW RemoveSSATags(CStringW str, bool fUnicode, int CharSet)
 
 //
 
-static CStringW SubRipper2SSA(CStringW str, int CharSet)
+static CStringW SubRipper2SSA(CStringW str)
 {
-    str.Replace(L"<i>", L"{\\i1}");
-    str.Replace(L"</i>", L"{\\i}");
-    str.Replace(L"<b>", L"{\\b1}");
-    str.Replace(L"</b>", L"{\\b}");
-    str.Replace(L"<u>", L"{\\u1}");
-    str.Replace(L"</u>", L"{\\u}");
+    if (str.Find(L'<') >= 0) {
+        str.Replace(L"<i>", L"{\\i1}");
+        str.Replace(L"</i>", L"{\\i}");
+        str.Replace(L"<b>", L"{\\b1}");
+        str.Replace(L"</b>", L"{\\b}");
+        str.Replace(L"<u>", L"{\\u1}");
+        str.Replace(L"</u>", L"{\\u}");
+    }
+    return str;
+}
 
+static CStringW WebVTT2SSA(CStringW str)
+{
+    if (str.Find(L'<') >= 0) {
+        str.Replace(L"<i>", L"{\\i1}");
+        str.Replace(L"</i>", L"{\\i}");
+        str.Replace(L"<b>", L"{\\b1}");
+        str.Replace(L"</b>", L"{\\b}");
+        str.Replace(L"<u>", L"{\\u1}");
+        str.Replace(L"</u>", L"{\\u}");
+    }
+    if (str.Find(L'&') >= 0) {
+        str.Replace(L"&lt;", L"<");
+        str.Replace(L"&gt;", L">");
+        str.Replace(L"&nbsp;", L"\\h");
+        str.Replace(L"&lrm;", L"");
+        str.Replace(L"&rlm;", L"");
+        str.Replace(L"&amp;", L"&");
+    }
     return str;
 }
 
@@ -476,9 +511,12 @@ static bool OpenVTT(CTextFile* file, CSimpleTextSubtitle& ret, int CharSet) {
         WCHAR sep;
         int c = swscanf_s(str, L"%d%c%d%c%d%c%d",
             &hh, &sep, 1, &mm, &sep, 1, &ss, &sep, 1, &ms);
-        // Check if ms was present
         if (c == 5) {
-            ms = 0;
+            // Hours value is absent, shift read values
+            ms = ss;
+            ss = mm;
+            mm = hh;
+            hh = 0;
         }
         return (c == 5 || c == 7);
     };
@@ -510,23 +548,24 @@ static bool OpenVTT(CTextFile* file, CSimpleTextSubtitle& ret, int CharSet) {
                     break;
                 }
 
-                CT2CA pszConvertedAnsiString(tmp);
-                std::string stdTmp(pszConvertedAnsiString);
-                //remove tags we don't support
-                stdTmp = std::regex_replace(stdTmp, std::regex("<c[.\\w\\d]*>"), "");
-                stdTmp = std::regex_replace(stdTmp, std::regex("</c>"), "");
-                stdTmp = std::regex_replace(stdTmp, std::regex("<\\d\\d:\\d\\d:\\d\\d.\\d\\d\\d>"), "");
-                stdTmp = std::regex_replace(stdTmp, std::regex("<v[ .][^>]*>"), "");
-                stdTmp = std::regex_replace(stdTmp, std::regex("</v>"), "");
-                stdTmp = std::regex_replace(stdTmp, std::regex("<lang[^>]*>"), "");
-                stdTmp = std::regex_replace(stdTmp, std::regex("</lang>"), "");
+                if (tmp.Find(L'<') >= 0) {
+                    CW2CW pszConvertedAnsiString(tmp);
+                    std::wstring stdTmp(pszConvertedAnsiString);
+                    // remove tags we don't support
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"<c[.\\w\\d]*>"), L"");
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"</c[.\\w\\d]*>"), L"");
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"<\\d\\d:\\d\\d:\\d\\d.\\d\\d\\d>"), L"");
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"<v[ .][^>]*>"), L"");
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"</v>"), L"");
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"<lang[^>]*>"), L"");
+                    stdTmp = std::regex_replace(stdTmp, std::wregex(L"</lang>"), L"");
+                    tmp = stdTmp.c_str();
+                }
 
-                CString tmp2(stdTmp.c_str());
-                
-                str += tmp2 + '\n';
+                str += WebVTT2SSA(tmp) + '\n';
             }
 
-            ret.Add(SubRipper2SSA(str, CharSet),
+            ret.Add(str,
                 file->IsUnicode(),
                 MS2RT((((hh1 * 60i64 + mm1) * 60i64) + ss1) * 1000i64 + ms1),
                 MS2RT((((hh2 * 60i64 + mm2) * 60i64) + ss2) * 1000i64 + ms2));
@@ -594,7 +633,7 @@ static bool OpenSubRipper(CTextFile* file, CSimpleTextSubtitle& ret, int CharSet
                     str += tmp + '\n';
                 }
 
-                ret.Add(SubRipper2SSA(str, CharSet),
+                ret.Add(SubRipper2SSA(str),
                         file->IsUnicode(),
                         MS2RT((((hh1 * 60i64 + mm1) * 60i64) + ss1) * 1000i64 + ms1),
                         MS2RT((((hh2 * 60i64 + mm2) * 60i64) + ss2) * 1000i64 + ms2));
@@ -1656,7 +1695,9 @@ static bool OpenSubStationAlpha(CTextFile* file, CSimpleTextSubtitle& ret, int C
         } else if (entry == L"fontname") {
             LoadUUEFont(file);
         } else if (entry == L"ycbcr matrix") {
-            ret.m_sYCbCrMatrix = GetStrW(pszBuff, nBuffLength);
+            try {
+                ret.m_sYCbCrMatrix = GetStrW(pszBuff, nBuffLength);
+            } catch (...) {}
         }
     }
 
@@ -1876,15 +1917,53 @@ static OpenFunctStruct OpenFuncts[] = {
     OpenMicroDVD, FRAME, Subtitle::SSA,
     OpenVPlayer, TIME, Subtitle::SRT,
     OpenSubStationAlpha, TIME, Subtitle::SSA,
+    OpenVTT, TIME, Subtitle::VTT,
     OpenXombieSub, TIME, Subtitle::XSS,
     OpenMPL2, TIME, Subtitle::SRT,
     OpenRealText, TIME, Subtitle::RT,
     OpenSami, TIME, Subtitle::SMI,
     OpenUSF, TIME, Subtitle::USF,
-    OpenVTT, TIME, Subtitle::VTT,
 };
 
 static int nOpenFuncts = _countof(OpenFuncts);
+
+static std::vector<int> PreferredOpenFuncts(CString fn) {
+    std::vector<int> functs;
+    auto fileExt = PathUtils::FileExt(fn).TrimLeft('.');
+    for (int i = 0; i < nOpenFuncts; i++) {
+        if (fileExt == _T("vtt")) {
+            if (OpenFuncts[i].open == OpenVTT) functs.insert(functs.begin(), i);
+            else if (OpenFuncts[i].open == OpenSubRipper) functs.push_back(i);
+        } else if (fileExt == _T("srt")) {
+            if (OpenFuncts[i].open == OpenSubRipper) functs.insert(functs.begin(), i);
+            else functs.push_back(i);
+        } else if (fileExt == _T("ssa") || fileExt == _T("ass")) {
+            if (OpenFuncts[i].open == OpenSubStationAlpha) functs.insert(functs.begin(), i);
+            else if (OpenFuncts[i].open == OpenSubRipper) functs.push_back(i);
+        } else if (fileExt == _T("xss")) {
+            if (OpenFuncts[i].open == OpenXombieSub) functs.insert(functs.begin(), i);
+        } else if (fileExt == _T("sub")) {
+            if (OpenFuncts[i].open == OpenSubViewer) functs.insert(functs.begin(), i);
+            else functs.push_back(i);
+        } else if (fileExt == _T("txt")) {
+            if (OpenFuncts[i].open == OpenMicroDVD) functs.insert(functs.begin(), i);
+            else functs.push_back(i);
+        } else if (fileExt == _T("rt")) {
+            if (OpenFuncts[i].open == OpenRealText) functs.insert(functs.begin(), i);
+        } else if (fileExt == _T("smi")) {
+            if (OpenFuncts[i].open == OpenSami) functs.insert(functs.begin(), i);
+        } else if (fileExt == _T("usf")) {
+            if (OpenFuncts[i].open == OpenUSF) functs.insert(functs.begin(), i);
+        } else if (fileExt == _T("style")) {
+            if (OpenFuncts[i].open == OpenSubStationAlpha) functs.push_back(i);
+        } else if (fileExt == _T("tmp")) { // used for embedded subs
+            if (OpenFuncts[i].open == OpenSubRipper || OpenFuncts[i].open == OpenSubStationAlpha || OpenFuncts[i].open == OpenVTT) functs.push_back(i);
+        } else {
+            functs.push_back(i);
+        }
+    }
+    return functs;
+}
 
 //
 
@@ -1902,11 +1981,26 @@ CSimpleTextSubtitle::CSimpleTextSubtitle()
     , m_fUsingAutoGeneratedDefaultStyle(false)
     , m_ePARCompensationType(EPCTDisabled)
     , m_dPARCompensation(1.0)
+#if USE_LIBASS
+    , m_renderUsingLibass(true)
+    , m_openTypeLangHint()
+    , m_assloaded(false)
+    , m_assfontloaded(false)
+    , m_pGraph(nullptr)
+    , m_pPin(nullptr)
+    , m_ass(nullptr)
+    , m_renderer(nullptr)
+    , m_track(nullptr)
+#endif
 {
 }
 
 CSimpleTextSubtitle::~CSimpleTextSubtitle()
 {
+#if USE_LIBASS
+    UnloadASS();
+#endif
+
     Empty();
 }
 /*
@@ -1943,6 +2037,12 @@ void CSimpleTextSubtitle::Copy(CSimpleTextSubtitle& sts)
         CopyStyles(sts.m_styles);
         m_segments.Copy(sts.m_segments);
         __super::Copy(sts);
+
+#if USE_LIBASS
+        if (m_assloaded) {
+            LoadASSFile(m_subtitleType);
+        }
+#endif
     }
 }
 
@@ -2245,6 +2345,7 @@ bool CSimpleTextSubtitle::SetDefaultStyle(const STSStyle& s)
     }
     *val = s;
     m_fUsingAutoGeneratedDefaultStyle = false;
+
     return true;
 }
 
@@ -2698,23 +2799,49 @@ bool CSimpleTextSubtitle::Open(CString fn, int CharSet, CString name, CString vi
     return Open(&f, CharSet, name);
 }
 
-static size_t CountLines(CTextFile* f, ULONGLONG from, ULONGLONG to, CString s = _T(""))
-{
-    size_t n = 0;
-    f->Seek(from, CFile::begin);
-    while (f->ReadString(s) && f->GetPosition() < to) {
-        n++;
-    }
-    return n;
-}
-
-bool CSimpleTextSubtitle::Open(CTextFile* f, int CharSet, CString name)
-{
+bool CSimpleTextSubtitle::Open(CTextFile* f, int CharSet, CString name) {
     Empty();
+
+#if USE_LIBASS
+    if (m_renderUsingLibass) {
+        if (lstrcmpi(PathFindExtensionW(f->GetFilePath()), L".ass") == 0 || lstrcmpi(PathFindExtensionW(f->GetFilePath()), L".ssa") == 0) {
+            CreateDefaultStyle(CharSet);
+            m_path = f->GetFilePath();
+            LoadASSFile(Subtitle::SubType::SSA);
+            m_subtitleType = Subtitle::SubType::SSA;
+            OpenSubStationAlpha(f, *this, CharSet);
+            CWebTextFile f2(CTextFile::UTF8);
+            if (f2.Open(f->GetFilePath() + _T(".style"))) {
+                OpenSubStationAlpha(&f2, *this, CharSet);
+            }
+        } else if (lstrcmpi(PathFindExtensionW(f->GetFilePath()), L".srt") == 0) {
+            CreateDefaultStyle(CharSet);
+            m_path = f->GetFilePath();
+            LoadASSFile(Subtitle::SubType::SRT);
+            m_subtitleType = Subtitle::SubType::SRT;
+            OpenSubRipper(f, *this, CharSet);
+        }
+
+        if (m_assloaded) {
+            m_name = name;
+            m_encoding = f->GetEncoding();
+            m_mode = TIME;
+
+            ChangeUnknownStylesToDefault();
+
+            if (m_dstScreenSize == CSize(0, 0)) {
+                m_dstScreenSize = CSize(384, 288);
+            }
+            return true;
+        }
+    }
+#endif
 
     ULONGLONG pos = f->GetPosition();
 
-    for (ptrdiff_t i = 0; i < nOpenFuncts; i++) {
+    auto functs = PreferredOpenFuncts(f->GetFilePath());
+
+    for (int i: functs) {
         if (!OpenFuncts[i].open(f, *this, CharSet)) {
             if (!IsEmpty()) {
                 CString lastLine;
@@ -2755,8 +2882,188 @@ bool CSimpleTextSubtitle::Open(CTextFile* f, int CharSet, CString name)
         return true;
     }
 
+    m_path = _T("");
     return false;
 }
+
+#if USE_LIBASS
+
+void CSimpleTextSubtitle::SetSubRenderSettings(SubRendererSettings settings) {
+    bool wasUsingLibass = subRendererSettings.renderUsingLibass;
+    subRendererSettings = settings;
+    if (settings.renderUsingLibass || wasUsingLibass) {
+        ResetASS();
+    }
+}
+
+void CSimpleTextSubtitle::ResetASS() {
+    if (subRendererSettings.renderUsingLibass) { 
+        m_renderUsingLibass = true;
+        if (!m_path.IsEmpty()) {
+            LoadASSFile(m_subtitleType);
+        }
+    } else {
+        if (m_assloaded) {
+            UnloadASS();
+        }
+        m_renderUsingLibass = false;
+    }
+}
+
+bool CSimpleTextSubtitle::LoadASSFile(Subtitle::SubType subType) {
+    if (m_path.IsEmpty() || !PathUtils::Exists(m_path)) return false;
+    UnloadASS();
+
+    m_assfontloaded = false;
+
+    m_ass = decltype(m_ass)(ass_library_init());
+    ass_set_extract_fonts(m_ass.get(), true);
+    ass_set_style_overrides(m_ass.get(), NULL);
+
+    m_renderer = decltype(m_renderer)(ass_renderer_init(m_ass.get()));
+    ass_set_use_margins(m_renderer.get(), false);
+    ass_set_font_scale(m_renderer.get(), 1.0);
+
+    STSStyle defStyle;
+    GetDefaultStyle(defStyle);
+    if (subType == Subtitle::SRT) {
+        m_track = decltype(m_track)(srt_read_file(m_ass.get(), const_cast<char*>((const char*)(CStringA)m_path), defStyle.charSet, defStyle, subRendererSettings));
+        if (m_dstScreenSize == CSize(0, 0)) {
+            m_dstScreenSize = CSize(defStyle.SrtResX, defStyle.SrtResY);
+        }
+    } else { //subType == Subtitle::SSA/ASS
+        m_track = decltype(m_track)(ass_read_file(m_ass.get(), const_cast<char*>((const char*)(CStringA)m_path), "UTF-8"));
+        if (m_dstScreenSize == CSize(0, 0)) {
+            m_dstScreenSize = CSize(defStyle.SrtResX, defStyle.SrtResY);
+        }
+    }
+
+    if (!m_track) return false;
+
+    CT2CA tmpFontName(defStyle.fontName);
+    ass_set_fonts(m_renderer.get(), NULL, std::string(tmpFontName).c_str(), ASS_FONTPROVIDER_DIRECTWRITE, NULL, 0);
+
+    m_assloaded = true;
+    m_assfontloaded = true;
+
+    return true;
+}
+
+bool CSimpleTextSubtitle::LoadASSTrack(char* data, int size, Subtitle::SubType subType) {
+    UnloadASS();
+    m_assfontloaded = false;
+
+    m_ass = decltype(m_ass)(ass_library_init());
+    m_renderer = decltype(m_renderer)(ass_renderer_init(m_ass.get()));
+    m_track = decltype(m_track)(ass_new_track(m_ass.get()));
+
+    if (!m_track) return false;
+
+    STSStyle defStyle;
+    GetDefaultStyle(defStyle);
+    if (subType == Subtitle::SRT) {
+        std::stringstream srtData;
+        srtData.write(data, size);
+        srt_read_data(m_ass.get(), m_track.get(), srtData, defStyle.charSet, defStyle, subRendererSettings);
+    } else { //subType == Subtitle::SSA/ASS
+        ass_process_codec_private(m_track.get(), data, size);
+    }
+    CT2CA tmpFontName(defStyle.fontName);
+    ass_set_fonts(m_renderer.get(), NULL, std::string(tmpFontName).c_str(), ASS_FONTPROVIDER_DIRECTWRITE, NULL, 0);
+    //don't set m_assfontloaded here, in case we can load embedded fonts later?
+
+    m_assloaded = true;
+    return true;
+}
+
+void CSimpleTextSubtitle::LoadASSFont(IPin* pPin, ASS_Library* ass, ASS_Renderer* renderer) {
+    // Try to load fonts in the container
+    CComPtr<IAMGraphStreams> graphStreams;
+    CComPtr<IDSMResourceBag> bag;
+    if (m_pGraph && SUCCEEDED(m_pGraph->QueryInterface(IID_PPV_ARGS(&graphStreams))) &&
+        SUCCEEDED(graphStreams->FindUpstreamInterface(pPin, IID_PPV_ARGS(&bag), AM_INTF_SEARCH_FILTER))) {
+        for (DWORD i = 0; i < bag->ResGetCount(); ++i) {
+            _bstr_t name, desc, mime;
+            BYTE* pData = nullptr;
+            DWORD len = 0;
+            if (SUCCEEDED(bag->ResGet(i, &name.GetBSTR(), &desc.GetBSTR(), &mime.GetBSTR(), &pData, &len, nullptr))) {
+                if (wcscmp(mime.GetBSTR(), L"application/x-truetype-font") == 0 ||
+                    wcscmp(mime.GetBSTR(), L"application/vnd.ms-opentype") == 0) // TODO: more mimes?
+                {
+                    ass_add_font(ass, (char*)name, (char*)pData, len);
+                    // TODO: clear these fonts somewhere?
+                }
+                CoTaskMemFree(pData);
+            }
+        }
+        m_assfontloaded = true;
+        STSStyle defStyle;
+        GetDefaultStyle(defStyle);
+        CT2CA tmpFontName(defStyle.fontName);
+        ass_set_fonts(renderer, NULL, std::string(tmpFontName).c_str(), ASS_FONTPROVIDER_DIRECTWRITE, NULL, 0);
+    }
+}
+
+void CSimpleTextSubtitle::UnloadASS() {
+    m_assloaded = false;
+    if (m_track) m_track.reset();
+    if (m_renderer) m_renderer.reset();
+    if (m_ass) m_ass.reset();
+}
+
+void CSimpleTextSubtitle::LoadASSSample(char *data, int dataSize, REFERENCE_TIME tStart, REFERENCE_TIME tStop) {
+    if (m_renderUsingLibass) {
+        if (m_subtitleType == Subtitle::SRT) { //received SRT sample, try to use libass to handle
+            if (!m_assloaded) { //create ass header
+                UnloadASS();
+                m_assfontloaded = false;
+
+                m_ass = decltype(m_ass)(ass_library_init());
+                m_renderer = decltype(m_renderer)(ass_renderer_init(m_ass.get()));
+                m_track = decltype(m_track)(ass_new_track(m_ass.get()));
+
+                char outBuffer[1024];
+                STSStyle defStyle;
+                GetDefaultStyle(defStyle);
+                srt_header(outBuffer, defStyle, subRendererSettings);
+                ass_process_codec_private(m_track.get(), outBuffer, static_cast<int>(strnlen_s(outBuffer, sizeof(outBuffer))));
+                m_assloaded = true;
+            }
+
+            if (m_assloaded) {
+                char subLineData[1024]{};
+                strncpy_s(subLineData, _countof(subLineData), data, dataSize);
+                std::string str = subLineData;
+
+                // This is the way i use to get a unique id for the subtitle line
+                // It will only fail in the case there is 2 or more lines with the same start timecode
+                // (Need to check if the matroska muxer join lines in such a case)
+                REFERENCE_TIME m_iSubLineCount = tStart / 10000;
+
+                // Change srt tags to ass tags
+                STSStyle defStyle;
+                GetDefaultStyle(defStyle);
+                ParseSrtLine(str, defStyle);
+
+                // Add the custom tags
+                CT2CA tmpCustomTags(defStyle.customTags);
+                str.insert(0, std::string(tmpCustomTags));
+
+                // Add blur
+                char blur[20]{};
+                _snprintf_s(blur, _TRUNCATE, "{\\blur%u}", defStyle.fBlur);
+                str.insert(0, blur);
+
+                // ASS in MKV: ReadOrder, Layer, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+                char outBuffer[1024]{};
+                _snprintf_s(outBuffer, _TRUNCATE, "%lld,0,Default,Main,0,0,0,,%s", m_iSubLineCount, str.c_str());
+                ass_process_chunk(m_track.get(), outBuffer, static_cast<int>(strnlen_s(outBuffer, sizeof(outBuffer))), tStart / 10000, (tStop - tStart) / 10000);
+            }
+        }
+    }
+}
+
+#endif
 
 bool CSimpleTextSubtitle::Open(CString provider, BYTE* data, int len, int CharSet, CString name, Subtitle::HearingImpairedType eHearingImpaired, LCID lcid)
 {
@@ -2799,6 +3106,8 @@ bool CSimpleTextSubtitle::Open(BYTE* data, int len, int CharSet, CString name)
 
     _tremove(fn);
 
+    m_path = _T("");
+
     return fRet;
 }
 
@@ -2826,7 +3135,7 @@ bool CSimpleTextSubtitle::SaveAs(CString fn, Subtitle::SubType type,
         str += _T("<STYLE TYPE=\"text/css\">\n");
         str += _T("<!--\n");
         str += _T("P {margin-left: 16pt; margin-right: 16pt; margin-bottom: 16pt; margin-top: 16pt;\n");
-        str += _T("   text-align: center; font-size: 18pt; font-family: tahoma; font-weight: bold; color: #f0f0f0;}\n");
+        str += _T("   text-align: center; font-size: 18pt; font-family: calibri; font-weight: bold; color: #f0f0f0;}\n");
         str += _T(".UNKNOWNCC {Name:Unknown; lang:en-US; SAMIType:CC;}\n");
         str += _T("-->\n");
         str += _T("</STYLE>\n");
@@ -3060,7 +3369,7 @@ void STSStyle::SetDefault()
     alpha[2] = 0x00;
     alpha[3] = 0x80;
     charSet = DEFAULT_CHARSET;
-    fontName = _T("Tahoma");
+    fontName = _T("Calibri");
     fontSize = 18;
     fontScaleX = fontScaleY = 100;
     fontSpacing = 0;
@@ -3251,7 +3560,7 @@ static bool OpenRealText(CTextFile* file, CSimpleTextSubtitle& ret, int CharSet)
 
     for (auto i = crRealText.m_mapLines.cbegin(); i != crRealText.m_mapLines.cend(); ++i) {
         ret.Add(
-            SubRipper2SSA(i->second.c_str(), CharSet),
+            SubRipper2SSA(i->second.c_str()),
             file->IsUnicode(),
             MS2RT(i->first.first),
             MS2RT(i->first.second));

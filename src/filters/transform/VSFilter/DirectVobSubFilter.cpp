@@ -1530,9 +1530,16 @@ bool CDirectVobSubFilter::Open()
 
         if (!pSubStream) {
             CAutoPtr<CRenderedTextSubtitle> pRTS(DEBUG_NEW CRenderedTextSubtitle(&m_csSubLock));
-            if (pRTS && pRTS->Open(ret[i].fn, DEFAULT_CHARSET, _T(""), m_videoFileName) && pRTS->GetStreamCount() > 0) {
-                pSubStream = pRTS.Detach();
-                m_frd.files.AddTail(ret[i].fn + _T(".style"));
+            if (pRTS) {
+#if USE_LIBASS
+                SubRendererSettings srs = GetSubRendererSettings();
+                pRTS->SetSubRenderSettings(srs);
+#endif
+                pRTS->SetDefaultStyle(m_defStyle);
+                if (pRTS->Open(ret[i].fn, DEFAULT_CHARSET, _T(""), m_videoFileName) && pRTS->GetStreamCount() > 0) {
+                    pSubStream = pRTS.Detach();
+                    m_frd.files.AddTail(ret[i].fn + _T(".style"));
+                }
             }
         }
 

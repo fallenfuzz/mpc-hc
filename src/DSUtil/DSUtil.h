@@ -77,8 +77,10 @@ enum OpticalDiskType_t {
 extern OpticalDiskType_t GetOpticalDiskType(TCHAR drive, CAtlList<CString>& files);
 extern CString GetDriveLabel(TCHAR drive);
 extern CString GetDriveLabel(CPath path);
+bool IsDriveVirtual(CString drive);
 extern bool GetKeyFrames(CString fn, CUIntArray& kfs);
 extern DVD_HMSF_TIMECODE RT2HMSF(REFERENCE_TIME rt, double fps = 0.0); // used to remember the current position
+extern DVD_HMSF_TIMECODE RT2HMS(REFERENCE_TIME rt);
 extern DVD_HMSF_TIMECODE RT2HMS_r(REFERENCE_TIME rt);                  // used only to display information with rounding to nearest second
 extern REFERENCE_TIME HMSF2RT(DVD_HMSF_TIMECODE hmsf, double fps = -1.0);
 extern void memsetd(void* dst, unsigned int c, size_t nbytes);

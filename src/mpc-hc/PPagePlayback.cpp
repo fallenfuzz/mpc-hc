@@ -168,7 +168,7 @@ BOOL CPPagePlayback::OnInitDialog()
     UDACCEL accel = { 0, 10 };
     m_SpeedStepCtrl.SetAccel(1, &accel);
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
         themedToolTip.Activate(TRUE);
         themedToolTip.SetDelayTime(TTDT_AUTOPOP, 10000);
@@ -338,7 +338,7 @@ void CPPagePlayback::OnCancel()
 
 BOOL CPPagePlayback::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (IsWindow(themedToolTip)) {
             themedToolTip.RelayEvent(pMsg);
         }

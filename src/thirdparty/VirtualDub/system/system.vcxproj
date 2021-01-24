@@ -54,28 +54,20 @@
     <ClCompile Include="source\cache.cpp" />
     <ClCompile Include="source\cmdline.cpp" />
     <ClCompile Include="source\cpuaccel.cpp" />
-    <ClCompile Include="source\date.cpp" />
     <ClCompile Include="source\debug.cpp" />
     <ClCompile Include="source\debugx86.cpp" />
     <ClCompile Include="source\Error.cpp" />
     <ClCompile Include="source\error_win32.cpp" />
     <ClCompile Include="source\event.cpp" />
-    <ClCompile Include="source\file.cpp" />
     <ClCompile Include="source\fileasync.cpp" />
-    <ClCompile Include="source\filestream.cpp" />
-    <ClCompile Include="source\filesys.cpp" />
-    <ClCompile Include="source\filewatcher.cpp" />
     <ClCompile Include="source\Fraction.cpp" />
     <ClCompile Include="source\halffloat.cpp" />
     <ClCompile Include="source\hash.cpp" />
     <ClCompile Include="source\int128.cpp" />
     <ClCompile Include="source\linearalloc.cpp" />
     <ClCompile Include="source\list.cpp" />
-    <ClCompile Include="source\log.cpp" />
     <ClCompile Include="source\math.cpp" />
     <ClCompile Include="source\memory.cpp" />
-    <ClCompile Include="source\process.cpp" />
-    <ClCompile Include="source\profile.cpp" />
     <ClCompile Include="source\progress.cpp" />
     <ClCompile Include="source\protscope.cpp" />
     <ClCompile Include="source\refcount.cpp" />
@@ -84,7 +76,6 @@
     <ClCompile Include="source\text.cpp" />
     <ClCompile Include="source\thread.cpp" />
     <ClCompile Include="source\thunk.cpp" />
-    <ClCompile Include="source\time.cpp" />
     <ClCompile Include="source\tls.cpp" />
     <ClCompile Include="source\vdalloc.cpp" />
     <ClCompile Include="source\VDNamespace.cpp" />
@@ -95,7 +86,6 @@
     <ClCompile Include="source\VDString.cpp" />
     <ClCompile Include="source\vectors.cpp" />
     <ClCompile Include="source\w32assist.cpp" />
-    <ClCompile Include="source\zip.cpp" />
     <ClCompile Include="source\stdaccel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)'=='Debug'">NotUsing</PrecompiledHeader>
@@ -111,14 +101,11 @@
     <ClInclude Include="..\h\vd2\system\cache.h" />
     <ClInclude Include="..\h\vd2\system\cmdline.h" />
     <ClInclude Include="..\h\vd2\system\cpuaccel.h" />
-    <ClInclude Include="..\h\vd2\system\date.h" />
     <ClInclude Include="..\h\vd2\system\debug.h" />
     <ClInclude Include="..\h\vd2\system\debugx86.h" />
     <ClInclude Include="..\h\vd2\system\Error.h" />
     <ClInclude Include="..\h\vd2\system\event.h" />
-    <ClInclude Include="..\h\vd2\system\file.h" />
     <ClInclude Include="..\h\vd2\system\fileasync.h" />
-    <ClInclude Include="..\h\vd2\system\filesys.h" />
     <ClInclude Include="..\h\vd2\system\filewatcher.h" />
     <ClInclude Include="..\h\vd2\system\Fraction.h" />
     <ClInclude Include="..\h\vd2\system\halffloat.h" />
@@ -126,11 +113,9 @@
     <ClInclude Include="..\h\vd2\system\int128.h" />
     <ClInclude Include="..\h\vd2\system\linearalloc.h" />
     <ClInclude Include="..\h\vd2\system\list.h" />
-    <ClInclude Include="..\h\vd2\system\log.h" />
     <ClInclude Include="..\h\vd2\system\math.h" />
     <ClInclude Include="..\h\vd2\system\memory.h" />
     <ClInclude Include="..\h\vd2\system\process.h" />
-    <ClInclude Include="..\h\vd2\system\profile.h" />
     <ClInclude Include="..\h\vd2\system\progress.h" />
     <ClInclude Include="..\h\vd2\system\protscope.h" />
     <ClInclude Include="..\h\vd2\system\refcount.h" />
@@ -162,7 +147,6 @@
     <ClInclude Include="..\h\vd2\system\vectors_float.h" />
     <ClInclude Include="..\h\vd2\system\vectors_int.h" />
     <ClInclude Include="..\h\vd2\system\w32assist.h" />
-    <ClInclude Include="..\h\vd2\system\zip.h" />
     <ClInclude Include="..\h\vd2\system\win32\intrin.h" />
     <ClInclude Include="..\h\vd2\system\win32\miniwindows.h" />
     <ClInclude Include="h\stdafx.h" />

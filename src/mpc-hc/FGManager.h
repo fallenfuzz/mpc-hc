@@ -62,6 +62,8 @@ protected:
     CInterfaceList<IUnknown, &IID_IUnknown> m_pUnks;
     CAtlList<CFGFilter*> m_source, m_transform, m_override;
 
+    BOOL m_ignoreVideo;
+
     static bool CheckBytes(HANDLE hFile, CString chkbytes);
 
     HRESULT EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl);
@@ -112,8 +114,11 @@ protected:
     STDMETHODIMP_(size_t) GetCount();
     STDMETHODIMP GetDeadEnd(int iIndex, CAtlList<CStringW>& path, CAtlList<CMediaType>& mts);
 
+	//
+	HWND m_hWnd;
+	bool m_bIsPreview;
 public:
-    CFGManager(LPCTSTR pName, LPUNKNOWN pUnk);
+	CFGManager(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd = 0, bool IsPreview = false);
     virtual ~CFGManager();
 
     DECLARE_IUNKNOWN;
@@ -127,8 +132,17 @@ public:
 
     STDMETHODIMP AddFilter(IBaseFilter* pFilter, LPCWSTR pName);
 
+    void InsertLAVSplitterSource(bool IsPreview = false);
+    void InsertLAVSplitter(bool IsPreview = false);
+    void InsertLAVVideo(bool IsPreview = false);
+    void InsertLAVAudio();
+    void InsertOtherInternalSourcefilters(bool IsPreview = false);
+    void InsertSubtitleFilters(bool IsPreview = false);
+    void InsertBlockedFilters();
+    void InsertBroadcomDecoder();
+
 public:
-    CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk);
+	CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd = 0, bool IsPreview = false);
 };
 
 class CFGManagerPlayer : public CFGManagerCustom
@@ -141,7 +155,7 @@ protected:
     STDMETHODIMP ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MEDIA_TYPE* pmt);
 
 public:
-    CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd);
+	CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd, bool IsPreview = false);
 };
 
 class CFGManagerDVD : public CFGManagerPlayer
@@ -153,7 +167,7 @@ protected:
     STDMETHODIMP AddSourceFilter(LPCWSTR lpcwstrFileName, LPCWSTR lpcwstrFilterName, IBaseFilter** ppFilter);
 
 public:
-    CFGManagerDVD(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd);
+	CFGManagerDVD(LPCTSTR pName, LPUNKNOWN pUnk, HWND hWnd, bool IsPreview = false);
 };
 
 class CFGManagerCapture : public CFGManagerPlayer

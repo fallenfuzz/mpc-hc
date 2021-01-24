@@ -42,6 +42,7 @@ CWinHotkeyCtrl::CWinHotkeyCtrl()
     , m_fModRel(0)
     , m_fModSet_def(0)
     , m_fIsPressed(FALSE)
+    , isMouseModifier(false)
 {
 }
 
@@ -106,7 +107,11 @@ BOOL CWinHotkeyCtrl::UninstallKbHook()
 void CWinHotkeyCtrl::UpdateText()
 {
     CString sText;
-    HotkeyToString(m_vkCode, m_fModSet, sText);
+    if (isMouseModifier) {
+        HotkeyToString(0, m_fModSet, sText);
+    } else {
+        HotkeyToString(m_vkCode, m_fModSet, sText);
+    }
     SetWindowText((LPCTSTR)sText);
     SetSel(0x8fffffff, 0x8fffffff, FALSE);
 }
@@ -139,7 +144,7 @@ void CWinHotkeyCtrl::SetWinHotkey(UINT vkCode, UINT fModifiers)
 
 void CWinHotkeyCtrl::DrawButton(CRect rectButton)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CWindowDC dc(this);
         bool disabled = 0 != (GetStyle() & (ES_READONLY | WS_DISABLED));
         bool selected = GetButtonThemeState() == PBS_PRESSED;
@@ -269,7 +274,7 @@ void CWinHotkeyCtrl::OnContextMenu(CWnd*, CPoint pt)
     menu.AppendMenu(MF_STRING, 1, ResStr(IDS_APPLY));
     menu.AppendMenu(MF_STRING, 2, ResStr(IDS_CLEAR));
     menu.AppendMenu(MF_STRING, 3, ResStr(IDS_CANCEL));
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         menu.fulfillThemeReqs();
     }
 

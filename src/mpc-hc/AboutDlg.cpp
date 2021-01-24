@@ -47,7 +47,6 @@ CAboutDlg::~CAboutDlg()
 BOOL CAboutDlg::OnInitDialog()
 {
     // Get the default text before it is overwritten by the call to __super::OnInitDialog()
-    GetDlgItem(IDC_AUTHORS_LINK)->GetWindowText(m_credits);
 #ifndef MPCHC_LITE
     GetDlgItem(IDC_LAVFILTERS_VERSION)->GetWindowText(m_LAVFiltersVersion);
 #endif
@@ -78,14 +77,6 @@ BOOL CAboutDlg::OnInitDialog()
     m_appname += _T(" Lite");
 #endif
 
-    // Build the path to Authors.txt
-    m_AuthorsPath = PathUtils::CombinePaths(PathUtils::GetProgramPath(), _T("Authors.txt"));
-    // Check if the file exists
-    if (PathUtils::Exists(m_AuthorsPath)) {
-        // If it does, we make the filename clickable
-        m_credits.Replace(_T("Authors.txt"), _T("<a>Authors.txt</a>"));
-    }
-
     m_homepage.Format(_T("<a>%s</a>"), WEBSITE_URL);
 
     m_strBuildNumber = VersionInfo::GetFullVersionString();
@@ -97,27 +88,12 @@ BOOL CAboutDlg::OnInitDialog()
 #error Compiler is not supported!
 #endif
 #elif defined(_MSC_VER)
-#if (_MSC_VER >= 1910)
+#if (_MSC_VER > 1800)
     m_MPCCompiler.Format(_T("MSVC v%.2d.%.2d.%.5d"), _MSC_VER / 100, _MSC_VER % 100, _MSC_FULL_VER % 100000);
-#if _MSC_BUILD
+    #if _MSC_BUILD
     m_MPCCompiler.AppendFormat(_T(".%.2d"), _MSC_BUILD);
-#endif
-#elif (_MSC_VER == 1900)                // 2015
-#if (_MSC_FULL_VER >= 190024210 && _MSC_FULL_VER <= 190024218)
-    m_MPCCompiler = _T("MSVC 2015 Update 3");
-#elif (_MSC_FULL_VER == 190023918)
-    m_MPCCompiler = _T("MSVC 2015 Update 2");
-#elif (_MSC_FULL_VER == 190023506)
-    m_MPCCompiler = _T("MSVC 2015 Update 1");
-#elif (_MSC_FULL_VER == 190023026)
-    m_MPCCompiler = _T("MSVC 2015");
+    #endif
 #else
-    m_MPCCompiler.Format(_T("MSVC v%.2d.%.2d.%.5d"), _MSC_VER / 100, _MSC_VER % 100, _MSC_FULL_VER % 100000);
-#if _MSC_BUILD
-    m_MPCCompiler.AppendFormat(_T(".%.2d"), _MSC_BUILD);
-#endif
-#endif
-#elif (_MSC_VER <= 1800)
 #error Compiler is not supported!
 #endif
 #else
@@ -132,12 +108,6 @@ BOOL CAboutDlg::OnInitDialog()
     m_MPCCompiler += _T(" (SSSE3)");
 #elif (__SSE3__)
     m_MPCCompiler += _T(" (SSE3)");
-#elif !defined(_M_X64) && defined(_M_IX86_FP)
-#if (_M_IX86_FP == 2)   // /arch:SSE2 was used
-    m_MPCCompiler += _T(" (SSE2)");
-#elif (_M_IX86_FP == 1) // /arch:SSE was used
-    m_MPCCompiler += _T(" (SSE)");
-#endif
 #endif
 
 #ifdef _DEBUG
@@ -194,7 +164,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
     //}}AFX_DATA_MAP
     DDX_Control(pDX, IDR_MAINFRAME, m_icon);
     DDX_Text(pDX, IDC_STATIC1, m_appname);
-    DDX_Text(pDX, IDC_AUTHORS_LINK, m_credits);
     DDX_Text(pDX, IDC_HOMEPAGE_LINK, m_homepage);
     DDX_Text(pDX, IDC_VERSION, m_strBuildNumber);
     DDX_Text(pDX, IDC_MPC_COMPILER, m_MPCCompiler);
@@ -212,19 +181,12 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CMPCThemeDialog)
     // No message handlers
     //}}AFX_MSG_MAP
     ON_NOTIFY(NM_CLICK, IDC_HOMEPAGE_LINK, OnHomepage)
-    ON_NOTIFY(NM_CLICK, IDC_AUTHORS_LINK, OnAuthors)
     ON_BN_CLICKED(IDC_BUTTON1, OnCopyToClipboard)
 END_MESSAGE_MAP()
 
 void CAboutDlg::OnHomepage(NMHDR* pNMHDR, LRESULT* pResult)
 {
     ShellExecute(m_hWnd, _T("open"), WEBSITE_URL, nullptr, nullptr, SW_SHOWDEFAULT);
-    *pResult = 0;
-}
-
-void CAboutDlg::OnAuthors(NMHDR* pNMHDR, LRESULT* pResult)
-{
-    ShellExecute(m_hWnd, _T("open"), m_AuthorsPath, nullptr, nullptr, SW_SHOWDEFAULT);
     *pResult = 0;
 }
 

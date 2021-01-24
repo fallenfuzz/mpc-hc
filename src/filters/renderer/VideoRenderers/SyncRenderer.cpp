@@ -47,6 +47,15 @@
 #include <initguid.h>
 #include <mfapi.h>
 #include "SyncRenderer.h"
+#include "Utils.h"
+#include "Variables.h"
+
+#if (0)     // Set to 1 to activate SyncRenderer traces
+#define TRACE_SR   TRACE
+#else
+#define TRACE_SR   __noop
+#endif
+
 
 #define REFERENCE_WIDTH 1920
 #define FONT_HEIGHT     21
@@ -78,6 +87,7 @@ CBaseAP::CBaseAP(HWND hWnd, bool bFullscreen, HRESULT& hr, CString& _Error)
     , m_nTearingPos(0)
     , m_VMR9AlphaBitmapWidthBytes()
     , m_pD3DXLoadSurfaceFromMemory(nullptr)
+    , m_pD3DXLoadSurfaceFromSurface(nullptr)
     , m_pD3DXCreateLine(nullptr)
     , m_pD3DXCreateFont(nullptr)
     , m_pD3DXCreateSprite(nullptr)
@@ -152,6 +162,7 @@ CBaseAP::CBaseAP(HWND hWnd, bool bFullscreen, HRESULT& hr, CString& _Error)
 
     if (hDll) {
         (FARPROC&)m_pD3DXLoadSurfaceFromMemory = GetProcAddress(hDll, "D3DXLoadSurfaceFromMemory");
+        (FARPROC&)m_pD3DXLoadSurfaceFromSurface = GetProcAddress(hDll, "D3DXLoadSurfaceFromSurface");
         (FARPROC&)m_pD3DXCreateLine = GetProcAddress(hDll, "D3DXCreateLine");
         (FARPROC&)m_pD3DXCreateFont = GetProcAddress(hDll, "D3DXCreateFontW");
         (FARPROC&)m_pD3DXCreateSprite = GetProcAddress(hDll, "D3DXCreateSprite");
@@ -2311,6 +2322,27 @@ bool CBaseAP::ExtractInterlaced(const AM_MEDIA_TYPE* pmt)
     }
 }
 
+HRESULT CBaseAP::Resize(IDirect3DTexture9* pTexture, const CRect& srcRect, const CRect& destRect) {
+    HRESULT hr;
+
+    const CRenderersSettings& r = GetRenderersSettings();
+
+    DWORD iDX9Resizer = r.iDX9Resizer;
+    Vector dst[4];
+    Transform(destRect, dst);
+
+    if (iDX9Resizer == 0 || iDX9Resizer == 1) {
+        D3DTEXTUREFILTERTYPE Filter = iDX9Resizer == 0 ? D3DTEXF_POINT : D3DTEXF_LINEAR;
+        hr = TextureResize(pTexture, dst, Filter, srcRect);
+    } else if (iDX9Resizer == 2) {
+        hr = TextureResizeBilinear(pTexture, dst, srcRect);
+    } else if (iDX9Resizer >= 3) {
+        hr = TextureResizeBicubic1pass(pTexture, dst, srcRect);
+    }
+
+    return hr;
+}
+
 STDMETHODIMP CBaseAP::GetDIB(BYTE* lpDib, DWORD* size)
 {
     CheckPointer(size, E_POINTER);
@@ -2332,6 +2364,17 @@ STDMETHODIMP CBaseAP::GetDIB(BYTE* lpDib, DWORD* size)
         return hr;
     }
 
+    CSize framesize = GetVideoSize(false);
+    const CSize dar = GetVideoSize(true);
+
+    bool resize = false;
+    if (dar.cx > 0 && dar.cy > 0 && (dar.cx != desc.Width || dar.cy != desc.Height)) {
+        framesize.cx = MulDiv(framesize.cy, dar.cx, dar.cy);
+        resize = true;
+        desc.Width = framesize.cx;
+        desc.Height = framesize.cy;
+    }
+
     DWORD required = sizeof(BITMAPINFOHEADER) + (desc.Width * desc.Height * 32 >> 3);
     if (!lpDib) {
         *size = required;
@@ -2342,13 +2385,36 @@ STDMETHODIMP CBaseAP::GetDIB(BYTE* lpDib, DWORD* size)
     }
     *size = required;
 
-    CComPtr<IDirect3DSurface9> pSurface = pVideoSurface;
+    CComPtr<IDirect3DSurface9> pSurface, tSurface;
+    // Convert to 8-bit when using 10-bit or full/half processing modes
+    if (desc.Format != D3DFMT_X8R8G8B8) {
+        if (FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &tSurface, nullptr))
+            || FAILED(hr = m_pD3DXLoadSurfaceFromSurface(tSurface, nullptr, nullptr, pVideoSurface, nullptr, nullptr, D3DX_DEFAULT, 0))) {
+            return hr;
+        }
+    } else {
+        tSurface = pVideoSurface;
+    }
+
+    if (resize) {
+        CComPtr<IDirect3DTexture9> pVideoTexture = m_pVideoTexture[m_nCurSurface];
+        if (FAILED(hr = m_pD3DDevEx->CreateRenderTarget(framesize.cx, framesize.cy, D3DFMT_X8R8G8B8, D3DMULTISAMPLE_NONE, 0, TRUE, &pSurface, nullptr))
+            || FAILED(hr = m_pD3DDevEx->SetRenderTarget(0, pSurface))
+            || FAILED(hr = Resize(pVideoTexture, { CPoint(0, 0), m_nativeVideoSize }, { CPoint(0, 0), framesize }))) {
+            return hr;
+        }
+    } else {
+        pSurface = tSurface;
+    }
+
     D3DLOCKED_RECT r;
     if (FAILED(hr = pSurface->LockRect(&r, nullptr, D3DLOCK_READONLY))) {
+        // If this fails, we try to use a surface allocated from the system memory
+        CComPtr<IDirect3DSurface9> pInputSurface = pSurface;
         pSurface = nullptr;
-        if (FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pSurface, nullptr))
-                || FAILED(hr = m_pD3DDev->GetRenderTargetData(pVideoSurface, pSurface))
-                || FAILED(hr = pSurface->LockRect(&r, nullptr, D3DLOCK_READONLY))) {
+        if (FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &pSurface, nullptr))
+            || FAILED(hr = m_pD3DDev->GetRenderTargetData(pInputSurface, pSurface))
+            || FAILED(hr = pSurface->LockRect(&r, nullptr, D3DLOCK_READONLY))) {
             return hr;
         }
     }
@@ -3425,10 +3491,51 @@ STDMETHODIMP CSyncAP::RepaintVideo()
     return S_OK;
 }
 
-STDMETHODIMP CSyncAP::GetCurrentImage(BITMAPINFOHEADER* pBih, BYTE** pDib, DWORD* pcbDib, LONGLONG* pTimeStamp)
-{
-    ASSERT(FALSE);
-    return E_NOTIMPL;
+STDMETHODIMP CSyncAP::GetCurrentImage(BITMAPINFOHEADER* pBih, BYTE** pDib, DWORD* pcbDib, LONGLONG* pTimeStamp) {
+    if (!pBih || !pDib || !pcbDib) {
+        return E_POINTER;
+    }
+    CheckPointer(m_pD3DDevEx, E_ABORT);
+
+    HRESULT hr = S_OK;
+    const unsigned width = m_windowRect.Width();
+    const unsigned height = m_windowRect.Height();
+    const unsigned len = width * height * 4;
+
+    memset(pBih, 0, sizeof(BITMAPINFOHEADER));
+    pBih->biSize = sizeof(BITMAPINFOHEADER);
+    pBih->biWidth = width;
+    pBih->biHeight = height;
+    pBih->biBitCount = 32;
+    pBih->biPlanes = 1;
+    pBih->biSizeImage = DIBSIZE(*pBih);
+
+    BYTE* p = (BYTE*)CoTaskMemAlloc(len); // only this allocator can be used
+    if (!p) {
+        return E_OUTOFMEMORY;
+    }
+
+    CComPtr<IDirect3DSurface9> pBackBuffer;
+    CComPtr<IDirect3DSurface9> pDestSurface;
+    D3DLOCKED_RECT r;
+    if (FAILED(hr = m_pD3DDevEx->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer))
+        || FAILED(hr = m_pD3DDevEx->CreateRenderTarget(width, height, D3DFMT_X8R8G8B8, D3DMULTISAMPLE_NONE, 0, TRUE, &pDestSurface, nullptr))
+        || (FAILED(hr = m_pD3DDevEx->StretchRect(pBackBuffer, m_windowRect, pDestSurface, nullptr, D3DTEXF_NONE)))
+        || (FAILED(hr = pDestSurface->LockRect(&r, nullptr, D3DLOCK_READONLY)))) {
+        CString Error = GetWindowsErrorMessage(hr, nullptr);
+        TRACE_SR(L"CSyncAP::GetCurrentImage failed : %s", S_OK == hr ? L"S_OK" : Error.GetBuffer());
+        CoTaskMemFree(p);
+        return hr;
+    }
+
+    RetrieveBitmapData(width, height, 32, p ? (BYTE*)p : (BYTE*)(pBih + 1), (BYTE*)r.pBits, r.Pitch);
+
+    pDestSurface->UnlockRect();
+
+    *pDib = p;
+    *pcbDib = len;
+
+    return S_OK;
 }
 
 STDMETHODIMP CSyncAP::SetBorderColor(COLORREF Clr)
@@ -3693,6 +3800,12 @@ void CSyncAP::RenderThread()
     DWORD dwResolution = std::min(std::max(tc.wPeriodMin, 0u), tc.wPeriodMax);
     VERIFY(timeBeginPeriod(dwResolution) == 0);
 
+    auto SubPicSetTime = [&] {
+        if (!g_bExternalSubtitleTime) {
+            CSubPicAllocatorPresenterImpl::SetTime(g_tSegmentStart + m_llSampleTime * (g_bExternalSubtitle ? g_dRate : 1));
+        }
+    };
+
     auto checkPendingMediaFinished = [this]() {
         if (m_bPendingMediaFinished) {
             CAutoLock lock(&m_SampleQueueLock);
@@ -3703,6 +3816,9 @@ void CSyncAP::RenderThread()
         }
     };
 
+    const CRenderersSettings r = GetRenderersSettings();
+    double dTargetSyncOffset = r.m_AdvRendSets.fTargetSyncOffset;
+
     while (!bQuit) {
         m_lNextSampleWait = 1; // Default value for running this loop
         int nSamplesLeft = 0;
@@ -3710,9 +3826,6 @@ void CSyncAP::RenderThread()
         LONG lDisplayCycle  = (LONG)(GetDisplayCycle());
         LONG lDisplayCycle2 = (LONG)(GetDisplayCycle() / 2.0); // These are a couple of empirically determined constants used the control the "snap" function
         LONG lDisplayCycle4 = (LONG)(GetDisplayCycle() / 4.0);
-
-        const CRenderersSettings& r = GetRenderersSettings();
-        double dTargetSyncOffset = r.m_AdvRendSets.fTargetSyncOffset;
 
         if ((m_nRenderState == Started || !m_bPrerolled) && !pNewSample) {  // If either streaming or the pre-roll sample and no sample yet fetched
             if (SUCCEEDED(GetScheduledSample(&pNewSample, nSamplesLeft))) { // Get the next sample
@@ -3852,9 +3965,7 @@ void CSyncAP::RenderThread()
                     m_pcFramesDrawn++;
                     stepForward = true;
                 } else if (pNewSample && !m_bStepping) { // When a stepped frame is shown, a new one is fetched that we don't want to show here while stepping
-                    if (!g_bExternalSubtitleTime) {
-                        __super::SetTime(g_tSegmentStart + m_llSampleTime);
-                    }
+                    SubPicSetTime();
                     Paint(pNewSample);
                     m_pcFramesDrawn++;
                     stepForward = true;

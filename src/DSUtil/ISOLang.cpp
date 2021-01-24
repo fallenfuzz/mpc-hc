@@ -672,6 +672,34 @@ LCID ISOLang::ISO6392ToLcid(LPCSTR code)
     return 0;
 }
 
+BOOL ISOLang::IsISO6391(LPCSTR code)
+{
+    CHAR tmp[2 + 1];
+    strncpy_s(tmp, code, 2);
+    tmp[2] = 0;
+    _strlwr_s(tmp);
+    for (size_t i = 0, cnt = _countof(s_isolangs); i < cnt; i++) {
+        if (!strcmp(s_isolangs[i].iso6391, tmp)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+BOOL ISOLang::IsISO6392(LPCSTR code)
+{
+    CHAR tmp[3 + 1];
+    strncpy_s(tmp, code, 3);
+    tmp[3] = 0;
+    _strlwr_s(tmp);
+    for (size_t i = 0, cnt = _countof(s_isolangs); i < cnt; i++) {
+        if (!strcmp(s_isolangs[i].iso6392, tmp)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 CStringA ISOLang::ISO6391To6392(LPCSTR code)
 {
     CHAR tmp[2 + 1];

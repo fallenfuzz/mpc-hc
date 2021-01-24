@@ -87,6 +87,11 @@
 #define IDS_RS_SAVEIMAGE_CURRENTTIME        _T("SaveImageCurrentTime")
 #define IDS_RS_ALLOW_INACCURATE_FASTSEEK    _T("AllowInaccurateFastseek")
 #define IDS_RS_LOOP_FOLDER_NEXT_FILE        _T("LoopFolderOnPlayNextFile")
+#define IDS_RS_TIME_REFRESH_INTERVAL        _T("TimeRefreshInterval")
+#define IDS_RS_SHOW_LANG_STATUSBAR          _T("ShowLangInStatusbar")
+#define IDS_RS_SHOW_FPS_STATUSBAR           _T("ShowFPSInStatusbar")
+#define IDS_RS_ADD_LANGCODE_WHEN_SAVE_SUBTITLES _T("AddLanguageCodeWhenSaveSubtitles")
+#define IDS_RS_USE_TITLE_IN_RECENT_FILE_LIST    _T("UseTitleInRecentFileList")
 
 // Audio
 #define IDS_RS_VOLUME                       _T("Volume")
@@ -119,6 +124,8 @@
 #define IDS_RS_MENULANG                     _T("MenuLang")
 #define IDS_RS_AUDIOLANG                    _T("AudioLang")
 #define IDS_RS_SUBTITLESLANG                _T("SubtitlesLang")
+#define IDS_RS_RENDERSUBTITLESUSINGLIBASS   _T("RenderSubtitlesUsingLibass")
+#define IDS_RS_OPENTYPELANGHINT             _T("OpenTypeLangHint")
 #define IDS_RS_AUTOSPEAKERCONF              _T("AutoSpeakerConf")
 #define IDS_RS_CLOSEDCAPTIONS               _T("ClosedCaptions")
 
@@ -151,8 +158,6 @@
 #define IDS_RS_DEFAULTVIDEOFRAME            _T("DefaultVideoFrame")
 #define IDS_RS_REMEMBERWINDOWSIZE           _T("RememberWindowSize")
 #define IDS_RS_PANSCANZOOM                  _T("PanScanZoom")
-#define IDS_RS_REALMEDIARENDERLESS          _T("RealMediaRenderless")
-#define IDS_RS_QUICKTIMERENDERER            _T("QuickTimeRenderer")
 #define IDS_RS_REALMEDIAFPS                 _T("RealMediaFPS")
 #define IDS_RS_SUBDELAYINTERVAL             _T("SubDelayInterval")
 #define IDS_RS_LOGOFILE                     _T("LogoFile")
@@ -178,14 +183,13 @@
 #define IDS_RS_RECENT_FILES_NUMBER          _T("RecentFilesNumber")
 #define IDS_RS_LOGOID                       _T("LogoID2")
 #define IDS_RS_LOGOEXT                      _T("LogoExt")
+#define IDS_RS_LOGOCOLORPROFILE             _T("LogoColorProfile")
 #define IDS_RS_TRAFILTERS                   _T("TraFilters")
 #define IDS_RS_COMPMONDESKARDIFF            _T("CompMonDeskARDiff")
 #define IDS_RS_HIDECDROMSSUBMENU            _T("HideCDROMsSubMenu")
 #define IDS_RS_VMRTEXTURE                   _T("VMRTexture")
 #define IDS_RS_VMR3D                        _T("VMR3D")
 #define IDS_RS_DSVIDEORENDERERTYPE          _T("DSVidRen")
-#define IDS_RS_RMVIDEORENDERERTYPE          _T("RMVidRen")
-#define IDS_RS_QTVIDEORENDERERTYPE          _T("QTVidRen")
 #define IDS_RS_SHUFFLEPLAYLISTITEMS         _T("ShufflePlaylistItems")
 #define IDS_RS_REMEMBERPLAYLISTITEMS        _T("RememberPlaylistItems")
 #define IDS_RS_HIDEPLAYLISTFULLSCREEN       _T("HidePlaylistFullScreen")
@@ -200,6 +204,8 @@
 #define IDS_RS_SNAPSHOTPATH                 _T("SnapshotPath")
 #define IDS_RS_PRIORITY                     _T("Priority")
 #define IDS_RS_SNAPSHOTEXT                  _T("SnapshotExt")
+#define IDS_RS_SNAPSHOTSUBTITLES            _T("SnapshotSubtitles")
+#define IDS_RS_SNAPSHOTKEEPVIDEOEXTENSION   _T("SnapshotKeepVideoExtension")
 #define IDS_RS_LAUNCHFULLSCREEN             _T("LaunchFullScreen")
 #define IDS_RS_WEBROOT                      _T("WebRoot")
 #define IDS_RS_WEBSERVERLOCALHOSTONLY       _T("WebServerLocalhostOnly")
@@ -256,7 +262,7 @@
 #define IDS_RS_COUNTRY                      _T("Country")
 
 #define IDS_R_DVB                           _T("DVBConfiguration")
-#define IDS_RS_BDA_NETWORKPROVIDER          _T("BDANetworkProvider")
+//#define IDS_RS_BDA_NETWORKPROVIDER          _T("BDANetworkProvider")
 #define IDS_RS_BDA_TUNER                    _T("BDATuner")
 #define IDS_RS_BDA_RECEIVER                 _T("BDAReceiver")
 #define IDS_RS_BDA_STANDARD                 _T("BDAStandard")
@@ -277,6 +283,12 @@
 #define IDS_RS_SHOW_CHAPTERS                _T("ShowChapters")
 
 #define IDS_RS_LCD_SUPPORT                  _T("LcdSupport")
+
+#define IDS_RS_SEEKPREVIEW                    _T("UseSeekPreview")
+#define IDS_RS_SEEKPREVIEW_SIZE               _T("SeekPreviewSize")
+
+#define IDS_RS_TOGGLESHADER                 _T("PreSizeShadersEnabled")
+#define IDS_RS_TOGGLESHADERSSCREENSPACE     _T("PostSizeShadersEnabled")
 
 #define IDS_RS_REMAINING_TIME               _T("RemainingTime")
 #define IDS_RS_HIGH_PRECISION_TIMER         _T("HighPrecisionTimer")
@@ -340,3 +352,5 @@
 #define IDS_RS_YDL_VIDEO_FORMAT             _T("YDLVideoFormat")
 #define IDS_RS_YDL_AUDIO_ONLY               _T("YDLAudioOnly")
 #define IDS_RS_YDL_COMMAND_LINE             _T("YDLCommandLine")
+
+#define IDS_RS_ENABLE_CRASH_REPORTER        _T("EnableCrashReporter")

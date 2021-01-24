@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the MPC-HC package.
 # Translators:
 # MPC HC <adiposegithub@gmail.com>, 2020
+# Hrant Ohanyan <h.ohanyan@haysoft.org>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: MPC-HC\n"
-"POT-Creation-Date: 2019-12-16 07:58:37+0000\n"
+"POT-Creation-Date: 2020-09-30 15:29:35+0000\n"
 "PO-Revision-Date: 2020-01-02 07:46+0000\n"
-"Last-Translator: MPC HC <adiposegithub@gmail.com>, 2020\n"
+"Last-Translator: Hrant Ohanyan <h.ohanyan@haysoft.org>, 2020\n"
 "Language-Team: Armenian (https://www.transifex.com/mpchc/teams/106126/hy/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +24,7 @@ msgstr "Ընտրեք տեսակը"
 
 msgctxt "IDD_SELECTMEDIATYPE_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_SELECTMEDIATYPE_IDCANCEL"
 msgid "Cancel"
@@ -126,7 +127,9 @@ msgid "Go To..."
 msgstr "Անցնել..."
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
-msgid "Enter a timecode using the format [hh:]mm:ss.ms to jump to a specified time. You do not need to enter the separators explicitly."
+msgid ""
+"Enter a timecode using the format [hh:]mm:ss.ms to jump to a specified time."
+" You do not need to enter the separators explicitly."
 msgstr "Ժամանակը նշեք հետևյալ կերպ [hh:]mm:ss.ms՝ նշված տեղին անցնելու համար։"
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
@@ -138,8 +141,12 @@ msgid "Go!"
 msgstr "Առաջ"
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
-msgid "Enter two numbers to jump to a specified frame, the first is the frame number, the second is the frame rate."
-msgstr "Գրեք երկու թիվ՝ նշված կադրին անցնելու համար. առաջինը՝ կադրի թիվը, երկրորդը՝ կադրերի քանակը վայրկյանում։"
+msgid ""
+"Enter two numbers to jump to a specified frame, the first is the frame "
+"number, the second is the frame rate."
+msgstr ""
+"Գրեք երկու թիվ՝ նշված կադրին անցնելու համար. առաջինը՝ կադրի թիվը, երկրորդը՝ "
+"կադրերի քանակը վայրկյանում։"
 
 msgctxt "IDD_GOTO_DLG_IDC_STATIC"
 msgid "Frame"
@@ -147,15 +154,18 @@ msgstr "Կադրը"
 
 msgctxt "IDD_GOTO_DLG_IDC_OK2"
 msgid "Go!"
-msgstr "Առաջ!"
+msgstr "Առաջ"
 
 msgctxt "IDD_OPEN_DLG_CAPTION"
 msgid "Open"
 msgstr "Բացել"
 
 msgctxt "IDD_OPEN_DLG_IDC_STATIC"
-msgid "Type the address of a movie or audio file (on the Internet or your computer) and the player will open it for you."
-msgstr "Գրեք ֆիլմի կամ ձայնային ֆայլի հասցեն (Համացանցում կամ Ձեր համակարգչում)"
+msgid ""
+"Type the address of a movie or audio file (on the Internet or your computer)"
+" and the player will open it for you."
+msgstr ""
+"Գրեք ֆիլմի կամ ձայնային ֆայլի հասցեն (Համացանցում կամ Ձեր համակարգչում)"
 
 msgctxt "IDD_OPEN_DLG_IDC_STATIC"
 msgid "Open:"
@@ -175,11 +185,11 @@ msgstr "Ընտրել..."
 
 msgctxt "IDD_OPEN_DLG_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_OPEN_DLG_IDCANCEL"
 msgid "Cancel"
-msgstr "Մերժել"
+msgstr "Չեղարկել"
 
 msgctxt "IDD_OPEN_DLG_IDC_CHECK1"
 msgid "Add to playlist without opening"
@@ -190,12 +200,13 @@ msgid "About"
 msgstr "Ծրագրի մասին"
 
 msgctxt "IDD_ABOUTBOX_IDC_AUTHORS_LINK"
-msgid "Copyright © 2002-2020 see Authors.txt"
-msgstr "Copyright © 2002-2020, կարդացե՛ք Authors.txt ֆայլը"
+msgid "Copyright 2002-2021 clsid2 and others"
+msgstr ""
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
-msgid "This program is freeware and released under the GNU General Public License."
-msgstr "Այս ծրագիրը անվճար է և տարածվում է GNU General Public-ի լիցենզիայով։"
+msgid ""
+"This program is freeware and released under the GNU General Public License."
+msgstr "Այս ծրագիրը անվճար է և տարածվում է GNU General Public-ի արտոնագրով։"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "English translation made by MPC-HC Team"
@@ -211,7 +222,7 @@ msgstr "Տարբերակ."
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "Compiler:"
-msgstr "կազմարկիչ."
+msgstr "Կազմարկիչ."
 
 msgctxt "IDD_ABOUTBOX_IDC_LAVFILTERS_VERSION"
 msgid "Not used"
@@ -227,7 +238,7 @@ msgstr "Օպերացիոն համակարգ"
 
 msgctxt "IDD_ABOUTBOX_IDC_STATIC"
 msgid "Name:"
-msgstr "Անունը."
+msgstr "Անուն."
 
 msgctxt "IDD_ABOUTBOX_IDC_BUTTON1"
 msgid "Copy to clipboard"
@@ -235,7 +246,7 @@ msgstr "Պատճենել մեկուսաշրջույթ"
 
 msgctxt "IDD_ABOUTBOX_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_STATIC"
 msgid "Open options"
@@ -243,11 +254,11 @@ msgstr "Բացելու ընտրանքներ"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_RADIO1"
 msgid "Use the same player for each media file"
-msgstr "Նույն վերարտադրիչը յուրաքանչյուր ֆայլի համար"
+msgstr "Նույն նվագարկիչը յուրաքանչյուր ֆայլի համար"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_RADIO2"
 msgid "Open a new player for each media file played"
-msgstr "Նոր վերարտադրիչ յուրաքանչյուր ֆայլի համար"
+msgstr "Նոր նվագարկիչ յուրաքանչյուր ֆայլի համար"
 
 msgctxt "IDD_PPAGEPLAYER_IDC_STATIC"
 msgid "Language"
@@ -395,7 +406,7 @@ msgstr "Առվ."
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC_BALANCE"
 msgid "Balance"
-msgstr "Բալանսը"
+msgstr "Բալանս"
 
 msgctxt "IDD_PPAGEPLAYBACK_IDC_STATIC"
 msgid "L"
@@ -567,15 +578,21 @@ msgstr "Նյութավորիչի դասավորություն"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_CHECK_SUB_AR_COMPENSATION"
 msgid "Apply aspect ratio compensation for anamorphic videos"
-msgstr "Կիրառել կողմերի հարաբերություն փոխհատուցումը անամորֆիկ տեսանյութերի համար"
+msgstr ""
+"Կիրառել կողմերի հարաբերություն փոխհատուցումը անամորֆիկ տեսանյութերի համար"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
 msgid "Warning"
 msgstr "Ուշադրություն"
 
 msgctxt "IDD_PPAGESUBTITLES_IDC_STATIC"
-msgid "If you override and enable fullscreen antialiasing somewhere at your videocard's settings, subtitles aren't going to look any better but it will surely eat your CPU."
-msgstr "Եթե փոխեք դիրքը և կարգավորեք տեսաքարտի էկրանային լղոզումը, ապա տողագրերը ավելի լավ չեն երևա, այլ փոխարենը կխլեն մեծ ռեսուրսներ։"
+msgid ""
+"If you override and enable fullscreen antialiasing somewhere at your "
+"videocard's settings, subtitles aren't going to look any better but it will "
+"surely eat your CPU."
+msgstr ""
+"Եթե փոխեք դիրքը և կարգավորեք տեսաքարտի էկրանային լղոզումը, ապա տողագրերը "
+"ավելի լավ չեն երևա, այլ փոխարենը կխլեն մեծ ռեսուրսներ։"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC2"
 msgid "File extensions"
@@ -606,26 +623,6 @@ msgid "Set as &default program"
 msgstr "Նշել որպես &հիմնական ծրագիր"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
-msgid "Real-Time Streaming Protocol handler (for rtsp://... URLs)"
-msgstr "Բացել Real-Time Streaming արձանագր. (rtsp://...)՝"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO1"
-msgid "RealMedia"
-msgstr "RealMedia"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO2"
-msgid "QuickTime"
-msgstr "QuickTime"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_RADIO3"
-msgid "DirectShow"
-msgstr "DirectShow"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_CHECK5"
-msgid "Check file extension first"
-msgstr "Նախ նայել ընդլայնումը"
-
-msgctxt "IDD_PPAGEFORMATS_IDC_STATIC"
 msgid "Explorer Context Menu"
 msgstr "Explorer-ի ընտրացանկը"
 
@@ -639,7 +636,7 @@ msgstr "Ֆայլերի համար"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_STATIC1"
 msgid "Autoplay"
-msgstr "Ինքնավերարտադրում"
+msgstr "Ինքնանվագարկում"
 
 msgctxt "IDD_PPAGEFORMATS_IDC_CHECK1"
 msgid "Video"
@@ -678,16 +675,22 @@ msgid "Display \"Now Playing\" information in Skype's mood message"
 msgstr "Ցուցադրել \"Այժմ խաղարկվում է\" տեղեկությունn Skype-ում"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK6"
-msgid "Prevent minimizing the player when in fullscreen on a non default monitor"
-msgstr "Չփոքրացնել պատուհանը՝ Ամբողջ էկրանով ոչ հիմնական մոնիտորի վրա վերարտադրելիս։"
+msgid ""
+"Prevent minimizing the player when in fullscreen on a non default monitor"
+msgstr ""
+"Չփոքրացնել պատուհանը՝ Ամբողջ էկրանով ոչ հիմնական մոնիտորի վրա նվագարկելիս։"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK_ENHANCED_TASKBAR"
 msgid "Use enhanced taskbar features"
 msgstr ""
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK7"
-msgid "Open previous/next file in folder on \"Skip back/forward\" when there is only one item in playlist"
-msgstr "Բացել հաջորդ/նախորդ ֆայլը թղթապանակում \"Հետ/Առաջ\"-ի միջոցով, եթե նվագացանկում առկա է մեկ ֆայլ։"
+msgid ""
+"Open previous/next file in folder on \"Skip back/forward\" when there is "
+"only one item in playlist"
+msgstr ""
+"Բացել հաջորդ/նախորդ ֆայլը թղթապանակում \"Հետ/Առաջ\"-ի միջոցով, եթե "
+"նվագացանկում առկա է մեկ ֆայլ։"
 
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK8"
 msgid "Show time tooltip:"
@@ -704,6 +707,14 @@ msgstr "Միացնել Logitech LCD-ի աջակցումը (փորձարկվու�
 msgctxt "IDD_PPAGETWEAKS_IDC_CHECK3"
 msgid "Auto-hide the mouse pointer during playback in windowed mode"
 msgstr "Ինքնաթաքցնել մկնիկի նշորդը նվագարկելիս պատուհանի կերպում"
+
+msgctxt "IDD_PPAGETWEAKS_IDC_SEEK_PREVIEW"
+msgid "Show preview on seek bar"
+msgstr ""
+
+msgctxt "IDD_PPAGETWEAKS_IDC_STATIC"
+msgid "Preview width (% of screen width)"
+msgstr ""
 
 msgctxt "IDD_PPAGEEXTERNALFILTERS_IDC_BUTTON1"
 msgid "Add Filter..."
@@ -779,7 +790,7 @@ msgstr "Հեղինակ."
 
 msgctxt "IDD_FILEPROPCLIP_IDC_STATIC"
 msgid "Copyright:"
-msgstr "Հեղ. իրվ."
+msgstr "Հեղ. իրավունք"
 
 msgctxt "IDD_FILEPROPCLIP_IDC_STATIC"
 msgid "Rating:"
@@ -811,7 +822,7 @@ msgstr "Չեղարկել"
 
 msgctxt "IDD_FAVADD_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_FAVADD_IDC_CHECK2"
 msgid "Relative drive"
@@ -839,7 +850,7 @@ msgstr "Ջնջել"
 
 msgctxt "IDD_FAVORGANIZE_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_PNSPRESET_DLG_CAPTION"
 msgid "Pan & Scan Presets"
@@ -902,8 +913,12 @@ msgid "Warning"
 msgstr "Ուշադրություն"
 
 msgctxt "IDD_MEDIATYPES_DLG_IDC_STATIC1"
-msgid "MPC-HC could not render some of the pins in the graph, you may not have the needed codecs or filters installed on the system."
-msgstr "MPC-HC-ն չի կարողանում վերարտադրել որոշ հոսքեր, հնարավոր է, որ տեղակայված չէ համապատասխան կոդավորիչը կամ ֆիլտրը։"
+msgid ""
+"MPC-HC could not render some of the pins in the graph, you may not have the "
+"needed codecs or filters installed on the system."
+msgstr ""
+"MPC-HC-ն չի կարողանում նվագարկել որոշ հոսքեր, հնարավոր է, որ տեղակայված չէ "
+"համապատասխան կոդավորիչը կամ ֆիլտրը։"
 
 msgctxt "IDD_MEDIATYPES_DLG_IDC_STATIC2"
 msgid "The following pin(s) failed to find a connectable filter:"
@@ -975,7 +990,7 @@ msgstr "Դիտել..."
 
 msgctxt "IDD_ADDREGFILTER_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_ADDREGFILTER_IDCANCEL"
 msgid "Cancel"
@@ -1078,8 +1093,12 @@ msgid "Link alpha channels"
 msgstr "Կապել առաջնային ալիքները"
 
 msgctxt "IDD_PPAGEINTERNALFILTERS_IDC_STATIC"
-msgid "If you would like to use the stand-alone versions of these filters or another replacement, disable them here."
-msgstr "Եթե ցանկանում եք օգտագործել այս ֆիլտրերի առանձին տարբերակը, ապա անջատեք դրանք այստեղ։"
+msgid ""
+"If you would like to use the stand-alone versions of these filters or "
+"another replacement, disable them here."
+msgstr ""
+"Եթե ցանկանում եք օգտագործել այս ֆիլտրերի առանձին տարբերակը, ապա անջատեք "
+"դրանք այստեղ։"
 
 msgctxt "IDD_PPAGEINTERNALFILTERS_IDC_STATIC"
 msgid "Source Filters"
@@ -1117,21 +1136,41 @@ msgctxt "IDD_PPAGELOGO_IDC_BUTTON2"
 msgid "Browse..."
 msgstr "Ընտրել..."
 
+msgctxt "IDD_PPAGELOGO_IDC_CHECK1"
+msgid "Apply Monitor Color Profile"
+msgstr ""
+
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "DirectShow Video"
 msgstr "DirectShow տեսանյութ"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "RealMedia Video"
-msgstr "RealMedia տեսանյութ"
+msgid "DXVA"
+msgstr "DXVA"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "QuickTime Video"
-msgstr "QuickTime տեսանյութ"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Screenshot"
+msgstr "Պատկերը"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Shaders"
+msgstr "Շեյդերներ"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Rotation"
+msgstr "Շրջել"
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "Audio Renderer"
 msgstr "Ձայնի նյութավորիչ"
+
+msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
+msgid "Subtitle Renderer"
+msgstr ""
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
 msgid "VMR-9 (renderless) and EVR (CP) settings"
@@ -1168,30 +1207,6 @@ msgstr "VMR-9 Mixer եղանակ"
 msgctxt "IDD_PPAGEOUTPUT_IDC_EVR_BUFFERS_TXT"
 msgid "EVR Buffers:"
 msgstr "EVR կենտրոն."
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "DXVA"
-msgstr "DXVA"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Subtitles"
-msgstr ""
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Screenshot"
-msgstr "Պատկերը"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Shaders"
-msgstr "Շեյդերներ"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Rotation"
-msgstr "Շրջել"
-
-msgctxt "IDD_PPAGEOUTPUT_IDC_STATIC"
-msgid "Subtitle Renderer"
-msgstr ""
 
 msgctxt "IDD_PPAGEOUTPUT_IDC_CACHESHADERS"
 msgid "Cache compiled Shaders"
@@ -1499,7 +1514,7 @@ msgstr "Ցուցադրել մոտագույն vsync-ի հետ"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK1"
 msgid "Launch files in fullscreen"
-msgstr "Բացել ֆայլերը ամբողջ էկրանով"
+msgstr "Բացել ֆայլերը լիրաէկրան"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK4"
 msgid "Hide controls in fullscreen"
@@ -1523,7 +1538,7 @@ msgstr "Ամբողջ էկրանի համար մոնիտորը"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_CHECK2"
 msgid "Use autochange fullscreen monitor mode"
-msgstr "Օգտ. մոնիտորի ամբողջ էկրանով ինքնափոխման եղանակը"
+msgstr "Օգտ. մոնիտորի լիաէկրան ինքնափոխման եղանակը"
 
 msgctxt "IDD_PPAGEFULLSCREEN_IDC_BUTTON1"
 msgid "Add"
@@ -1594,7 +1609,8 @@ msgid "Automatically search and download subtitles if none are found locally"
 msgstr ""
 
 msgctxt "IDD_PPAGESUBMISC_IDC_CHECK5"
-msgid "Prefer subtitles for hearing impaired (when indicated by subtitles provider)"
+msgid ""
+"Prefer subtitles for hearing impaired (when indicated by subtitles provider)"
 msgstr ""
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC1"
@@ -1603,10 +1619,6 @@ msgstr ""
 
 msgctxt "IDD_PPAGESUBMISC_IDC_STATIC"
 msgid "Languages in order of preference:"
-msgstr ""
-
-msgctxt "IDD_PPAGESUBMISC_IDC_CHECK6"
-msgid "Automatically upload active subtitles at the end of video playback"
 msgstr ""
 
 msgctxt "IDD_UPDATE_DIALOG_CAPTION"
@@ -1626,8 +1638,12 @@ msgid "&Ignore this update"
 msgstr "&Անտեսել թարմացումը"
 
 msgctxt "IDD_PPAGESHADERS_IDC_STATIC"
-msgid "Shaders contain special effects which can be added to the video rendering process."
-msgstr "Շեյդերները պարունակում են հատուկ էֆեկտներ, որոնք կարող են ավելացվել տեսանյութի նյութավորմանը"
+msgid ""
+"Shaders contain special effects which can be added to the video rendering "
+"process."
+msgstr ""
+"Շեյդերները պարունակում են հատուկ էֆեկտներ, որոնք կարող են ավելացվել "
+"տեսանյութի նյութավորմանը"
 
 msgctxt "IDD_PPAGESHADERS_IDC_BUTTON12"
 msgid "Add shader file"
@@ -1668,6 +1684,12 @@ msgstr "Ակտիվ նախաչափափոխված շեյդերներ"
 msgctxt "IDD_PPAGESHADERS_IDC_STATIC"
 msgid "Active post-resize shaders"
 msgstr "Ակտիվ հետչափափոխված շեյդերներ"
+
+msgctxt "IDD_PPAGESHADERS_IDC_STATIC5"
+msgid ""
+"MPC-VR does not support pre-resize shaders. It will run them after resize, "
+"before the post-resize shaders."
+msgstr ""
 
 msgctxt "IDD_DEBUGSHADERS_DLG_CAPTION"
 msgid "Debug Shaders"
@@ -1754,7 +1776,9 @@ msgid "Note"
 msgstr ""
 
 msgctxt "IDD_PPAGEAUDIORENDERER_IDC_STATIC"
-msgid "To minimize audio distortion, it is recommended to keep player volume at around 85% when playing loud lossy-encoded content."
+msgid ""
+"To minimize audio distortion, it is recommended to keep player volume at "
+"around 85% when playing loud lossy-encoded content."
 msgstr ""
 
 msgctxt "IDD_SAVEIMAGEDIALOGTEMPL_IDC_STATIC"
@@ -1767,7 +1791,7 @@ msgstr "Հրամանի տողի օգնություն"
 
 msgctxt "IDD_CMD_LINE_HELP_IDOK"
 msgid "OK"
-msgstr "ԼԱՎ"
+msgstr "Լավ"
 
 msgctxt "IDD_CRASH_REPORTER_CAPTION"
 msgid "Crash reporter"
@@ -1790,8 +1814,11 @@ msgid "Email:"
 msgstr "Էլ. փոստ."
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC3"
-msgid "Your email address is optional and will only be used if the developers need to contact you for more information."
-msgstr "Էլ. փոստի հասցեն լրացուցիչ է և կօգտագործվի միայն Ձեզ պատասխանելու համար:"
+msgid ""
+"Your email address is optional and will only be used if the developers need "
+"to contact you for more information."
+msgstr ""
+"Էլ. փոստի հասցեն լրացուցիչ է և կօգտագործվի միայն Ձեզ պատասխանելու համար:"
 
 msgctxt "IDD_CRASH_REPORTER_IDC_STATIC4"
 msgid "Problem description (use English only):"
@@ -1805,3 +1832,10 @@ msgctxt "IDD_CRASH_REPORTER_IDC_BUTTON2"
 msgid "Quit MPC-HC"
 msgstr "Փակել MPC-HC-ը"
 
+msgctxt "IDD_PPAGEDPICALC_IDC_STATIC1"
+msgid "Groupbox"
+msgstr ""
+
+msgctxt "IDD_PPAGEDPICALC_IDC_STATIC2"
+msgid "Autoplay"
+msgstr ""

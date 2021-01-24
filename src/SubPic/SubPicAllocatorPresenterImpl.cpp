@@ -125,6 +125,9 @@ void CSubPicAllocatorPresenterImpl::InitMaxSubtitleTextureSize(int maxSize, CSiz
             break;
     }
 
+    if (m_maxSubtitleTextureSize.cx == 0 || m_maxSubtitleTextureSize.cy == 0) {
+        m_maxSubtitleTextureSize.SetSize(1920, 1080);
+    }
     m_curSubtitleTextureSize = m_maxSubtitleTextureSize;
 }
 
@@ -150,7 +153,10 @@ HRESULT CSubPicAllocatorPresenterImpl::AlphaBltSubPic(const CRect& windowRect,
 
 STDMETHODIMP_(void) CSubPicAllocatorPresenterImpl::SetVideoSize(CSize szVideo, CSize szAspectRatio /* = CSize(0, 0) */)
 {
-    if (szAspectRatio == CSize(0, 0)) {
+    if (szVideo.cx == 0) {
+        return;
+    }
+    if (szAspectRatio.cx == 0) {
         szAspectRatio = szVideo;
     }
 
@@ -162,8 +168,11 @@ STDMETHODIMP_(void) CSubPicAllocatorPresenterImpl::SetVideoSize(CSize szVideo, C
 
     if (bVideoSizeChanged || bAspectRatioChanged) {
         if (m_SubtitleTextureLimit == VIDEO) {
-            m_maxSubtitleTextureSize = m_curSubtitleTextureSize = GetVideoSize();
-            m_pAllocator->SetMaxTextureSize(m_maxSubtitleTextureSize);
+            CSize vidsize = GetVideoSize(true);
+            if (vidsize.cx > 0 && vidsize.cy > 0) {
+                m_maxSubtitleTextureSize = m_curSubtitleTextureSize = vidsize;
+                m_pAllocator->SetMaxTextureSize(m_maxSubtitleTextureSize);
+            }
         }
     }
 }
@@ -190,12 +199,13 @@ STDMETHODIMP_(void) CSubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
 
     m_windowRect = w;
 
-    if (bWindowSizeChanged && m_pAllocator && m_SubtitleTextureLimit != VIDEO) {
+    if (bWindowSizeChanged && m_pAllocator) {
         if (m_windowRect.Width() != m_curSubtitleTextureSize.cx || m_windowRect.Height() != m_curSubtitleTextureSize.cy) {
             if (m_windowRect.Width() * m_windowRect.Height() <= m_maxSubtitleTextureSize.cx * m_maxSubtitleTextureSize.cy) {
                 m_curSubtitleTextureSize = CSize(m_windowRect.Width(), m_windowRect.Height());
                 m_pAllocator->SetMaxTextureSize(m_curSubtitleTextureSize);
             } else if (m_curSubtitleTextureSize.cx * m_curSubtitleTextureSize.cy < m_maxSubtitleTextureSize.cx * m_maxSubtitleTextureSize.cy) {
+                // ToDo: use size with same total max pixels, but with AR of window?
                 m_curSubtitleTextureSize = CSize(m_maxSubtitleTextureSize.cx, m_maxSubtitleTextureSize.cy);
                 m_pAllocator->SetMaxTextureSize(m_curSubtitleTextureSize);
             }
@@ -220,8 +230,9 @@ STDMETHODIMP_(void) CSubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
         }
     }
 
-    if (bWindowPosChanged || bVideoRectChanged) {
+	if (bWindowPosChanged || bVideoRectChanged || m_bOtherTransform) {
         Paint(false);
+		m_bOtherTransform = false;
     }
 }
 

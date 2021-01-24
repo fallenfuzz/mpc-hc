@@ -255,7 +255,7 @@ typedef enum MPCAPI_COMMAND :
     CMD_DECREASEVOLUME      = 0xA0004004,
 
     // Toggle shader
-    //CMD_SHADER_TOGGLE       = 0xA0004005,
+    CMD_SHADER_TOGGLE       = 0xA0004005,
 
     // Close App
     CMD_CLOSEAPP            = 0xA0004006,

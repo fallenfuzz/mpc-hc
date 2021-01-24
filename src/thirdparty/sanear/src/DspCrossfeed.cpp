@@ -17,8 +17,9 @@ namespace SaneAudioRenderer
         {
             m_bs2b.clear();
             m_bs2b.set_srate(rate);
-            UpdateSettings();
         }
+
+        UpdateSettings();
     }
 
     bool DspCrossfeed::Active()

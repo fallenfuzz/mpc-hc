@@ -36,12 +36,14 @@ CPPageFileInfoClip::CPPageFileInfoClip(CString path, IFilterGraph* pFG, IFileSou
     : CMPCThemePropertyPage(CPPageFileInfoClip::IDD, CPPageFileInfoClip::IDD)
     , m_hIcon(nullptr)
     , m_fn(path)
+    , m_displayFn(path)
     , m_path(path)
     , m_clip(StrRes(IDS_AG_NONE))
     , m_author(StrRes(IDS_AG_NONE))
     , m_copyright(StrRes(IDS_AG_NONE))
     , m_rating(StrRes(IDS_AG_NONE))
     , m_location(StrRes(IDS_AG_NONE))
+    , m_displayLocation(StrRes(IDS_AG_NONE))
 {
     if (pFSF) {
         CComHeapPtr<OLECHAR> pFN;
@@ -62,6 +64,7 @@ CPPageFileInfoClip::CPPageFileInfoClip(CString path, IFilterGraph* pFG, IFileSou
             CComBSTR bstr;
             if (SUCCEEDED(pAMMC->get_Title(&bstr)) && bstr.Length()) {
                 m_clip = bstr.m_str;
+                m_clip.Trim();
                 bFound = true;
             }
             bstr.Empty();
@@ -82,6 +85,8 @@ CPPageFileInfoClip::CPPageFileInfoClip(CString path, IFilterGraph* pFG, IFileSou
             bstr.Empty();
             if (SUCCEEDED(pAMMC->get_Description(&bstr)) && bstr.Length()) {
                 m_desc = bstr.m_str;
+                m_desc.Replace(L"\r\n", L"\n"); //Replace existing \r\n to \n
+                m_desc.Replace(L"\n", L"\r\n");
                 bFound = true;
             }
             bstr.Empty();
@@ -104,12 +109,12 @@ void CPPageFileInfoClip::DoDataExchange(CDataExchange* pDX)
 {
     __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_DEFAULTICON, m_icon);
-    DDX_Text(pDX, IDC_EDIT1, m_fn);
+    DDX_Text(pDX, IDC_EDIT1, m_displayFn);
     DDX_Text(pDX, IDC_EDIT4, m_clip);
     DDX_Text(pDX, IDC_EDIT3, m_author);
     DDX_Text(pDX, IDC_EDIT2, m_copyright);
     DDX_Text(pDX, IDC_EDIT5, m_rating);
-    DDX_Text(pDX, IDC_EDIT6, m_location);
+    DDX_Text(pDX, IDC_EDIT6, m_displayLocation);
     DDX_Control(pDX, IDC_EDIT6, m_locationCtrl);
     DDX_Text(pDX, IDC_EDIT7, m_desc);
 }
@@ -143,7 +148,11 @@ BOOL CPPageFileInfoClip::OnInitDialog()
     m_fn.TrimRight('/');
     int i = std::max(m_fn.ReverseFind('\\'), m_fn.ReverseFind('/'));
     if (i >= 0 && i < m_fn.GetLength() - 1) {
-        m_location = m_fn.Left(i);
+        if (PathUtils::IsURL(m_fn)) {
+            m_location = m_fn;
+        } else {
+            m_location = m_fn.Left(i);
+        }
         m_fn = m_fn.Mid(i + 1);
 
         if (m_location.GetLength() == 2 && m_location[1] == ':') {
@@ -154,6 +163,14 @@ BOOL CPPageFileInfoClip::OnInitDialog()
     m_hIcon = LoadIcon(m_fn, false);
     if (m_hIcon) {
         m_icon.SetIcon(m_hIcon);
+    }
+
+    if (PathUtils::IsURL(m_path)) {
+        m_displayFn = UrlDecodeWithUTF8(ShortenURL(m_fn));
+        m_displayLocation = UrlDecodeWithUTF8(m_location, true);
+    } else {
+        m_displayFn = m_fn;
+        m_displayLocation = m_location;
     }
 
     m_tooltip.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);

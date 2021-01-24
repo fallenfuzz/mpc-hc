@@ -29,6 +29,8 @@
 #include "CMPCThemeComboBox.h"
 
 
+#define WM_EXTERNALCLOSE WM_APP + 0x100
+
 // CMediaTypesDlg dialog
 
 class CMediaTypesDlg : public CMPCThemeResizableDialog
@@ -58,4 +60,5 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg void OnCbnSelchangeCombo1();
+    afx_msg LRESULT OnExternalClose(WPARAM wParam, LPARAM lParam);
 };

@@ -427,10 +427,11 @@ HRESULT CFGFilterFile::Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &IID_
 // CFGFilterVideoRenderer
 //
 
-CFGFilterVideoRenderer::CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CStringW name, UINT64 merit)
+CFGFilterVideoRenderer::CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CStringW name, UINT64 merit, bool preview)
     : CFGFilter(clsid, name, merit)
     , m_hWnd(hWnd)
     , m_bHas10BitWorkAround(false)
+    , m_bIsPreview(preview)
 {
     AddType(MEDIATYPE_Video, MEDIASUBTYPE_NULL);
 }
@@ -466,7 +467,9 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
         if (CComQIPtr<IMadVRSubclassReplacement> pMVRSR = pCAP) {
             VERIFY(SUCCEEDED(pMVRSR->DisableSubclassing()));
         }
-    } else if (m_clsid == CLSID_VMR9AllocatorPresenter || m_clsid == CLSID_DXRAllocatorPresenter || m_clsid == CLSID_MPCVRAllocatorPresenter) {
+    } else if (m_clsid == CLSID_MPCVRAllocatorPresenter) {
+        CheckNoLog(CreateAP9(m_clsid, m_hWnd, isD3DFullScreenMode(), &pCAP));
+    } else if (m_clsid == CLSID_VMR9AllocatorPresenter || m_clsid == CLSID_DXRAllocatorPresenter) {
         CheckNoLog(CreateAP9(m_clsid, m_hWnd, isD3DFullScreenMode(), &pCAP));
     } else {
         CComPtr<IBaseFilter> pBF;
@@ -474,7 +477,7 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 
         if (m_clsid == CLSID_EnhancedVideoRenderer) {
             CComQIPtr<IEVRFilterConfig> pConfig = pBF;
-            pConfig->SetNumberOfStreams(3);
+            pConfig->SetNumberOfStreams(m_bIsPreview ? 1 : 3);
 
             if (CComQIPtr<IMFGetService> pMFGS = pBF) {
                 CComPtr<IMFVideoDisplayControl> pMFVDC;
@@ -499,23 +502,27 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
         CComPtr<IUnknown> pRenderer;
         CheckNoLog(pCAP->CreateRenderer(&pRenderer));
 
-        if (m_clsid == CLSID_madVRAllocatorPresenter) {
-            // madVR supports calling IVideoWindow::put_Owner before the pins are connected
-            if (CComQIPtr<IVideoWindow> pVW = pCAP) {
+        *ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
+
+        if (m_clsid == CLSID_madVRAllocatorPresenter || m_clsid == CLSID_MPCVRAllocatorPresenter) {
+            // renderer supports calling IVideoWindow::put_Owner before the pins are connected
+            if (CComQIPtr<IVideoWindow> pVW = *ppBF) {
                 VERIFY(SUCCEEDED(pVW->put_Owner((OAHWND)m_hWnd)));
             }
         }
 
-        *ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
         pUnks.AddTail(pCAP);
         if (CComQIPtr<ISubPicAllocatorPresenter2> pCAP2 = pCAP) {
             pUnks.AddTail(pCAP2);
+        }
+        if (CComQIPtr<ISubPicAllocatorPresenter3> pCAP3 = pCAP) {
+            pUnks.AddTail(pCAP3);
         }
     }
 
     CheckPointer(*ppBF, E_FAIL);
 
-    if (m_clsid != CLSID_madVRAllocatorPresenter) {
+    if (!m_bIsPreview && (m_clsid == CLSID_EnhancedVideoRenderer || m_clsid == CLSID_EVRAllocatorPresenter || m_clsid == CLSID_SyncAllocatorPresenter || m_clsid == CLSID_VMR9AllocatorPresenter)) {
         HookWorkAround10BitBug(*ppBF);
         m_bHas10BitWorkAround = true;
     }
@@ -567,15 +574,24 @@ void CFGFilterList::Insert(CFGFilter* pFGF, int group, bool exactmatch, bool aut
             break;
         }
 
-        if (group != f.group) {
-            continue;
+        if (pFGF->GetCLSID() != GUID_NULL && pFGF->GetCLSID() == f.pFGF->GetCLSID()) {
+            if (group == f.group && f.pFGF->GetMerit() == MERIT64_DO_NOT_USE) {
+                TRACE(_T("Rejected (same filter with merit DO_NOT_USE already in the list)\n"));
+                bInsert = false;
+                break;
+            }
+            if (f.pFGF->GetCLSID() == CLSID_AsyncReader || f.pFGF->GetCLSID() == CLSID_URLReader) {
+                if (pFGF->GetMerit() == f.pFGF->GetMerit()) {
+                    // to avoid duplicates with different group value
+                    TRACE(_T("Rejected (same source filter already in list)\n"));
+                    bInsert = false;
+                    break;
+                }
+            }
         }
 
-        if (pFGF->GetCLSID() != GUID_NULL && pFGF->GetCLSID() == f.pFGF->GetCLSID()
-                && f.pFGF->GetMerit() == MERIT64_DO_NOT_USE) {
-            TRACE(_T("Rejected (same filter with merit DO_NOT_USE already in the list)\n"));
-            bInsert = false;
-            break;
+        if (group != f.group) {
+            continue;
         }
 
         if (CFGFilterRegistry* pFGFR2 = dynamic_cast<CFGFilterRegistry*>(f.pFGF)) {

@@ -28,6 +28,7 @@ public:
 
     void Override(HWND hWindow);
     void Override(int dpix, int dpiy);
+    int GetSystemMetricsDPI(int nIndex);
 
     inline double ScaleFactorX() const { return m_dpix / 96.0; }
     inline double ScaleFactorY() const { return m_dpiy / 96.0; }
@@ -44,6 +45,7 @@ public:
 
     inline int DPIX() { return m_dpix; }
     inline int DPIY() { return m_dpiy; }
+    static bool CanUsePerMonitorV2();
 
 private:
 

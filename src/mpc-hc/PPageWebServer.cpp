@@ -26,7 +26,7 @@
 #include "PathUtils.h"
 #include <afxglobals.h>
 #include "WebServer.h"
-
+#include "CMPCThemeMsgBox.h"
 
 // CPPageWebServer dialog
 
@@ -253,7 +253,7 @@ void CPPageWebServer::OnUpdateButton2(CCmdUI* pCmdUI)
 void CPPageWebServer::OnEnablePreviewChecked()
 {
     if (IsDlgButtonChecked(IDC_CHECK6)
-            && (MessageBox(ResStr(IDS_WEBUI_PREVIEW_WARNING), nullptr, MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2) == IDNO)) {
+            && (CMPCThemeMsgBox::MessageBox(this, ResStr(IDS_WEBUI_PREVIEW_WARNING), nullptr, MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2) == IDNO)) {
         CheckDlgButton(IDC_CHECK6, BST_UNCHECKED);
     } else {
         SetModified();

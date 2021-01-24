@@ -416,12 +416,29 @@ bool CCDDAStream::Load(const WCHAR* fnw)
             continue;
         }
 
-        const int lenU = _countof(pDesc->Text);
-        const int lenW = _countof(pDesc->WText);
-
-        CString text = !pDesc->Unicode
-                       ? CString(reinterpret_cast<CStringA::PCXSTR>(pDesc->Text), lenU)
-                       : CString(pDesc->WText, lenW);
+        CString text;
+        CString tmp; 
+        if (pDesc->Unicode) {
+            const int lenW = _countof(pDesc->WText);
+            text = CString(CStringW((WCHAR*)pDesc->WText, lenW));
+            int tlen = text.GetLength();
+            int nLength = lenW - (tlen + 1);
+            if (nLength > 0 && tlen < 11) {
+                tmp = CString(CStringW((WCHAR*)pDesc->WText + tlen + 1, nLength));
+            } else {
+                tmp = CString(_T(""));
+            }
+        } else {
+            const int lenU = _countof(pDesc->Text);
+            text = CString(CStringA((CHAR*)pDesc->Text, lenU));
+            int tlen = text.GetLength();
+            int nLength = lenU - (tlen + 1);
+            if (nLength > 0 && tlen < 11) {
+                tmp = CString(CStringA( (CHAR*)pDesc->Text +  tlen + 1, nLength));
+            } else {
+                tmp = CString("");
+            }
+        }
 
         if (pDesc->PackType < 0x80 || pDesc->PackType >= 0x80 + 0x10) {
             continue;
@@ -438,14 +455,7 @@ bool CCDDAStream::Load(const WCHAR* fnw)
             }
         }
 
-        const int tlen = text.GetLength();
-        if (tlen < 12 - 1) {
-            last = !pDesc->Unicode
-                   ? CString(reinterpret_cast<CStringA::PCXSTR>(pDesc->Text) + tlen + 1, lenU - (tlen + 1))
-                   : CString(static_cast<CStringW::PCXSTR>(pDesc->WText) + tlen + 1, lenW - (tlen + 1));
-        } else {
-            last.Empty();
-        }
+        last = tmp;
     }
 
     m_discTitle = str[0][0];

@@ -25,6 +25,12 @@
 #include <array>
 #include "TextFile.h"
 #include "SubtitleHelpers.h"
+#include "../../include/mpc-hc_config.h"
+#if USE_LIBASS
+#include "SSASub.h"
+#include "SubRendererSettings.h"
+#endif
+#include "OpenTypeLangTags.h"
 
 enum tmode { TIME, FRAME }; // the meaning of STSEntry::start/end
 
@@ -57,7 +63,17 @@ public:
     double     fGaussianBlur;
     double     fontAngleZ, fontAngleX, fontAngleY;
     double     fontShiftX, fontShiftY;
+
     RelativeTo relativeTo;
+
+#if USE_LIBASS
+    // libass stuff
+    DWORD      SrtResX = 1920;
+    DWORD      SrtResY = 1080;
+    bool       Kerning = false;
+    bool       ScaledBorderAndShadow = true;
+    CString    customTags;
+#endif
 
     STSStyle();
 
@@ -218,6 +234,39 @@ public:
 
     void SetStr(int i, CStringA str, bool fUnicode /* ignored */);
     void SetStr(int i, CStringW str, bool fUnicode);
+
+public:
+    STSStyle m_styleOverride; // the app can decide to use this style instead of a built-in one
+
+#if USE_LIBASS
+public:
+    bool m_renderUsingLibass;
+    OpenTypeLang::HintStr m_openTypeLangHint;
+
+    SubRendererSettings subRendererSettings;
+    void SetSubRenderSettings(SubRendererSettings settings);
+
+
+    bool m_assloaded;
+    bool m_assfontloaded;
+
+    IFilterGraph* m_pGraph;
+    std::unique_ptr<ASS_Library, ASS_LibraryDeleter> m_ass;
+    std::unique_ptr<ASS_Renderer, ASS_RendererDeleter> m_renderer;
+    std::unique_ptr<ASS_Track, ASS_TrackDeleter> m_track;
+
+    void ResetASS();
+    bool LoadASSFile(Subtitle::SubType subType);
+    bool LoadASSTrack(char* data, int size, Subtitle::SubType subType);
+    void UnloadASS();
+    void LoadASSSample(char* data, int dataSize, REFERENCE_TIME tStart, REFERENCE_TIME tStop);
+    void LoadASSFont(IPin* pPin, ASS_Library* ass, ASS_Renderer* renderer);
+    void SetFilterGraph(IFilterGraph* g) { m_pGraph = g; };
+    void SetPin(IPin* i) { m_pPin = i; };
+
+protected:
+    IPin* m_pPin;
+#endif
 };
 
 extern const BYTE CharSetList[];

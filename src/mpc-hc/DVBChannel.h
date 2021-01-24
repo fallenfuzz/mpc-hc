@@ -53,6 +53,7 @@ enum BDA_STREAM_TYPE {
     BDA_AC3      = 0x03,
     BDA_EAC3     = 0x04,
     BDA_HEVC     = 0x05,
+    BDA_ADTS     = 0x10,
     BDA_LATM     = 0x11,
     BDA_PSI      = 0x80,
     BDA_TIF      = 0x81,

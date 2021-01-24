@@ -120,8 +120,12 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   if (Command=='T' || Command=='X' || Command=='E')
     mprintf(St(Command=='T' ? MTestVol:MExtrVol),Arc.FileName);
 
-
-  Arc.CheckArc(true);
+  try { // MPC-HC custom code
+      Arc.CheckArc(true);
+  }
+  catch (...) {
+      return false;
+  }
 #ifdef RARDLL
   if (!DllVolNotify(Cmd,NextName))
     return false;

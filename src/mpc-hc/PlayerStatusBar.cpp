@@ -25,6 +25,7 @@
 #include "MainFrm.h"
 #include "DSUtil.h"
 #include "CMPCTheme.h"
+#include "DpiHelper.h"
 
 // CPlayerStatusBar
 
@@ -58,7 +59,7 @@ BOOL CPlayerStatusBar::Create(CWnd* pParentWnd)
 
     // Should never be RTLed
     ModifyStyleEx(WS_EX_LAYOUTRTL, WS_EX_NOINHERITLAYOUT);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
         themedToolTip.SetDelayTime(TTDT_INITIAL, 0);
         themedToolTip.SetDelayTime(TTDT_AUTOPOP, 2500);
@@ -93,7 +94,9 @@ CSize CPlayerStatusBar::CalcFixedLayout(BOOL bStretch, BOOL bHorz)
 {
     CSize ret = __super::CalcFixedLayout(bStretch, bHorz);
     ret.cy = std::max<long>(ret.cy, 24);
-    ret.cy = m_pMainFrame->m_dpi.ScaleSystemToOverrideY(ret.cy);
+    if (!DpiHelper::CanUsePerMonitorV2()) {
+        ret.cy = m_pMainFrame->m_dpi.ScaleSystemToOverrideY(ret.cy);
+    }
     return ret;
 }
 
@@ -267,12 +270,6 @@ CString CPlayerStatusBar::PreparePathStatusMessage(CPath path)
     return path;
 }
 
-CString CPlayerStatusBar::GetTimerOSD() const
-{
-    return timerOSD;
-}
-
-
 CString CPlayerStatusBar::GetStatusTimer() const
 {
     CString strResult;
@@ -307,9 +304,9 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
             tcDur = RT2HMSF(rtDur);
             tcRt  = RT2HMSF(rtDur - rtNow);
         } else {
-            tcNow = RT2HMS_r(rtNow);
-            tcDur = RT2HMS_r(rtDur);
-            tcRt  = RT2HMS_r(rtDur - rtNow);
+            tcNow = RT2HMS(rtNow);
+            tcDur = RT2HMS(rtDur);
+            tcRt  = RT2HMS(rtDur - rtNow);
         }
 
         if (tcDur.bHours > 0 || (rtNow >= rtDur && tcNow.bHours > 0)) {
@@ -337,23 +334,10 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
         rstr.Format(_T("%I64d"), rtDur - rtNow);
     }
 
-    CString percentComplete;
     if (!s.fRemainingTime) {
-        if ((rtDur <= 0) || (rtDur < rtNow)) {
-            str = posstr;
-        } else {
-            str = posstr + _T(" / ") + durstr;
-            percentComplete.Format(_T(" [%3.2f%%]"), 100.f * (float(rtNow) / float(rtDur)));
-            timerOSD = str + percentComplete;
-        }
+        str = ((rtDur <= 0) || (rtDur < rtNow)) ? posstr : posstr + _T(" / ") + durstr;
     } else {
-        if ((rtDur <= 0) || (rtDur < rtNow)) {
-            str = posstr;
-        } else {
-            str = _T("- ") + rstr + _T(" / ") + durstr;
-            percentComplete.Format(_T(" [%3.2f%%]"), 100.f * (float(rtDur - rtNow) / float(rtDur)));
-            timerOSD = str + percentComplete;
-        }
+        str = ((rtDur <= 0) || (rtDur < rtNow)) ? posstr : _T("- ") + rstr + _T(" / ") + durstr;
     }
 
     SetStatusTimer(str);
@@ -427,15 +411,13 @@ void CPlayerStatusBar::OnPaint()
         r.InflateRect(1, 0, 1, 0);
     }
 
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         dc.FillSolidRect(&r, CMPCTheme::NoBorderColor);
         CRect top(r.left, r.top, r.right, r.top + 1);
         dc.FillSolidRect(&top, CMPCTheme::WindowBGColor);
     } else {
         dc.Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT));
     }
-
 
     r.DeflateRect(1, 1);
 
@@ -533,7 +515,7 @@ HBRUSH CPlayerStatusBar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 BOOL CPlayerStatusBar::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.RelayEvent(pMsg);
     } else {
         m_tooltip.RelayEvent(pMsg);

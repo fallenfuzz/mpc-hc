@@ -26,6 +26,7 @@
 #include "CMPCThemePPageBase.h"
 #include "CMPCThemeListBox.h"
 #include "CMPCThemeComboBox.h"
+#include "CMPCThemeStatic.h"
 
 class CShaderListBox : public CMPCThemeListBox
 {
@@ -77,11 +78,14 @@ protected:
     CShaderListBox m_Shaders, m_PreResize, m_PostResize;
     CMPCThemeComboBox m_PresetsBox;
     ShaderSelection::ShaderPresetMap m_Presets;
+    CMPCThemeStatic mpcvrNote;
 
     virtual void DoDataExchange(CDataExchange* pDX) override;
     virtual BOOL OnInitDialog() override;
+    virtual BOOL OnSetActive();
     virtual BOOL OnApply() override;
 
+    void CheckRenderer();
     void OnLoadShaderPreset();
     void OnSaveShaderPreset();
     void OnDeleteShaderPreset();

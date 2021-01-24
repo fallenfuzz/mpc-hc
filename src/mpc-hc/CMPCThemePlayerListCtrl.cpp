@@ -29,7 +29,7 @@ CMPCThemePlayerListCtrl::~CMPCThemePlayerListCtrl()
 
 void CMPCThemePlayerListCtrl::PreSubclassWindow()
 {
-    if (!AfxGetAppSettings().bMPCThemeLoaded) {
+    if (!AppIsThemeLoaded()) {
         EnableToolTips(TRUE);
     } else {
         if (CMPCThemeUtil::canUseWin10DarkTheme()) {
@@ -74,7 +74,7 @@ void CMPCThemePlayerListCtrl::subclassHeader()
 
 void CMPCThemePlayerListCtrl::setAdditionalStyles(DWORD styles)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         DWORD stylesToAdd = styles, stylesToRemove = 0;
         if (styles & LVS_EX_GRIDLINES) {
             stylesToAdd &= ~LVS_EX_GRIDLINES;
@@ -128,7 +128,7 @@ bool CMPCThemePlayerListCtrl::getFlaggedItem(int iItem)
 
 BOOL CMPCThemePlayerListCtrl::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (!IsWindow(themedToolTip.m_hWnd)) {
             themedToolTip.Create(this, TTS_ALWAYSTIP);
             themedToolTip.enableFlickerHelper();
@@ -150,7 +150,7 @@ void CMPCThemePlayerListCtrl::setCheckedColors(COLORREF checkedBG, COLORREF chec
 
 void CMPCThemePlayerListCtrl::OnNcPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (nullptr != themedSBHelper) {
             themedSBHelper->themedNcPaintWithSB();
         } else {
@@ -168,7 +168,7 @@ int CMPCThemePlayerListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         SetBkColor(CMPCTheme::ContentBGColor);
         subclassHeader();
     }
@@ -178,7 +178,7 @@ int CMPCThemePlayerListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CMPCThemePlayerListCtrl::OnLvnEndScroll(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (nullptr != themedSBHelper) {
             themedSBHelper->updateScrollInfo();
         }
@@ -203,7 +203,7 @@ void CMPCThemePlayerListCtrl::updateScrollInfo()
 
 LRESULT CMPCThemePlayerListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded && nullptr != themedSBHelper) {
+    if (AppIsThemeLoaded() && nullptr != themedSBHelper) {
         if (themedSBHelper->WindowProc(this, message, wParam, lParam)) {
             return 1;
         }
@@ -213,7 +213,7 @@ LRESULT CMPCThemePlayerListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM 
 
 void CMPCThemePlayerListCtrl::updateToolTip(CPoint point)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded && nullptr != themedToolTip) {
+    if (AppIsThemeLoaded() && nullptr != themedToolTip) {
         TOOLINFO ti = { 0 };
         UINT_PTR tid = OnToolHitTest(point, &ti);
         //OnToolHitTest returns -1 on failure but doesn't update uId to match
@@ -280,13 +280,18 @@ void CMPCThemePlayerListCtrl::drawItem(CDC* pDC, int nItem, int nSubItem)
         if (rClient.left <= rect.right && rClient.right >= rect.left && rClient.top <= rect.bottom && rClient.bottom >= rect.top) {
             COLORREF textColor = CMPCTheme::TextFGColor;
             COLORREF bgColor = CMPCTheme::ContentBGColor;
+            COLORREF selectedBGColor = CMPCTheme::ContentSelectedColor;
 
             COLORREF oldTextColor = pDC->GetTextColor();
             COLORREF oldBkColor = pDC->GetBkColor();
 
             CString text = GetItemText(nItem, nSubItem);
             if (nullptr != customThemeInterface) { //subclasses can override colors here
-                customThemeInterface->GetCustomTextColors(nItem, nSubItem, textColor, bgColor);
+                bool overrideSelectedBG = false;
+                customThemeInterface->GetCustomTextColors(nItem, nSubItem, textColor, bgColor, overrideSelectedBG);
+                if (overrideSelectedBG) {
+                    selectedBGColor = bgColor;
+                }
             }
 
             pDC->SetTextColor(textColor);
@@ -348,7 +353,7 @@ void CMPCThemePlayerListCtrl::drawItem(CDC* pDC, int nItem, int nSubItem)
                             rIcon.DeflateRect(0, (rIcon.Height() - rIcon.Width()) / 2); //as tall as wide
                         }
 
-                        CMPCThemeUtil::drawCheckBox(lvi.iImage, false, false, rIcon, &dcMem);
+                        CMPCThemeUtil::drawCheckBox(GetParent(), lvi.iImage, false, false, rIcon, &dcMem);
                     } else {
                         if (dwStyle == LVS_ICON) {
                         } else if (dwStyle == LVS_SMALLICON || dwStyle == LVS_LIST || dwStyle == LVS_REPORT) {
@@ -371,13 +376,13 @@ void CMPCThemePlayerListCtrl::drawItem(CDC* pDC, int nItem, int nSubItem)
                     int cbYMargin = (rect.Height() - cbSize - 1) / 2;
                     int cbXMargin = (contentLeft - rect.left - cbSize) / 2;
                     CRect rcb = { rect.left + cbXMargin, rect.top + cbYMargin, rect.left + cbXMargin + cbSize, rect.top + cbYMargin + cbSize };
-                    CMPCThemeUtil::drawCheckBox(isChecked, false, true, rcb, &dcMem);
+                    CMPCThemeUtil::drawCheckBox(GetParent(), isChecked, false, true, rcb, &dcMem);
                 }
             }
 
             if (IsWindowEnabled()) {
                 if (GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED && (nSubItem == 0 || fullRowSelect)) {
-                    bgColor = CMPCTheme::ContentSelectedColor;
+                    bgColor = selectedBGColor;
                     if (LVS_REPORT != dwStyle) { //in list mode we don't fill the "whole" column
                         CRect tmp = rText;
                         dcMem.DrawText(text, tmp, textFormat | DT_CALCRECT); //end of string
@@ -449,7 +454,7 @@ void CMPCThemePlayerListCtrl::drawItem(CDC* pDC, int nItem, int nSubItem)
 
 BOOL CMPCThemePlayerListCtrl::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
 
         *pResult = CDRF_DODEFAULT;
@@ -485,7 +490,7 @@ BOOL CMPCThemePlayerListCtrl::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 
 BOOL CMPCThemePlayerListCtrl::OnEraseBkgnd(CDC* pDC)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CRect r;
         GetClientRect(r);
         int dcState = pDC->SaveDC();
@@ -558,7 +563,7 @@ HBRUSH CMPCThemePlayerListCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CMPCThemePlayerListCtrl::OnHdnEndtrack(NMHDR* pNMHDR, LRESULT* pResult)
 {
     //    LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (nullptr != themedSBHelper) {
             themedSBHelper->updateScrollInfo();
         }
@@ -575,8 +580,7 @@ LRESULT CMPCThemePlayerListCtrl::OnDelayed_updateListCtrl(WPARAM, LPARAM)
 BOOL CMPCThemePlayerListCtrl::OnLvnItemchanged(NMHDR* pNMHDR, LRESULT* pResult)
 {
     //LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         ::PostMessage(m_hWnd, PLAYER_PLAYLIST_LVN_ITEMCHANGED, 0, 0);
     }
     *pResult = 0;

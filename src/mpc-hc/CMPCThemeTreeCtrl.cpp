@@ -9,7 +9,7 @@ CMPCThemeTreeCtrl::CMPCThemeTreeCtrl():
     themedSBHelper(nullptr),
     themedToolTipCid((UINT_PTR) - 1)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         m_brBkgnd.CreateSolidBrush(CMPCTheme::InlineEditBorderColor);
         if (!CMPCThemeUtil::canUseWin10DarkTheme()) {
             themedSBHelper = DEBUG_NEW CMPCThemeScrollBarHelper(this);
@@ -27,7 +27,7 @@ CMPCThemeTreeCtrl::~CMPCThemeTreeCtrl()
 
 BOOL CMPCThemeTreeCtrl::PreCreateWindow(CREATESTRUCT& cs)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         cs.dwExStyle |= WS_EX_CLIENTEDGE;
     }
     return __super::PreCreateWindow(cs);
@@ -35,7 +35,7 @@ BOOL CMPCThemeTreeCtrl::PreCreateWindow(CREATESTRUCT& cs)
 
 void CMPCThemeTreeCtrl::fulfillThemeReqs()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (CMPCThemeUtil::canUseWin10DarkTheme()) {
             SetWindowTheme(GetSafeHwnd(), L"DarkMode_Explorer", NULL);
         } else {
@@ -72,7 +72,7 @@ IMPLEMENT_DYNAMIC(CMPCThemeTreeCtrl, CTreeCtrl)
 
 BOOL CMPCThemeTreeCtrl::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (!IsWindow(themedToolTip.m_hWnd)) {
             themedToolTip.Create(this, TTS_ALWAYSTIP);
             themedToolTip.enableFlickerHelper();
@@ -86,7 +86,7 @@ BOOL CMPCThemeTreeCtrl::PreTranslateMessage(MSG* pMsg)
 
 void CMPCThemeTreeCtrl::updateToolTip(CPoint point)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded && nullptr != themedToolTip) {
+    if (AppIsThemeLoaded() && nullptr != themedToolTip) {
         TOOLINFO ti = { 0 };
         UINT_PTR tid = OnToolHitTest(point, &ti);
         //OnToolHitTest returns -1 on failure but doesn't update uId to match
@@ -124,7 +124,7 @@ void CMPCThemeTreeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
     NMTVCUSTOMDRAW* pstCD = reinterpret_cast<NMTVCUSTOMDRAW*>(pNMHDR);
     *pResult = CDRF_DODEFAULT;
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
 
         bool isFocus, isHot;
         switch (pNMCD->dwDrawStage) {
@@ -179,7 +179,7 @@ void CMPCThemeTreeCtrl::doEraseBkgnd(CDC* pDC)
 
 BOOL CMPCThemeTreeCtrl::OnEraseBkgnd(CDC* pDC)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         //doEraseBkgnd(pDC); //we do this in the custom draw prepaint step now, to allow double buffering to work
         return TRUE;
     } else {
@@ -190,7 +190,7 @@ BOOL CMPCThemeTreeCtrl::OnEraseBkgnd(CDC* pDC)
 
 void CMPCThemeTreeCtrl::OnNcPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (nullptr != themedSBHelper) {
             themedSBHelper->themedNcPaintWithSB();
         } else {
@@ -205,7 +205,7 @@ void CMPCThemeTreeCtrl::OnNcPaint()
 BOOL CMPCThemeTreeCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
     BOOL ret = __super::OnMouseWheel(nFlags, zDelta, pt);
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (nullptr != themedSBHelper) {
             themedSBHelper->updateScrollInfo();
         }
@@ -233,7 +233,7 @@ void CMPCThemeTreeCtrl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBa
 
 LRESULT CMPCThemeTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded && nullptr != themedSBHelper) {
+    if (AppIsThemeLoaded() && nullptr != themedSBHelper) {
         if (themedSBHelper->WindowProc(this, message, wParam, lParam)) {
             return 1;
         }

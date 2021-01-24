@@ -43,6 +43,10 @@ CPlaylistItem::CPlaylistItem()
     , m_fInvalid(false)
     , m_bYoutubeDL(false)
     , m_ydlSourceURL(_T(""))
+    , m_cue(false)
+    , m_cue_filename(_T(""))
+    , m_cue_index(0)
+    , m_cover(_T(""))
 {
     m_id = m_globalid++;
 }
@@ -76,6 +80,10 @@ CPlaylistItem& CPlaylistItem::operator=(const CPlaylistItem& pli)
         m_posPrevShuffle = pli.m_posPrevShuffle;
         m_bYoutubeDL = pli.m_bYoutubeDL;
         m_ydlSourceURL = pli.m_ydlSourceURL;
+        m_cue = pli.m_cue;
+        m_cue_filename = pli.m_cue_filename;
+        m_cue_index = pli.m_cue_index;
+        m_cover = pli.m_cover;
     }
     return *this;
 }
@@ -151,7 +159,7 @@ void CPlaylistItem::AutoLoadFiles()
 
     CString fn = m_fns.GetHead();
 
-    if (s.fAutoloadAudio && fn.Find(_T("://")) < 0) {
+    if (s.fAutoloadAudio && !PathUtils::IsURL(fn)) {
         int i = fn.ReverseFind('.');
         if (i > 0) {
             const CMediaFormats& mf = s.m_Formats;

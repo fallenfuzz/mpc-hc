@@ -1,21 +1,22 @@
 // ***************************************************************
-//  mvrInterfaces.h           version: 1.0.9  ·  date: 2016-01-23
+//  mvrInterfaces.h          version: 1.0.10  ·  date: 2017-09-11
 //  -------------------------------------------------------------
 //  various interfaces exported by madVR
 //  -------------------------------------------------------------
-//  Copyright (C) 2011 - 2016 www.madshi.net, BSD license
+//  Copyright (C) 2011 - 2017 www.madshi.net, BSD license
 // ***************************************************************
 
-// 2016-01-23 1.0.9 added EC_VIDEO_SIZE_CHANGED "lParam" values
-// 2015-06-21 1.0.8 added IMadVRCommand
-// 2014-01-18 1.0.7 added IMadVRSettings2
-// 2013-06-04 1.0.6 added IMadVRInfo
-// 2013-01-23 1.0.5 added IMadVRSubclassReplacement
-// 2012-11-18 1.0.4 added IMadVRExternalPixelShaders
-// 2012-10-07 1.0.3 added IMadVRExclusiveModeCallback
-// 2011-08-03 1.0.2 added IMadVRExclusiveModeControl
-// 2011-07-17 1.0.1 added IMadVRRefreshRateInfo
-// 2011-06-25 1.0.0 initial release
+// 2017-09-11 1.0.10 added IMadVRFrameGrabber
+// 2016-01-23 1.0.9  added EC_VIDEO_SIZE_CHANGED "lParam" values
+// 2015-06-21 1.0.8  added IMadVRCommand
+// 2014-01-18 1.0.7  added IMadVRSettings2
+// 2013-06-04 1.0.6  added IMadVRInfo
+// 2013-01-23 1.0.5  added IMadVRSubclassReplacement
+// 2012-11-18 1.0.4  added IMadVRExternalPixelShaders
+// 2012-10-07 1.0.3  added IMadVRExclusiveModeCallback
+// 2011-08-03 1.0.2  added IMadVRExclusiveModeControl
+// 2011-07-17 1.0.1  added IMadVRRefreshRateInfo
+// 2011-06-25 1.0.0  initial release
 
 #ifndef __mvrInterfaces__
 #define __mvrInterfaces__
@@ -150,10 +151,11 @@ DECLARE_INTERFACE_IID_(IOsdRenderCallback, IUnknown, "57FBF6DC-3E5F-4641-935A-CB
 };
 
 // flags for IMadVROsdServices::OsdSetBitmap
-const static int BITMAP_STRETCH_TO_OUTPUT = 1;  // stretch OSD bitmap to video/output rect
-const static int BITMAP_INFO_DISPLAY      = 2;  // info display, doesn't need low latency
-const static int BITMAP_USER_INTERFACE    = 4;  // user interface, switches madVR into low latency mode
-const static int BITMAP_MASKING_AWARE     = 8;  // caller is aware of screen masking, bitmaps are positioned properly inside of "fullOutputRect"
+const static int BITMAP_STRETCH_TO_OUTPUT = 1;     // stretch OSD bitmap to video/output rect
+const static int BITMAP_INFO_DISPLAY      = 2;     // info display, doesn't need low latency
+const static int BITMAP_USER_INTERFACE    = 4;     // user interface, switches madVR into low latency mode
+const static int BITMAP_MASKING_AWARE     = 8;     // caller is aware of screen masking, bitmaps are positioned properly inside of "fullOutputRect"
+const static int BITMAP_HDR_PQ            = 0x10;  // the bitmap has PQ transfer function (instead of gamma)
 
 // this is the main interface which madVR provides to you
 //[uuid("3AE03A88-F613-4BBA-AD3E-EE236976BF9A")]
@@ -320,6 +322,7 @@ DECLARE_INTERFACE_IID_(IMadVRInfo, IUnknown, "8FAB7F31-06EF-444C-A798-10314E1855
 // refreshRate,             double,    display refresh rate (0, if unknown)
 // displayModeSize,         size,      display mode width/height
 // yuvMatrix,               string,    RGB Video: "None" (fullrange); YCbCr Video: "Levels.Matrix", Levels: TV|PC, Matrix: 601|709|240M|FCC|2020
+// hdrOutput,               bool,      does madVR send the video in HDR/PQ transfer function to the display?
 // exclusiveModeActive,     bool,      is madVR currently in exclusive mode?
 // madVRSeekbarEnabled,     bool,      is the madVR exclusive mode seek bar currently enabled?
 // dxvaDecodingActive,      bool,      is DXVA2 decoding      being used at the moment?
@@ -713,6 +716,76 @@ DECLARE_INTERFACE_IID_(IMadVRSettings2, IMadVRSettings, "1C3E03D6-F422-4D31-9424
 //     deactivateCmdline,           command line to execute when this profile is deactivated,           string
 
 // ---------------------------------------------------------------------------
+// IMadVRFrameGrabber
+// ---------------------------------------------------------------------------
+
+// the "IMadVRFrameGrabber" interface can be used to get an 8bit RGB grab
+// of the currently shown video frame
+
+// the resulting DIB Image is allocated by madVR using LocalAlloc
+// it's the caller's duty to free the buffer when it's no longer needed
+
+// values for IMadVRFrameGrabber::GrabFrame's "zoom" parameter
+const static int ZOOM_PLAYBACK_SIZE = 0;     // the exact size/zoom used in current playback
+const static int ZOOM_ENCODED_SIZE  = 1;     // the video in its encoded size (e.g. DVD 720x480), *without* aspect ratio correction
+const static int ZOOM_25_PERCENT    = 25;    // the video zoomed down to 25% of its original size, with AR correction
+const static int ZOOM_50_PERCENT    = 50;    // the video zoomed down to 50%
+const static int ZOOM_100_PERCENT   = 100;   // the video in its original size
+const static int ZOOM_200_PERCENT   = 200;   // the video zoomed up to 200%
+const static int ZOOM_300_PERCENT   = 300;   // the video zoomed up to 300%
+const static int ZOOM_400_PERCENT   = 400;   // the video zoomed up to 400%
+const static int ZOOM_800_PERCENT   = 800;   // the video zoomed up to 800%
+const static int ZOOM_1280x720      = 720;   // the video centered with "touch from inside" in a 1280x720 rect
+const static int ZOOM_1920x1080     = 1080;  // the video centered with "touch from inside" in a 1920x1080 rect
+const static int ZOOM_3840x2160     = 2160;  // the video centered with "touch from inside" in a 3840x2160 rect
+
+// flags for IMadVRFrameGrabber::GrabFrame's "flags" parameter
+const static int FLAGS_RENDER_OSD               = 1;     // *do* include the OSD in the frame grab
+const static int FLAGS_APPLY_CALIBRATION        = 2;     // *do* perform calibration stuff (3dlut, color & gamma changes etc)
+const static int FLAGS_NO_SUBTITLES             = 4;     // don't include subtitles in the frame grab
+const static int FLAGS_NO_ARTIFACT_REMOVAL      = 8;     // don't apply the user selected artifact removal algorithms
+const static int FLAGS_NO_IMAGE_ENHANCEMENTS    = 0x10;  // don't apply the user selected image enhancement algorithms
+const static int FLAGS_NO_UPSCALING_REFINEMENTS = 0x20;  // don't apply the user selected image upscaling refinement algorithms
+const static int FLAGS_NO_HDR_SDR_CONVERSION    = 0x40;  // don't perform HDR -> SDR conversion
+const static int FLAGS_NO_CUSTOM_SHADERS        = 0x80;  // don't execute custom shaders
+
+// flags for IMadVRFrameGrabber::GrabFrame's "chromaUpscaling" parameter
+const static int CHROMA_UPSCALING_USER_SELECTED = 0;  // use the user selected chroma upscaling algorithm
+const static int CHROMA_UPSCALING_BILINEAR      = 1;  // use fast "bilinear" chroma upscaling
+const static int CHROMA_UPSCALING_NGU_AA        = 2;  // use slow but high quality NGU Anti-Alias chroma upscaling
+
+// flags for IMadVRFrameGrabber::GrabFrame's "imageDownscaling" parameter
+const static int IMAGE_DOWNSCALING_USER_SELECTED = 0;  // use the user selected image downscaling algorithm
+const static int IMAGE_DOWNSCALING_BILINEAR      = 1;  // use fast "bilinear" image downscaling
+const static int IMAGE_DOWNSCALING_SSIM1D100     = 2;  // use slow but high quality SSIM-1D "100" image downscaling
+
+// flags for IMadVRFrameGrabber::GrabFrame's "imageUpscaling" parameter
+const static int IMAGE_UPSCALING_USER_SELECTED      = 0;  // use the user selected image upscaling algorithm
+const static int IMAGE_UPSCALING_BILINEAR           = 1;  // use fast "bilinear" image upscaling
+const static int IMAGE_UPSCALING_NGU_AA             = 2;  // use NGU Anti-Alias image upscaling
+const static int IMAGE_UPSCALING_NGU_STANDARD       = 3;  // use NGU Standard image upscaling
+const static int IMAGE_UPSCALING_NGU_SHARP          = 4;  // use NGU Sharp image upscaling
+const static int IMAGE_UPSCALING_NGU_AA_GRAIN       = 5;  // use NGU Anti-Alias image upscaling, with a bit of added grain
+const static int IMAGE_UPSCALING_NGU_STANDARD_GRAIN = 6;  // use NGU Standard image upscaling, with a bit of added grain
+const static int IMAGE_UPSCALING_NGU_SHARP_GRAIN    = 7;  // use NGU Sharp image upscaling, with a bit of added grain
+
+//[uuid("B0F34BA5-5EFD-4762-A07F-FF9046B4566C")]
+//interface IMadVRFrameGrabber : public IUnknown
+DECLARE_INTERFACE_IID_(IMadVRFrameGrabber, IUnknown, "B0F34BA5-5EFD-4762-A07F-FF9046B4566C")
+{
+  STDMETHOD(GrabFrame)(
+    DWORD zoom,                            // which resolution to create the frame grab in?
+    DWORD flags,                           // various flags/options
+    DWORD chromaUpscaling,                 // which chroma upscaling algorithm to use?
+    DWORD lumaDownscaling,                 // which luma downscaling algorithm to use?
+    DWORD lumaUpscaling,                   // which luma upscaling algorithm to use?
+    DWORD reserved1,                       // reserved for future flags/options, set to 0
+    LPVOID *dibImage,                      // output: DIB Image = BITMAPINFOHEADER + pixels
+    LPVOID reserved2                       // reserved for future use, set to NULL
+  ) = 0;
+};
+
+// ---------------------------------------------------------------------------
 // ISubRender
 // ---------------------------------------------------------------------------
 
@@ -720,7 +793,7 @@ DECLARE_INTERFACE_IID_(IMadVRSettings2, IMadVRSettings, "1C3E03D6-F422-4D31-9424
 // engine in MPC-HC and PotPlayer for communication with madVR and with the
 // Haali Video Renderer
 
-/*
+/* for mpc-hc we need to comment these out to avoid conflicts with ISubRender.h
 interface ISubRenderCallback; // forward
 
 // interface exported by madVR
@@ -760,7 +833,6 @@ DECLARE_INTERFACE_IID_(ISubRenderCallback4, ISubRenderCallback3, "C89CF1D4-29C5-
   STDMETHOD(RenderEx3)(REFERENCE_TIME frameStart, REFERENCE_TIME frameStop, REFERENCE_TIME avgTimePerFrame, RECT croppedVideoRect, RECT originalVideoRect, RECT viewportRect, const double videoStretchFactor = 1.0, int xOffsetInPixels = 0, DWORD flags = 0) = 0;
 };
 */
-
 // ---------------------------------------------------------------------------
 // EC_VIDEO_SIZE_CHANGED "lParam2" values sent by madVR
 // ---------------------------------------------------------------------------

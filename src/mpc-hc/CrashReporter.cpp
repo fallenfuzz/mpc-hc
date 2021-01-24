@@ -40,12 +40,12 @@ namespace CrashReporter
 }
 #endif
 
-void CrashReporter::Enable(LPCTSTR langDll /*= nullptr*/)
+void CrashReporter::Enable()
 {
 #if !defined(_DEBUG) && USE_DRDUMP_CRASH_REPORTER
     crash_rpt::ApplicationInfo appInfo = {
         sizeof(appInfo),
-        "31c48823-ce52-401b-8425-888388161757",
+        "80dcded5-e256-46c1-ae51-fe7384cae2be",
         "mpc-hc",
         L"MPC-HC",
         L"MPC-HC Team",
@@ -75,21 +75,13 @@ void CrashReporter::Enable(LPCTSTR langDll /*= nullptr*/)
                                        MiniDumpIgnoreInaccessibleMemory
                                    );
 
-    crash_rpt::custom_data_collection::Settings dataCollectionSettings = {
-        sizeof(dataCollectionSettings),
-        _T("CrashReporter\\CrashReporterDialog.dll"),               // Path of the DLL
-        "CreateCrashDialog",                                        // Function name
-        (LPBYTE)langDll,                                            // No user-defined data
-        langDll ? DWORD(_tcslen(langDll) + 1)* sizeof(TCHAR) : 0    // Size of user-defined data
-    };
-
     crash_rpt::HandlerSettings handlerSettings = {
         sizeof(handlerSettings),
-        FALSE,      // Don't keep the dumps
-        FALSE,      // Don't open the problem page in the browser
-        FALSE,      // Don't use WER (for now)
+        FALSE,      // If dumps should be kept in temp dir
+        TRUE,       // Open the problem page in the browser
+        FALSE,      // If Windows Error Reporting should be used
         0,          // Anonymous submitter
-        FALSE,      // Ask before sending additional info
+        TRUE,       // Additional info
         TRUE,       // Override the "full" dump settings
         dumpType,   // "Full" dump custom settings
         nullptr,    // No lang file (for now)
@@ -97,7 +89,8 @@ void CrashReporter::Enable(LPCTSTR langDll /*= nullptr*/)
         nullptr,    // Default path for DbgHelp
         CrashProcessingCallback,    // Callback function
         nullptr,    // No user defined parameter for the callback function
-        &dataCollectionSettings // Use our custom dialog
+        nullptr,    // Custom data collection settings
+        nullptr
     };
 
     g_bEnabled = g_crashReporter.InitCrashRpt(&appInfo, &handlerSettings);

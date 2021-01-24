@@ -31,6 +31,7 @@ namespace SaneAudioRenderer
         bool                  exclusive;
         bool                  bitstream;
         bool                  eventMode;
+        bool                  isDVD;
         bool                  realtime;
 
         bool                  ignoredSystemChannelMixer;
@@ -90,7 +91,7 @@ namespace SaneAudioRenderer
 
         bool CheckLastInstances()
         {
-            if (!m_backend.unique())
+            if (m_backend.use_count() != 1)
                 return false;
 
             if (m_backend->audioClock && !IsLastInstance(m_backend->audioClock))

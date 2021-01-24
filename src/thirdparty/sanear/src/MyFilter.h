@@ -58,3 +58,11 @@ namespace SaneAudioRenderer
         IUnknownPtr m_seeking;
     };
 }
+
+#define BeginEnumFilters(pFilterGraph, pEnumFilters, pBaseFilter)                                                      \
+{                                                                                                                      \
+    CComPtr<IEnumFilters> pEnumFilters;                                                                                \
+    if (pFilterGraph && SUCCEEDED(pFilterGraph->EnumFilters(&pEnumFilters))) {                                         \
+        for (CComPtr<IBaseFilter> pBaseFilter; S_OK == pEnumFilters->Next(1, &pBaseFilter, 0); pBaseFilter = nullptr) {
+
+#define EndEnumFilters }}}

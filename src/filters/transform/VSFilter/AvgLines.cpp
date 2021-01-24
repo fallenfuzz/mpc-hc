@@ -31,7 +31,7 @@ void AvgLines8(BYTE* dst, DWORD h, DWORD pitch)
         BYTE* tmp = s;
 
 #ifndef _WIN64
-        if ((g_cpuid.m_flags & CCpuID::sse2) && !((DWORD)tmp & 0xf) && !((DWORD)pitch & 0xf)) {
+        if (!((DWORD)tmp & 0xf) && !((DWORD)pitch & 0xf)) {
             __asm {
                 mov     esi, tmp
                 mov     ebx, pitch
@@ -54,7 +54,7 @@ void AvgLines8(BYTE* dst, DWORD h, DWORD pitch)
             for (ptrdiff_t i = pitch & 7; i--; tmp++) {
                 tmp[pitch] = (tmp[0] + tmp[pitch << 1] + 1) >> 1;
             }
-        } else if (g_cpuid.m_flags & CCpuID::mmx) {
+        } else {
             __asm {
                 mov     esi, tmp
                 mov     ebx, pitch
@@ -97,13 +97,12 @@ void AvgLines8(BYTE* dst, DWORD h, DWORD pitch)
             for (ptrdiff_t i = pitch & 7; i--; tmp++) {
                 tmp[pitch] = (tmp[0] + tmp[pitch << 1] + 1) >> 1;
             }
-        } else
-#endif
-        {
-            for (ptrdiff_t i = pitch; i--; tmp++) {
-                tmp[pitch] = (tmp[0] + tmp[pitch << 1] + 1) >> 1;
-            }
         }
+#else
+        for (ptrdiff_t i = pitch; i--; tmp++) {
+            tmp[pitch] = (tmp[0] + tmp[pitch << 1] + 1) >> 1;
+        }
+#endif
     }
 
     if (!(h & 1) && h >= 2) {

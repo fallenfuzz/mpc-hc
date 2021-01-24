@@ -52,9 +52,7 @@ CVMROSD::CVMROSD(CMainFrame* pMainFrame)
     , m_bShowMessage(true)
     , m_nMessagePos(OSD_NOMESSAGE)
 {
-
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         m_colors[OSD_TRANSPARENT] = RGB(0, 0, 0);
         m_colors[OSD_BACKGROUND] = CMPCTheme::ContentBGColor;
         m_colors[OSD_BORDER] = CMPCTheme::WindowBorderColorDim;

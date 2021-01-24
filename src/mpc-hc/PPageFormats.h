@@ -53,8 +53,6 @@ private:
     bool m_bInsufficientPrivileges;
     bool m_bFileExtChanged;
     CMediaFormats m_mf;
-    int m_iRtspHandler;
-    BOOL m_fRtspFileExtFirst;
     bool m_bHaveRegisteredCategory;
 
     enum { COL_CATEGORY, COL_ENGINE };

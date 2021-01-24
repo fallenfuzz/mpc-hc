@@ -1,5 +1,5 @@
 @ECHO OFF
-REM (C) 2010-2013, 2015, 2017 see Authors.txt
+REM (C) 2010-2020 see Authors.txt
 REM
 REM This file is part of MPC-HC.
 REM
@@ -25,11 +25,10 @@ SET "COMMON=%FILE_DIR%\common.bat"
 
 IF EXIST "build.user.bat" CALL "build.user.bat"
 
-IF NOT DEFINED MPCHC_GIT IF DEFINED GIT (SET MPCHC_GIT=%GIT%)
-SET "PATH=%MPCHC_GIT%\cmd;%PATH%"
+IF NOT DEFINED MPCHC_GIT IF DEFINED GIT (SET MPCHC_GIT=%GIT%) ELSE (SET MPCHC_GIT="C:\Program Files\Git")
 
-CALL "%COMMON%" :SubSetPath
-IF %ERRORLEVEL% NEQ 0 GOTO MissingVar
+SET "PATH=%MPCHC_GIT%\bin;%PATH%"
+
 CALL "%COMMON%" :SubDoesExist bash.exe
 IF %ERRORLEVEL% NEQ 0 GOTO MissingVar
 
@@ -43,8 +42,9 @@ EXIT /B
 
 
 :MissingVar
-ECHO Not all build dependencies were found.
+copy /Y "build\version_rev_fallback.h" "build\version_rev.h"
+ECHO Not all build dependencies were found: Missing bash.exe in Git installation
 ECHO.
 ECHO See "docs\Compilation.md" for more information.
 ENDLOCAL
-EXIT /B 1
+EXIT /B

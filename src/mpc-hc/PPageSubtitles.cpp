@@ -186,7 +186,7 @@ BOOL CPPageSubtitles::OnInitDialog()
 
     UpdateData(FALSE);
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
         themedToolTip.Activate(TRUE);
         themedToolTip.SetDelayTime(TTDT_AUTOPOP, 10000);
@@ -304,7 +304,7 @@ BOOL CPPageSubtitles::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 
 BOOL CPPageSubtitles::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (IsWindow(themedToolTip)) {
             themedToolTip.RelayEvent(pMsg);
         }

@@ -56,7 +56,7 @@ namespace SaneAudioRenderer
         std::array<float, 18 * 18> BuildFullMatrix(DWORD inputMask, DWORD outputMask)
         {
             const float fullPower = 1.0f;
-            const float halfPower = 0.707113564f;
+            const float halfPower = 0.70710678f; // 1.0/sqrt(2.0)
 
             std::array<float, 18 * 18> matrix{};
 
@@ -81,17 +81,44 @@ namespace SaneAudioRenderer
                     target[i] = 0.0f;
             };
 
+            // Mid-range of regular speaker layouts (min <-> max)
+            // C = 0 deg, L/R = 26 deg (22 <-> 30)
+            // SL/SR = 105 deg (90 <-> 120), RL/RR = 142.5 deg (135 <-> 150), MS = 180 deg
+            // Panning calculated using sine law
+
             // Mix side
             {
                 if (!(outputMask & SPEAKER_SIDE_LEFT))
                 {
-                    feed(SPEAKER_SIDE_LEFT, SPEAKER_BACK_LEFT, fullPower);
+                    if ((outputMask & SPEAKER_BACK_LEFT) && (outputMask & SPEAKER_FRONT_LEFT))
+                    {
+                        // p = (105-26)/(142.5-26)
+                        // L = cos( (p*PI)/2 ), RL = sin( (p*PI)/2 )
+                        feed(SPEAKER_SIDE_LEFT, SPEAKER_FRONT_LEFT, 0.48435095f);
+                        feed(SPEAKER_SIDE_LEFT, SPEAKER_BACK_LEFT, 0.87487380f);
+                    }
+                    else
+                    {
+                        feed(SPEAKER_SIDE_LEFT, SPEAKER_BACK_LEFT, fullPower);
+                    }
+
                     clear(SPEAKER_SIDE_LEFT);
                 }
 
                 if (!(outputMask & SPEAKER_SIDE_RIGHT))
                 {
-                    feed(SPEAKER_SIDE_RIGHT, SPEAKER_BACK_RIGHT, fullPower);
+                    if ((outputMask & SPEAKER_BACK_RIGHT) && (outputMask & SPEAKER_FRONT_RIGHT))
+                    {
+                        // p = (105-26)/(142.5-26)
+                        // R = cos( (p*PI)/2 ), RR = sin( (p*PI)/2 )
+                        feed(SPEAKER_SIDE_RIGHT, SPEAKER_FRONT_RIGHT, 0.48435095f);
+                        feed(SPEAKER_SIDE_RIGHT, SPEAKER_BACK_RIGHT, 0.87487380f);
+                    }
+                    else
+                    {
+                        feed(SPEAKER_SIDE_RIGHT, SPEAKER_BACK_RIGHT, fullPower);
+                    }
+
                     clear(SPEAKER_SIDE_RIGHT);
                 }
             }
@@ -100,24 +127,60 @@ namespace SaneAudioRenderer
             {
                 if (!(outputMask & SPEAKER_BACK_CENTER))
                 {
-                    feed(SPEAKER_BACK_CENTER, SPEAKER_BACK_LEFT, halfPower);
-                    feed(SPEAKER_BACK_CENTER, SPEAKER_BACK_RIGHT, halfPower);
+                    if ((outputMask & SPEAKER_SIDE_LEFT) && (!(outputMask & SPEAKER_BACK_LEFT)))
+                    {
+                        feed(SPEAKER_BACK_CENTER, SPEAKER_SIDE_LEFT, halfPower);
+                    }
+                    else
+                    {
+                        feed(SPEAKER_BACK_CENTER, SPEAKER_BACK_LEFT, halfPower);
+                    }
+
+                    if ((outputMask & SPEAKER_SIDE_RIGHT) && (!(outputMask & SPEAKER_BACK_RIGHT)))
+                    {
+                        feed(SPEAKER_BACK_CENTER, SPEAKER_SIDE_RIGHT, halfPower);
+                    }
+                    else
+                    {
+                        feed(SPEAKER_BACK_CENTER, SPEAKER_BACK_RIGHT, halfPower);
+                    }
+
                     clear(SPEAKER_BACK_CENTER);
                 }
 
                 if (!(outputMask & SPEAKER_BACK_LEFT))
                 {
-                    if (outputMask & SPEAKER_BACK_CENTER)
+                    if (outputMask & SPEAKER_SIDE_LEFT)
                     {
-                        feed(SPEAKER_BACK_LEFT, SPEAKER_BACK_CENTER, fullPower);
-                    }
-                    else if (outputMask & SPEAKER_SIDE_LEFT)
-                    {
-                        feed(SPEAKER_BACK_LEFT, SPEAKER_SIDE_LEFT, fullPower);
+                        if (outputMask & SPEAKER_BACK_CENTER)
+                        {
+                            // p = (142.5-105)/(180-105)
+                            // SL = cos( (p*PI)/2 ), MS = sin( (p*PI)/2 )
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_SIDE_LEFT, halfPower);
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_BACK_CENTER, halfPower);
+                        }
+                        else if (outputMask & SPEAKER_SIDE_RIGHT)
+                        {
+                            // p = (142.5-105)/(255-105)
+                            // SL = cos( (p*PI)/2 ), SR = sin( (p*PI)/2 )
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_SIDE_LEFT, 0.92387953f);
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_SIDE_RIGHT, 0.38268343f);
+                        }
+                        else
+                        {
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_SIDE_LEFT, fullPower);
+                        }
                     }
                     else
                     {
-                        feed(SPEAKER_BACK_LEFT, SPEAKER_FRONT_LEFT, halfPower);
+                        if (outputMask & SPEAKER_BACK_CENTER)
+                        {
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_BACK_CENTER, halfPower);
+                        }
+                        else
+                        {
+                            feed(SPEAKER_BACK_LEFT, SPEAKER_FRONT_LEFT, halfPower);
+                        }
                     }
 
                     clear(SPEAKER_BACK_LEFT);
@@ -125,17 +188,37 @@ namespace SaneAudioRenderer
 
                 if (!(outputMask & SPEAKER_BACK_RIGHT))
                 {
-                    if (outputMask & SPEAKER_BACK_CENTER)
+                    if (outputMask & SPEAKER_SIDE_RIGHT)
                     {
-                        feed(SPEAKER_BACK_RIGHT, SPEAKER_BACK_CENTER, fullPower);
-                    }
-                    else if (outputMask & SPEAKER_SIDE_RIGHT)
-                    {
-                        feed(SPEAKER_BACK_RIGHT, SPEAKER_SIDE_RIGHT, fullPower);
+                        if (outputMask & SPEAKER_BACK_CENTER)
+                        {
+                            // p = (142.5-105)/(180-105)
+                            // SR = cos( (p*PI)/2 ), MS = sin( (p*PI)/2 )
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_SIDE_RIGHT, halfPower);
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_BACK_CENTER, halfPower);
+                        }
+                        else if (outputMask & SPEAKER_SIDE_LEFT)
+                        {
+                            // p = (142.5-105)/(255-105)
+                            // SR = cos( (p*PI)/2 ), SL = sin( (p*PI)/2 )
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_SIDE_RIGHT, 0.92387953f);
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_SIDE_LEFT, 0.38268343f);
+                        }
+                        else
+                        {
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_SIDE_RIGHT, fullPower);
+                        }
                     }
                     else
                     {
-                        feed(SPEAKER_BACK_RIGHT, SPEAKER_FRONT_RIGHT, halfPower);
+                        if (outputMask & SPEAKER_BACK_CENTER)
+                        {
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_BACK_CENTER, halfPower);
+                        }
+                        else
+                        {
+                            feed(SPEAKER_BACK_RIGHT, SPEAKER_FRONT_RIGHT, halfPower);
+                        }
                     }
 
                     clear(SPEAKER_BACK_RIGHT);

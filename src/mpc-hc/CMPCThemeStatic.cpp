@@ -23,7 +23,7 @@ END_MESSAGE_MAP()
 
 void CMPCThemeStatic::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CPaintDC dc(this);
 
         CString sTitle;
@@ -85,7 +85,7 @@ void CMPCThemeStatic::OnPaint()
 
 void CMPCThemeStatic::OnNcPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CDC* pDC = GetWindowDC();
 
         CRect rect;
@@ -110,7 +110,7 @@ void CMPCThemeStatic::OnNcPaint()
 
 void CMPCThemeStatic::OnEnable(BOOL bEnable)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         SetRedraw(FALSE);
         __super::OnEnable(bEnable);
         SetRedraw(TRUE);
@@ -130,7 +130,7 @@ void CMPCThemeStatic::OnEnable(BOOL bEnable)
 
 BOOL CMPCThemeStatic::OnEraseBkgnd(CDC* pDC)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CRect r;
         GetClientRect(r);
         if (isFileDialogChild) {

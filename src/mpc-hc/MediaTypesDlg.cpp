@@ -77,6 +77,7 @@ void CMediaTypesDlg::AddMediaType(const AM_MEDIA_TYPE* pmt)
 
 BEGIN_MESSAGE_MAP(CMediaTypesDlg, CMPCThemeResizableDialog)
     ON_CBN_SELCHANGE(IDC_COMBO1, OnCbnSelchangeCombo1)
+    ON_MESSAGE(WM_EXTERNALCLOSE, OnExternalClose)
 END_MESSAGE_MAP()
 
 
@@ -107,6 +108,8 @@ BOOL CMediaTypesDlg::OnInitDialog()
 
     SetMinTrackSize(CSize(300, 200));
     fulfillThemeReqs();
+
+    //DWORD threadID = GetWindowThreadProcessId(m_hWnd,nullptr);
 
     return TRUE;  // return TRUE unless you set the focus to a control
     // EXCEPTION: OCX Property Pages should return FALSE
@@ -147,4 +150,9 @@ void CMediaTypesDlg::OnCbnSelchangeCombo1()
     }
 
     m_report.SetSel(0, 0);
+}
+
+LRESULT CMediaTypesDlg::OnExternalClose(WPARAM wParam, LPARAM lParam) {
+    EndDialog(IDCANCEL);
+    return LRESULT();
 }

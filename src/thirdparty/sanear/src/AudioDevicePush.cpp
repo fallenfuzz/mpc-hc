@@ -12,7 +12,7 @@ namespace SaneAudioRenderer
         m_backend = backend;
 
         if (static_cast<HANDLE>(m_wake) == NULL)
-            throw E_OUTOFMEMORY;
+            throw HResultException{ E_OUTOFMEMORY };
     }
 
     AudioDevicePush::~AudioDevicePush()
@@ -39,7 +39,7 @@ namespace SaneAudioRenderer
     REFERENCE_TIME AudioDevicePush::Finish(CAMEvent* pFilledEvent)
     {
         if (m_error)
-            throw E_FAIL;
+            throw HResultException{ E_FAIL };
 
         if (!m_endOfStream)
         {
@@ -56,9 +56,9 @@ namespace SaneAudioRenderer
                     m_thread = std::thread(std::bind(&AudioDevicePush::SilenceFeed, this));
                 }
             }
-            catch (std::system_error&)
+            catch (...)
             {
-                throw E_OUTOFMEMORY;
+                throw HResultException{ E_OUTOFMEMORY };
             }
         }
 
@@ -138,7 +138,7 @@ namespace SaneAudioRenderer
                 m_silenceFrames += PushSilenceToDevice(m_backend->deviceBufferSize);
                 m_wake.Wait(m_backend->bufferDuration / 4);
             }
-            catch (HRESULT)
+            catch (...)
             {
                 m_error = true;
             }

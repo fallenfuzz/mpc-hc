@@ -31,14 +31,14 @@ BOOL CMPCThemePropertySheet::OnInitDialog()
 
 void CMPCThemePropertySheet::fulfillThemeReqs()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CMPCThemeUtil::fulfillThemeReqs((CWnd*)this);
     }
 }
 
 HBRUSH CMPCThemePropertySheet::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         LRESULT lResult;
         if (pWnd->SendChildNotifyLastMsg(&lResult)) {
             return (HBRUSH)lResult;

@@ -22,7 +22,7 @@
 
 namespace CrashReporter
 {
-    void Enable(LPCTSTR langDll = nullptr);
+    void Enable();
     void Disable();
     bool IsEnabled();
 };

@@ -753,7 +753,7 @@ void CXeScrollBarBase::OnLButtonUp( UINT nFlags, CPoint point )
 
 	if( m_bDragging )					// Did we send any SB_THUMBTRACK messages?
 	{
-		SendScrollMsg( SB_THUMBPOSITION, m_nTrackPos );
+		SendScrollMsg( SB_THUMBPOSITION, (WORD)m_nTrackPos );
 		m_bDragging = FALSE;
 		RecalcRects();	// Reset thumb pos. to current scroll pos.
 	}
@@ -769,16 +769,15 @@ void CXeScrollBarBase::OnLButtonUp( UINT nFlags, CPoint point )
 	CScrollBar::OnLButtonUp(nFlags, point);
 }
 
-/* updated to newer api and reversing return value to avoid mousewheel propagating*/
-/* remove restriction on vert scrollbar, as both are valid in win32*/
+/* updated to newer api and reversing return value to avoid mousewheel propagating */
+/* remove restriction on vert scrollbar, as both are valid in win32 */
 BOOL CXeScrollBarBase::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
     ASSERT(::IsWindow(m_hWnd));
-    short xPos = pt.x;
-    short yPos = pt.y;
+    //short xPos = pt.x;
+    //short yPos = pt.y;
 
     //if (!m_bHorizontal)	// Mouse wheel messages only apply to vertical scrollbar.
-
-    {
+    //{
         WORD wSBcode = 0xFFFF;
         if (zDelta >= WHEEL_DELTA) {
             wSBcode = SB_LINEUP;
@@ -794,8 +793,8 @@ BOOL CXeScrollBarBase::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
             SendScrollMsg(SB_ENDSCROLL);
         }
         return 1;	// Message was processed. (was 0, but per https://msdn.microsoft.com/en-us/data/eff58fe7(v=vs.85) should be 1 if scrolling enabled
-    }
-    return 0;	// Message not processed.  (was 1, but per https://msdn.microsoft.com/en-us/data/eff58fe7(v=vs.85) should be 0 if scrolling not enabled
+    //}
+    //return 0;	// Message not processed.  (was 1, but per https://msdn.microsoft.com/en-us/data/eff58fe7(v=vs.85) should be 0 if scrolling not enabled
 }
 
 
@@ -858,7 +857,7 @@ void CXeScrollBarBase::OnMouseMove( UINT nFlags, CPoint point )
 		{	// Send scroll message when user starts dragging
 			// OR when track pos has changed.
 			m_nTrackPos = nTrackPos;
-			SendScrollMsg( SB_THUMBTRACK, m_nTrackPos );
+			SendScrollMsg( SB_THUMBTRACK, (WORD)m_nTrackPos );
 			m_bNeedEndScroll = TRUE;
 		}
 	}
@@ -1030,7 +1029,7 @@ void CXeScrollBarBase::OnMenuCommands( UINT uID )
 		else if( nScrollHerePos > m_nMaxReportedPos )
 			nScrollHerePos = m_nMaxReportedPos;
 		m_nTrackPos = nScrollHerePos;
-		SendScrollMsg( SB_THUMBPOSITION, m_nTrackPos );
+		SendScrollMsg( SB_THUMBPOSITION, (WORD)m_nTrackPos );
 		SendScrollMsg( SB_ENDSCROLL );
 		break;
 	case XSB_IDM_SCR_TL:

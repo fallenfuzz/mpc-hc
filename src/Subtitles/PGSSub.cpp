@@ -534,18 +534,27 @@ bool CPGSSubFile::Open(CString fn, CString name /*= _T("")*/, CString videoName 
         m_name = name;
     }
 
-    CFile f;
-    if (f.Open(fn, CFile::modeRead | CFile::shareDenyWrite)) {
-        WORD wSyncCode = 0;
-        f.Read(&wSyncCode, sizeof(wSyncCode));
-        wSyncCode = _byteswap_ushort(wSyncCode);
-        if (wSyncCode == PGS_SYNC_CODE) {
-            m_parsingThread = std::thread([this, fn] { ParseFile(fn); });
-            bOpened = true;
+    m_path = fn;
+
+    try {
+        CFile f;
+        if (f.Open(fn, CFile::modeRead | CFile::shareDenyWrite)) {
+            WORD wSyncCode = 0;
+            f.Read(&wSyncCode, sizeof(wSyncCode));
+            wSyncCode = _byteswap_ushort(wSyncCode);
+            if (wSyncCode == PGS_SYNC_CODE) {
+                m_parsingThread = std::thread([this, fn] { ParseFile(fn); });
+                bOpened = true;
+            }
         }
+    } catch (CFileException*) {
     }
 
     return bOpened;
+}
+
+CString CPGSSubFile::GetPath() {
+    return m_path;
 }
 
 void CPGSSubFile::ParseFile(CString fn)

@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2f2c4a75-f563-4eda-81a8-99f05e978394}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9dcb9da6-1c85-40b9-b875-9bdf9575be2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e05e69ea-955c-4c2c-83f8-ff30c0007387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\charset">
+      <UniqueIdentifier>{1ab8f1f7-42df-4528-a241-aa083af60769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\charset">
+      <UniqueIdentifier>{6c0771a6-b382-4529-a62b-e95f73cb3b81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{ad563a82-4d36-4de0-a7a4-3d102f4ba6ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\lib">
+      <UniqueIdentifier>{67c8bce6-3bc8-4725-b3a6-f55f9c51953d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fribidi-config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fribidi\lib\bidi-types.h" />
+    <ClInclude Include="fribidi\lib\common.h" />
+    <ClInclude Include="fribidi\lib\debug.h" />
+    <ClInclude Include="fribidi\lib\fribidi-arabic.h" />
+    <ClInclude Include="fribidi\lib\fribidi-begindecls.h" />
+    <ClInclude Include="fribidi\lib\fribidi-bidi-types-list.h" />
+    <ClInclude Include="fribidi\lib\fribidi-bidi-types.h" />
+    <ClInclude Include="fribidi\lib\fribidi-bidi.h" />
+    <ClInclude Include="fribidi\lib\fribidi-common.h" />
+    <ClInclude Include="fribidi\lib\fribidi-deprecated.h" />
+    <ClInclude Include="fribidi\lib\fribidi-enddecls.h" />
+    <ClInclude Include="fribidi\lib\fribidi-flags.h" />
+    <ClInclude Include="fribidi\lib\fribidi-joining-types-list.h" />
+    <ClInclude Include="fribidi\lib\fribidi-joining-types.h" />
+    <ClInclude Include="fribidi\lib\fribidi-joining.h" />
+    <ClInclude Include="fribidi\lib\fribidi-mirroring.h" />
+    <ClInclude Include="fribidi\lib\fribidi-shape.h" />
+    <ClInclude Include="fribidi\lib\fribidi-types.h" />
+    <ClInclude Include="fribidi\lib\fribidi-unicode.h" />
+    <ClInclude Include="fribidi\lib\fribidi.h" />
+    <ClInclude Include="fribidi\lib\joining-types.h" />
+    <ClInclude Include="fribidi\lib\run.h" />
+    <ClInclude Include="fribidi\lib\fribidi-brackets.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-cap-rtl.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-cp1255.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-cp1256.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-iso8859-6.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-iso8859-8.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-list.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets-utf8.h" />
+    <ClInclude Include="fribidi\lib\fribidi-char-sets.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="fribidi\lib\fribidi-arabic.c" />
+    <ClCompile Include="fribidi\lib\fribidi-bidi-types.c" />
+    <ClCompile Include="fribidi\lib\fribidi-bidi.c" />
+    <ClCompile Include="fribidi\lib\fribidi-deprecated.c" />
+    <ClCompile Include="fribidi\lib\fribidi-joining-types.c" />
+    <ClCompile Include="fribidi\lib\fribidi-joining.c" />
+    <ClCompile Include="fribidi\lib\fribidi-mirroring.c" />
+    <ClCompile Include="fribidi\lib\fribidi-run.c" />
+    <ClCompile Include="fribidi\lib\fribidi-shape.c" />
+    <ClCompile Include="fribidi\lib\fribidi.c" />
+    <ClCompile Include="fribidi\lib\fribidi-brackets.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets-cap-rtl.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets-cp1255.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets-cp1256.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets-iso8859-6.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets-iso8859-8.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets-utf8.c" />
+    <ClCompile Include="fribidi\lib\fribidi-char-sets.c" />
+  </ItemGroup>
+</Project>

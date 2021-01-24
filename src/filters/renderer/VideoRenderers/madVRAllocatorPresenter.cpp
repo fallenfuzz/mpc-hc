@@ -25,11 +25,11 @@
 #include "RenderersSettings.h"
 #include <initguid.h>
 #include <mvrInterfaces.h>
-
+#include "IPinHook.h"
+#include "Variables.h"
+#include "Utils.h"
 
 using namespace DSObjects;
-
-extern bool g_bExternalSubtitleTime;
 
 CmadVRAllocatorPresenter::CmadVRAllocatorPresenter(HWND hWnd, HRESULT& hr, CString& _Error)
     : CSubPicAllocatorPresenterImpl(hWnd, hr, &_Error)
@@ -62,7 +62,8 @@ STDMETHODIMP CmadVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, 
            QI(ISubRenderCallback2)
            QI(ISubRenderCallback3)
            QI(ISubRenderCallback4)
-           __super::NonDelegatingQueryInterface(riid, ppv);
+           QI(ISubPicAllocatorPresenter3)
+        __super::NonDelegatingQueryInterface(riid, ppv);
 }
 
 // ISubRenderCallback
@@ -124,9 +125,14 @@ HRESULT CmadVRAllocatorPresenter::RenderEx3(REFERENCE_TIME rtStart,
 
     __super::SetPosition(viewportRect, croppedVideoRect);
     if (!g_bExternalSubtitleTime) {
-        SetTime(rtStart);
+        if (g_bExternalSubtitle && g_dRate != 0.0) {
+            const REFERENCE_TIME sampleTime = rtStart - g_tSegmentStart;
+            SetTime(g_tSegmentStart + sampleTime * g_dRate);
+        } else {
+            SetTime(rtStart);
+        }
     }
-    if (atpf > 0) {
+    if (atpf > 0 && m_pSubPicQueue) {
         m_fps = 10000000.0 / atpf;
         m_pSubPicQueue->SetFPS(m_fps);
     }
@@ -151,6 +157,11 @@ STDMETHODIMP CmadVRAllocatorPresenter::CreateRenderer(IUnknown** ppRenderer)
 
     (*ppRenderer = (IUnknown*)(INonDelegatingUnknown*)(this))->AddRef();
 
+    CComQIPtr<IBaseFilter> pBF = m_pMVR;
+    CComPtr<IPin> pPin = GetFirstPin(pBF);
+    CComQIPtr<IMemInputPin> pMemInputPin = pPin;
+    HookNewSegmentAndReceive((IPinC*)(IPin*)pPin, (IMemInputPinC*)(IMemInputPin*)pMemInputPin);
+
     return S_OK;
 }
 
@@ -165,7 +176,37 @@ STDMETHODIMP_(void) CmadVRAllocatorPresenter::SetPosition(RECT w, RECT v)
         pVW->SetWindowPosition(w.left, w.top, w.right - w.left, w.bottom - w.top);
     }
 
-    SetVideoSize(GetVideoSize(), GetVideoSize(true));
+    SetVideoSize(GetVideoSize(false), GetVideoSize(true));
+}
+
+STDMETHODIMP CmadVRAllocatorPresenter::SetRotation(int rotation)
+{
+	if (AngleStep90(rotation)) {
+		HRESULT hr = E_NOTIMPL;
+		int curRotation = rotation;
+		if (CComQIPtr<IMadVRInfo> pMVRI = m_pMVR) {
+			pMVRI->GetInt("rotation", &curRotation);
+		}
+		if (CComQIPtr<IMadVRCommand> pMVRC = m_pMVR) {
+			hr = pMVRC->SendCommandInt("rotate", rotation);
+			if (SUCCEEDED(hr) && curRotation != rotation) {
+				hr = pMVRC->SendCommand("redraw");
+			}
+		}
+		return hr;
+	}
+	return E_INVALIDARG;
+}
+
+STDMETHODIMP_(int) CmadVRAllocatorPresenter::GetRotation()
+{
+	if (CComQIPtr<IMadVRInfo> pMVRI = m_pMVR) {
+		int rotation = 0;
+		if (SUCCEEDED(pMVRI->GetInt("rotation", &rotation))) {
+			return rotation;
+		}
+	}
+	return 0;
 }
 
 STDMETHODIMP_(SIZE) CmadVRAllocatorPresenter::GetVideoSize(bool bCorrectAR) const
@@ -229,5 +270,32 @@ STDMETHODIMP_(bool) CmadVRAllocatorPresenter::IsRendering()
             return playbackState == State_Running;
         }
     }
+    return false;
+}
+// ISubPicAllocatorPresenter3
+
+STDMETHODIMP CmadVRAllocatorPresenter::ClearPixelShaders(int target)
+{
+	ASSERT(TARGET_FRAME == ShaderStage_PreScale && TARGET_SCREEN == ShaderStage_PostScale);
+	HRESULT hr = E_NOTIMPL;
+
+	if (CComQIPtr<IMadVRExternalPixelShaders> pMVREPS = m_pMVR) {
+		hr = pMVREPS->ClearPixelShaders(target);
+	}
+	return hr;
+}
+
+STDMETHODIMP CmadVRAllocatorPresenter::AddPixelShader(int target, LPCWSTR name, LPCSTR profile, LPCSTR sourceCode)
+{
+	ASSERT(TARGET_FRAME == ShaderStage_PreScale && TARGET_SCREEN == ShaderStage_PostScale);
+	HRESULT hr = E_NOTIMPL;
+
+	if (CComQIPtr<IMadVRExternalPixelShaders> pMVREPS = m_pMVR) {
+		hr = pMVREPS->AddPixelShader(sourceCode, profile, target, nullptr);
+	}
+	return hr;
+}
+
+STDMETHODIMP_(bool) CmadVRAllocatorPresenter::ToggleStats() {
     return false;
 }

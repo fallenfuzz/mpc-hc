@@ -36,7 +36,7 @@ END_MESSAGE_MAP()
 
 HBRUSH CMPCThemeMsgBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         return getCtlColor(pDC, pWnd, nCtlColor);
     } else {
         HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -47,7 +47,7 @@ HBRUSH CMPCThemeMsgBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 BOOL CMPCThemeMsgBox::OnEraseBkgnd(CDC* pDC)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CRect rect, messageArea, buttonArea;
         GetClientRect(&rect);
         messageArea = rect;
@@ -69,7 +69,7 @@ BOOL CMPCThemeMsgBox::MessageBox(CWnd* parent, LPCWSTR lpText)
 
 BOOL CMPCThemeMsgBox::MessageBox(CWnd* parent, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CMPCThemeMsgBox dlgMessage(parent, lpText, lpCaption, uType, NULL);
         return (BOOL)dlgMessage.DoModal();
     } else {

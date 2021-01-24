@@ -151,6 +151,7 @@ private:
     CComPtr<IBaseFilter> m_pDemux;
 
     HRESULT         CreateKSFilter(IBaseFilter** ppBF, CLSID KSCategory, const CStringW& DisplayName);
+    HRESULT         CreateKSFilterFN(IBaseFilter** ppBF, CLSID KSCategory, const CStringW& FriendlyName);
     HRESULT         ConnectFilters(IBaseFilter* pOutFiter, IBaseFilter* pInFilter);
     HRESULT         CreateMicrosoftDemux(CComPtr<IBaseFilter>& pMpeg2Demux);
     HRESULT         SetChannelInternal(CBDAChannel* pChannel);

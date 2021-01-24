@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include <atlutil.h>
 #include "text.h"
+#include <memory>
 
 DWORD CharSetToCodePage(DWORD dwCharSet)
 {
@@ -120,6 +121,104 @@ CStringA UrlDecode(const CStringA& strIn)
     strOut.ReleaseBuffer(dwStrLen);
 
     return strOut;
+}
+
+CStringW UrlDecodeWithUTF8(CStringW in, bool keepEncodedSpecialChar) {
+    TCHAR t[100];
+    DWORD bufSize = _countof(t);
+    CString tem(in);
+    tem.Replace(_T("+"), _T(" ")); //UrlUnescape does not deal with '+' properly
+    if (keepEncodedSpecialChar) {
+        tem.Replace(_T("%25"), _T("%2525"));  // %
+        tem.Replace(_T("%3A"), _T("%253A"));
+        tem.Replace(_T("%3a"), _T("%253A"));
+        tem.Replace(_T("%2F"), _T("%252F"));
+        tem.Replace(_T("%2f"), _T("%252F"));
+        tem.Replace(_T("%3F"), _T("%253F"));
+        tem.Replace(_T("%3f"), _T("%253F"));
+        tem.Replace(_T("%23"), _T("%2523"));
+        tem.Replace(_T("%5B"), _T("%255B"));
+        tem.Replace(_T("%5b"), _T("%255B"));
+        tem.Replace(_T("%5D"), _T("%255D"));
+        tem.Replace(_T("%5d"), _T("%255D"));
+        tem.Replace(_T("%40"), _T("%2540"));
+        tem.Replace(_T("%21"), _T("%2521"));
+        tem.Replace(_T("%24"), _T("%2524"));
+        tem.Replace(_T("%26"), _T("%2526"));
+        tem.Replace(_T("%27"), _T("%2527"));
+        tem.Replace(_T("%28"), _T("%2528"));
+        tem.Replace(_T("%29"), _T("%2529"));
+        tem.Replace(_T("%2A"), _T("%252A"));
+        tem.Replace(_T("%2a"), _T("%252A"));
+        tem.Replace(_T("%2B"), _T("%252B"));
+        tem.Replace(_T("%2b"), _T("%252B"));
+        tem.Replace(_T("%2C"), _T("%252C"));
+        tem.Replace(_T("%2c"), _T("%252C"));
+        tem.Replace(_T("%3B"), _T("%253B"));
+        tem.Replace(_T("%3b"), _T("%253B"));
+        tem.Replace(_T("%3D"), _T("%253D"));
+        tem.Replace(_T("%3d"), _T("%253D"));
+        tem.Replace(_T("%20"), _T("%2520"));
+    }
+    HRESULT result = UrlUnescape(tem.GetBuffer(), t, &bufSize, URL_ESCAPE_AS_UTF8); //URL_ESCAPE_AS_UTF8 will work as URL_UNESCAPE_AS_UTF8 on windows 8+, otherwise it will just ignore utf-8
+
+    if (result == E_POINTER) {
+        std::shared_ptr<TCHAR[]> buffer(new TCHAR[bufSize]);
+        if (S_OK == UrlUnescape(tem.GetBuffer(), buffer.get(), &bufSize, URL_ESCAPE_AS_UTF8)) {
+            CString urlDecoded(buffer.get());
+            return urlDecoded;
+        }
+    }
+    else {
+        CString urlDecoded(t);
+        return urlDecoded;
+    }
+    return in;
+}
+
+CStringW URLGetHostName(const CStringW in) {
+    CStringW t(in);
+    if (t.Find(_T("://")) > 1) {
+        t = t.Mid(t.Find(_T("://")) + 3);
+    }
+    if (t.Left(4) == _T("www.")) {
+        t = t.Mid(4);
+    }
+    if (t.Find(_T("/")) > 0) {
+        t = t.Left(t.Find(_T("/")));
+    }
+    return UrlDecodeWithUTF8(t);
+}
+
+CStringW ShortenURL(const CStringW url, int targetLength, bool returnHostnameIfTooLong) {
+    CStringW t(url);
+    if (t.Find(_T("://")) > 1) {
+        t = t.Mid(t.Find(_T("://")) + 3);
+    }
+    if (t.Left(4) == _T("www.")) {
+        t = t.Mid(4);
+    }
+    while (t.GetLength() > targetLength) {
+        int position = t.ReverseFind('#');
+        if (position > 0) {
+            t = t.Left(position);
+            continue;
+        }
+        position = t.ReverseFind('&');
+        if (position > 0) {
+            t = t.Left(position);
+            continue;
+        }
+        position = t.ReverseFind('?');
+        if (position > 0) {
+            t = t.Left(position);
+            break;
+        }
+        break;
+    }
+    t = UrlDecodeWithUTF8(t);
+    if (t.GetLength() > targetLength && returnHostnameIfTooLong) return URLGetHostName(url);
+    return t;
 }
 
 CString ExtractTag(CString tag, CMapStringToString& attribs, bool& fClosing)
@@ -232,4 +331,30 @@ CString FormatNumber(CString szNumber, bool bNoFractionalDigits /*= true*/)
     }
 
     return ret;
+}
+
+void GetLocaleString(LCID lcid, LCTYPE type, CString& output) {
+    int len = GetLocaleInfo(lcid, type, output.GetBuffer(256), 256);
+    output.ReleaseBufferSetLength(std::max(len - 1, 0));
+}
+
+int LastIndexOfCString(const CString& text, const CString& pattern) {
+    int found = -1;
+    int next_pos = 0;
+    while (true) {
+        next_pos = text.Find(pattern, next_pos);
+        if (next_pos > found) {
+            found = next_pos;
+            next_pos = next_pos + pattern.GetLength();
+        } else {
+            return found;
+        }        
+    }
+}
+
+bool IsNameSimilar(const CString& title, const CString& fileName) {
+    if (title.Left(25) == fileName.Left(25)) return true;
+    int m = fileName.ReverseFind(_T('.'));
+    if (m > -1 && title == fileName.Left(m)) return true;
+    return false;
 }

@@ -185,7 +185,7 @@ STDMETHODIMP_(void) CDXRAllocatorPresenter::SetPosition(RECT w, RECT v)
         pVW->SetWindowPosition(w.left, w.top, w.right - w.left, w.bottom - w.top);
     }
 
-    SetVideoSize(GetVideoSize(), GetVideoSize(true));
+    SetVideoSize(GetVideoSize(false), GetVideoSize(true));
 }
 
 STDMETHODIMP_(SIZE) CDXRAllocatorPresenter::GetVideoSize(bool bCorrectAR) const

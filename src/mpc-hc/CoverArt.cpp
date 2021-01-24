@@ -28,6 +28,7 @@ CString CoverArt::FindExternal(const CString& filename_no_ext, const CString& pa
     isFileArt = false;
     if (!path.IsEmpty()) {
         CAtlList<CString> files;
+        // file match
         FindFiles(filename_no_ext + _T(".png"), files);
         FindFiles(filename_no_ext + _T(".jp*g"), files);
         FindFiles(filename_no_ext + _T(".bmp"), files);
@@ -36,26 +37,41 @@ CString CoverArt::FindExternal(const CString& filename_no_ext, const CString& pa
             return files.GetHead();
         }
 
-        FindFiles(path + _T("\\*front*.png"), files);
-        FindFiles(path + _T("\\*front*.jp*g"), files);
-        FindFiles(path + _T("\\*front*.bmp"), files);
-        FindFiles(path + _T("\\*cover*.png"), files);
-        FindFiles(path + _T("\\*cover*.jp*g"), files);
-        FindFiles(path + _T("\\*cover*.bmp"), files);
-        FindFiles(path + _T("\\*folder*.png"), files);
-        FindFiles(path + _T("\\*folder*.jp*g"), files);
-        FindFiles(path + _T("\\*folder*.bmp"), files);
-        int maxlen = path.GetLength() + 25;
-        POSITION pos = files.GetHeadPosition();
-        while (pos) {
-            CString curfile = files.GetNext(pos);
-            if (curfile.GetLength() < maxlen) {
-                return curfile;
-            }
+        // album match
+        FindFiles(path + _T("\\front.png"), files);
+        FindFiles(path + _T("\\front.jp*g"), files);
+        FindFiles(path + _T("\\front.bmp"), files);
+        FindFiles(path + _T("\\cover.png"), files);
+        FindFiles(path + _T("\\cover.jp*g"), files);
+        FindFiles(path + _T("\\cover.bmp"), files);
+        FindFiles(path + _T("\\folder.png"), files);
+        FindFiles(path + _T("\\folder.jp*g"), files);
+        FindFiles(path + _T("\\folder.bmp"), files);
+        if (!files.IsEmpty()) {
+            return files.GetHead();
+        }
+        FindFiles(path + _T("\\* front.png"), files);
+        FindFiles(path + _T("\\* front.jp*g"), files);
+        FindFiles(path + _T("\\* front.bmp"), files);
+        FindFiles(path + _T("\\* cover.png"), files);
+        FindFiles(path + _T("\\* cover.jp*g"), files);
+        FindFiles(path + _T("\\* cover.bmp"), files);
+        if (!files.IsEmpty()) {
+            return files.GetHead();
+        }
+        FindFiles(path + _T("\\* ?front?.png"), files);
+        FindFiles(path + _T("\\* ?front?.jp*g"), files);
+        FindFiles(path + _T("\\* ?front?.bmp"), files);
+        FindFiles(path + _T("\\* ?cover?.png"), files);
+        FindFiles(path + _T("\\* ?cover?.jp*g"), files);
+        FindFiles(path + _T("\\* ?cover?.bmp"), files);
+        if (!files.IsEmpty()) {
+            return files.GetHead();
         }
 
         if (!author.IsEmpty()) {
             files.RemoveAll();
+            // author match
             FindFiles(path + _T("\\*") + author + _T("*.png"), files);
             FindFiles(path + _T("\\*") + author + _T("*.jp*g"), files);
             FindFiles(path + _T("\\*") + author + _T("*.bmp"), files);

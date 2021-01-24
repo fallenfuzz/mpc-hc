@@ -50,39 +50,43 @@ bool CTextFile::Open(LPCTSTR lpszFileName)
     m_offset = 0;
     m_nInBuffer = m_posInBuffer = 0;
 
-    if (__super::GetLength() >= 2) {
-        WORD w;
-        if (sizeof(w) != Read(&w, sizeof(w))) {
-            return Close(), false;
-        }
-
-        if (w == 0xfeff) {
-            m_encoding = LE16;
-            m_offset = 2;
-        } else if (w == 0xfffe) {
-            m_encoding = BE16;
-            m_offset = 2;
-        } else if (w == 0xbbef && __super::GetLength() >= 3) {
-            BYTE b;
-            if (sizeof(b) != Read(&b, sizeof(b))) {
+    try {
+        if (__super::GetLength() >= 2) {
+            WORD w;
+            if (sizeof(w) != Read(&w, sizeof(w))) {
                 return Close(), false;
             }
 
-            if (b == 0xbf) {
-                m_encoding = UTF8;
-                m_offset = 3;
+            if (w == 0xfeff) {
+                m_encoding = LE16;
+                m_offset = 2;
+            } else if (w == 0xfffe) {
+                m_encoding = BE16;
+                m_offset = 2;
+            } else if (w == 0xbbef && __super::GetLength() >= 3) {
+                BYTE b;
+                if (sizeof(b) != Read(&b, sizeof(b))) {
+                    return Close(), false;
+                }
+
+                if (b == 0xbf) {
+                    m_encoding = UTF8;
+                    m_offset = 3;
+                }
             }
         }
-    }
 
-    if (m_encoding == DEFAULT_ENCODING) {
-        if (!ReopenAsText()) {
-            return false;
+        if (m_encoding == DEFAULT_ENCODING) {
+            if (!ReopenAsText()) {
+                return false;
+            }
+        } else if (m_offset == 0) { // No BOM detected, ensure the file is read from the beginning
+            Seek(0, begin);
+        } else {
+            m_posInFile = __super::GetPosition();
         }
-    } else if (m_offset == 0) { // No BOM detected, ensure the file is read from the beginning
-        Seek(0, begin);
-    } else {
-        m_posInFile = __super::GetPosition();
+    } catch (CFileException*) {
+        return false;
     }
 
     return true;
@@ -718,7 +722,7 @@ bool CWebTextFile::Open(LPCTSTR lpszFileName)
 {
     CString fn(lpszFileName);
 
-    if (fn.Find(_T("http://")) != 0) {
+    if (fn.Find(_T("://")) == -1) {
         return __super::Open(lpszFileName);
     }
 

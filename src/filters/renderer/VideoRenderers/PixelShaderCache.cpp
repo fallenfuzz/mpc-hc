@@ -150,19 +150,25 @@ bool CPixelShaderCache::IsEnabled()
 void CPixelShaderCache::TouchFile(const CString& FileName) const
 {
     CFileStatus status;
-    if (CFile::GetStatus(FileName, status)) {
-        status.m_mtime = CTime::GetCurrentTime();
-        CFile::SetStatus(FileName, status);
+    try {
+        if (CFile::GetStatus(FileName, status)) {
+            status.m_mtime = CTime::GetCurrentTime();
+            CFile::SetStatus(FileName, status);
+        }
     }
+    catch (...) {}
 }
 
 bool CPixelShaderCache::IsFileOutdated(const CString& FileName) const
 {
     CFileStatus status;
-    if (CFile::GetStatus(FileName, status)) {
-        CTimeSpan timespan(m_CachedDaysLimit, 0, 0, 0);
-        return CTime::GetCurrentTime() - status.m_mtime > timespan;
+    try {
+        if (CFile::GetStatus(FileName, status)) {
+            CTimeSpan timespan(m_CachedDaysLimit, 0, 0, 0);
+            return CTime::GetCurrentTime() - status.m_mtime > timespan;
+        }
     }
+    catch (...) {}
 
     return true;
 }

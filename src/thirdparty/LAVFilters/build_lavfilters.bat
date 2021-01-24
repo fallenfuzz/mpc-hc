@@ -27,7 +27,10 @@ SET "COMMON=%FILE_DIR%%ROOT_DIR%\common.bat"
 CALL "%COMMON%" :SubSetPath
 IF %ERRORLEVEL% NEQ 0 EXIT /B 1
 CALL "%COMMON%" :SubDoesExist gcc.exe
-IF %ERRORLEVEL% NEQ 0 EXIT /B 1
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO ERROR: gcc.exe not found in your MinGW installation
+  EXIT /B 1
+)
 
 SET ARG=/%*
 SET ARG=%ARG:/=%
@@ -52,8 +55,8 @@ FOR %%G IN (%ARG%) DO (
   IF /I "%%G" == "x64"      SET "ARCH=x64"            & SET /A ARGPL+=1
   IF /I "%%G" == "Debug"    SET "RELEASETYPE=Debug"   & SET /A ARGBC+=1
   IF /I "%%G" == "Release"  SET "RELEASETYPE=Release" & SET /A ARGBC+=1
-  IF /I "%%G" == "VS2015"   SET "COMPILER=VS2015"     & SET /A ARGCOMP+=1
   IF /I "%%G" == "VS2017"   SET "COMPILER=VS2017"     & SET /A ARGCOMP+=1
+  IF /I "%%G" == "VS2019"   SET "COMPILER=VS2019"     & SET /A ARGCOMP+=1
   IF /I "%%G" == "Silent"   SET "SILENT=True"         & SET /A VALID+=1
   IF /I "%%G" == "Nocolors" SET "NOCOLORS=True"       & SET /A VALID+=1
 )
@@ -66,19 +69,21 @@ IF %VALID% NEQ %INPUT% GOTO UnsupportedSwitch
 IF %ARGB%    GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGB% == 0    (SET "BUILDTYPE=Build")
 IF %ARGPL%   GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGPL% == 0   (SET "ARCH=Both")
 IF %ARGBC%   GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGBC% == 0   (SET "RELEASETYPE=Release")
-IF %ARGCOMP% GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGCOMP% == 0 (SET "COMPILER=VS2017")
+IF %ARGCOMP% GTR 1 (GOTO UnsupportedSwitch) ELSE IF %ARGCOMP% == 0 (SET "COMPILER=VS2019")
 
-IF /I "%COMPILER%" == "VS2017" (
-  IF NOT EXIST "%MPCHC_VS_PATH%" CALL "%COMMON%" :SubVSPath
-  IF NOT EXIST "!MPCHC_VS_PATH!" GOTO MissingVar
-  SET "TOOLSET=!MPCHC_VS_PATH!\Common7\Tools\vsdevcmd"
-  SET "BIN_DIR=%ROOT_DIR%\bin"
-) ELSE (
-  IF NOT DEFINED VS140COMNTOOLS GOTO MissingVar
-  SET "TOOLSET=%VS140COMNTOOLS%..\..\VC\vcvarsall.bat"
-  SET "BIN_DIR=%ROOT_DIR%\bin15"
+IF NOT EXIST "%MPCHC_VS_PATH%" CALL "%COMMON%" :SubVSPath
+IF NOT EXIST "!MPCHC_VS_PATH!" (
+  ECHO ERROR: Visual Studio install path not found or invalid. You should add MPCHC_VS_PATH to build.user.bat
+  GOTO MissingVar
 )
-IF NOT EXIST "%TOOLSET%" GOTO MissingVar
+
+SET "TOOLSET=!MPCHC_VS_PATH!\Common7\Tools\vsdevcmd"
+IF NOT EXIST "%TOOLSET%" (
+  ECHO ERROR: Visual Studio tool path invalid
+  GOTO MissingVar
+)
+
+SET "BIN_DIR=%ROOT_DIR%\bin"
 
 CALL "%COMMON%" :SubParseConfig
 
@@ -95,11 +100,7 @@ GOTO End
 IF %ERRORLEVEL% NEQ 0 EXIT /B
 
 IF /I "%ARCH%" == "x86" (SET TOOLSETARCH=x86) ELSE (SET TOOLSETARCH=amd64)
-IF /I "%COMPILER%" == "VS2017" (
-  CALL "%TOOLSET%" -no_logo -arch=%TOOLSETARCH% -winsdk=%MPCHC_WINSDK_VER%
-) ELSE (
-  CALL "%TOOLSET%" %TOOLSETARCH% %MPCHC_WINSDK_VER%
-)
+CALL "%TOOLSET%" -no_logo -arch=%TOOLSETARCH% -winsdk=%MPCHC_WINSDK_VER%
 
 SET START_TIME=%TIME%
 SET START_DATE=%DATE%
@@ -217,13 +218,13 @@ CALL "%COMMON%" :SubMsg "ERROR" "LAV Filters compilation failed!" & EXIT /B 1
 TITLE %~nx0 Help
 ECHO.
 ECHO Usage:
-ECHO %~nx0 [Clean^|Build^|Rebuild] [x86^|x64^|Both] [Debug^|Release] [VS2015^|VS2017]
+ECHO %~nx0 [Clean^|Build^|Rebuild] [x86^|x64^|Both] [Debug^|Release] [VS2017^|VS2019]
 ECHO.
 ECHO Notes: You can also prefix the commands with "-", "--" or "/".
 ECHO        The arguments are not case sensitive and can be ommitted.
 ECHO. & ECHO.
 ECHO Executing %~nx0 without any arguments will use the default ones:
-ECHO "%~nx0 Build Both Release VS2015"
+ECHO "%~nx0 Build Both Release VS2019"
 ECHO.
 POPD
 ENDLOCAL

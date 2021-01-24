@@ -16,6 +16,18 @@ namespace SaneAudioRenderer
     {
     }
 
+    IBaseFilter* FindFilter(const CLSID& clsid, IFilterGraph* pFG) {
+        BeginEnumFilters(pFG, pEF, pBF) {
+            CLSID clsid2;
+            if (SUCCEEDED(pBF->GetClassID(&clsid2)) && clsid == clsid2) {
+                return pBF;
+            }
+        }
+        EndEnumFilters;
+
+        return nullptr;
+    }
+
     HRESULT MyFilter::Init(ISettings* pSettings)
     {
         HRESULT result = S_OK;
@@ -40,9 +52,9 @@ namespace SaneAudioRenderer
             if (SUCCEEDED(result))
                 result = CreatePosPassThru(GetOwner(), FALSE, m_pin.get(), &m_seeking);
         }
-        catch (std::bad_alloc&)
+        catch (...)
         {
-            result = E_OUTOFMEMORY;
+            result = exception_to_hresult();
         }
 
         return result;
@@ -122,7 +134,13 @@ namespace SaneAudioRenderer
 
         CBaseFilter::SetSyncSource(pClock);
 
-        m_renderer->SetClock(pClock);
+        bool isDVD = false;
+        CBaseFilter* filter = m_pin->GetFilter();
+        if (filter) {
+            isDVD = FindFilter(CLSID_DVDNavigator, filter->GetFilterGraph()) != nullptr;
+        }
+
+        m_renderer->SetClock(pClock, isDVD);
 
         return S_OK;
     }
@@ -187,9 +205,9 @@ namespace SaneAudioRenderer
                                                     m_renderer->IsLive(),
                                                     m_renderer->OnGuidedReclock());
         }
-        catch (std::bad_alloc&)
+        catch (...)
         {
-            return E_OUTOFMEMORY;
+            return exception_to_hresult();
         }
 
         return S_OK;

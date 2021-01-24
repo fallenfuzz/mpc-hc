@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="libass\libass\ass.h" />
+    <ClInclude Include="libass\libass\ass_bitmap.h" />
+    <ClInclude Include="libass\libass\ass_cache.h" />
+    <ClInclude Include="libass\libass\ass_cache_template.h" />
+    <ClInclude Include="libass\libass\ass_compat.h" />
+    <ClInclude Include="libass\libass\ass_directwrite.h" />
+    <ClInclude Include="libass\libass\ass_drawing.h" />
+    <ClInclude Include="libass\libass\ass_font.h" />
+    <ClInclude Include="libass\libass\ass_fontconfig.h" />
+    <ClInclude Include="libass\libass\ass_fontselect.h" />
+    <ClInclude Include="libass\libass\ass_func_template.h" />
+    <ClInclude Include="libass\libass\ass_library.h" />
+    <ClInclude Include="libass\libass\ass_outline.h" />
+    <ClInclude Include="libass\libass\ass_parse.h" />
+    <ClInclude Include="libass\libass\ass_rasterizer.h" />
+    <ClInclude Include="libass\libass\ass_render.h" />
+    <ClInclude Include="libass\libass\ass_shaper.h" />
+    <ClInclude Include="libass\libass\ass_string.h" />
+    <ClInclude Include="libass\libass\ass_types.h" />
+    <ClInclude Include="libass\libass\ass_utils.h" />
+    <ClInclude Include="libass\libass\dwrite_c.h" />
+    <ClInclude Include="libass\libass\x86\cpuid.h" />
+    <ClInclude Include="config.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="libass\libass\ass.c" />
+    <ClCompile Include="libass\libass\ass_bitmap.c" />
+    <ClCompile Include="libass\libass\ass_blur.c" />
+    <ClCompile Include="libass\libass\ass_cache.c" />
+    <ClCompile Include="libass\libass\ass_directwrite.c" />
+    <ClCompile Include="libass\libass\ass_drawing.c" />
+    <ClCompile Include="libass\libass\ass_font.c" />
+    <ClCompile Include="libass\libass\ass_fontconfig.c" />
+    <ClCompile Include="libass\libass\ass_fontselect.c" />
+    <ClCompile Include="libass\libass\ass_library.c" />
+    <ClCompile Include="libass\libass\ass_outline.c" />
+    <ClCompile Include="libass\libass\ass_parse.c" />
+    <ClCompile Include="libass\libass\ass_rasterizer.c" />
+    <ClCompile Include="libass\libass\ass_rasterizer_c.c" />
+    <ClCompile Include="libass\libass\ass_render.c" />
+    <ClCompile Include="libass\libass\ass_render_api.c" />
+    <ClCompile Include="libass\libass\ass_shaper.c" />
+    <ClCompile Include="libass\libass\ass_string.c" />
+    <ClCompile Include="libass\libass\ass_strtod.c" />
+    <ClCompile Include="libass\libass\ass_utils.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libass.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <YASM Include="libass\libass\x86\be_blur.asm">
+      <ExcludedFromBuild Condition="'$(Platform)'=='Win32'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="libass\libass\x86\blend_bitmaps.asm" />
+    <YASM Include="libass\libass\x86\blur.asm" />
+    <YASM Include="libass\libass\x86\cpuid.asm" />
+    <YASM Include="libass\libass\x86\gaussian.asm" />
+    <YASM Include="libass\libass\x86\rasterizer.asm" />
+    <YASM Include="libass\libass\x86\utils.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{19677DFD-C020-434D-9CB1-D0F105E72770}</ProjectGuid>
+    <RootNamespace>libass</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="..\..\platform.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="..\..\yasm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\common.props" />
+    <Import Project="..\..\common-3rd-party.props" />
+  </ImportGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\fribidi\generated;..\libiconv\libiconv-for-Windows\include;..\dirent;..\freetype2\freetype2\include\freetype;..\fontconfig\fontconfig;..\freetype2\freetype2\include;..\harfbuzz\harfbuzz\src;..\fribidi\fribidi\lib;..\fribidi\fribidi\charset;..\fribidi;..\fribidi\fribidi\SMP\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level2</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <C99Support>true</C99Support>
+      <TreatSpecificWarningsAsErrors>4113;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <DisableSpecificWarnings>4005;4244;4267;4018;4334;4101;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>freetype2.lib;libfontconfig.lib;libfribidi.lib;libharfbuzz.lib;libiconv.lib;liblzma.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <YASM>
+      <IncludePaths>libass\libass;%(IncludePaths)</IncludePaths>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </YASM>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+    <YASM>
+      <Defines>HAVE_CPUNOP=0;PREFIX;WIN32=1;ARCH_X86_64=0;HAVE_ALIGNED_STACK=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(Defines)</Defines>
+    </YASM>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
+    <YASM>
+      <Defines>HAVE_CPUNOP=0;WIN32=1;ARCH_X86_64=1;HAVE_ALIGNED_STACK=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(Defines)</Defines>
+    </YASM>
+  </ItemDefinitionGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <MSBuildWarningsAsMessages>MSB8012</MSBuildWarningsAsMessages>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="$(Configuration.Contains('Release'))">
+    <Lib>
+      <AdditionalLibraryDirectories Condition="'$(PlatformToolsetVersion)'!='140'">$(SolutionDir)bin\lib\Release_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(PlatformToolsetVersion)'=='140'">$(SolutionDir)bin15\lib\Release_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="$(Configuration.Contains('Debug'))">
+    <Lib>
+      <AdditionalLibraryDirectories Condition="'$(PlatformToolsetVersion)'!='140'">$(SolutionDir)bin\lib\Debug_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(PlatformToolsetVersion)'=='140'">$(SolutionDir)bin15\lib\Debug_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <Defines>_WIN32_WINNT=0x0502;WIN32;_WINDOWS;inline=_inline;_USE_MATH_DEFINES;LIBXML_STATIC;_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(Defines)</Defines>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(OutDir)\lib\x86\;$(ProjectDir)\..\..\prebuilt\lib\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/IGNORE:4006,4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <Defines>_WIN32_WINNT=0x0601;WIN32;_WINDOWS;inline=_inline;_USE_MATH_DEFINES;LIBXML_STATIC;_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(Defines)</Defines>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Lib>
+      <TargetMachine>MachineX64</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(OutDir)\lib\x64\;$(ProjectDir)\..\..\prebuilt\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/IGNORE:4006,4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <Defines>_WIN32_WINNT=0x0502;WIN32;_WINDOWS;inline=_inline;_USE_MATH_DEFINES;LIBXML_STATIC;_LIB;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(Defines)</Defines>
+      <StringPooling>true</StringPooling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <InterproceduralOptimization>SingleFile</InterproceduralOptimization>
+    </ClCompile>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(OutDir)\lib\x86\;$(ProjectDir)\..\..\prebuilt\lib\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/IGNORE:4006,4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <Defines>_WIN32_WINNT=0x0601;WIN32;_WINDOWS;inline=_inline;_USE_MATH_DEFINES;LIBXML_STATIC;_LIB;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(Defines)</Defines>
+      <StringPooling>true</StringPooling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <InterproceduralOptimization>SingleFile</InterproceduralOptimization>
+    </ClCompile>
+    <Lib>
+      <TargetMachine>MachineX64</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(OutDir)\lib\x64\;$(ProjectDir)\..\..\prebuilt\lib\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/IGNORE:4006,4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\yasm.targets" />
+  </ImportGroup>
+</Project>

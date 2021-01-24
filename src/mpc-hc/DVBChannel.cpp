@@ -167,6 +167,7 @@ void CBDAChannel::AddStreamInfo(ULONG ulPID, BDA_STREAM_TYPE nType, PES_STREAM_T
         case BDA_MPA:
         case BDA_AC3:
         case BDA_EAC3:
+        case BDA_ADTS:
         case BDA_LATM:
             if (m_nAudioCount < BDA_MAX_AUDIO) {
                 m_Audios[m_nAudioCount].ulPID     = ulPID;

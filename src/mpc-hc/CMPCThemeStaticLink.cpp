@@ -25,7 +25,7 @@ END_MESSAGE_MAP()
 
 void CMPCThemeStaticLink::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {  //only reason for custom paint is disabled statics do not honor ctlcolor and draw greyed text which looks terrible on other bgs
+    if (AppIsThemeLoaded()) {  //only reason for custom paint is disabled statics do not honor ctlcolor and draw greyed text which looks terrible on other bgs
         CPaintDC dc(this); // device context for painting
         COLORREF oldBkClr = dc.GetBkColor();
         COLORREF oldTextClr = dc.GetTextColor();
@@ -72,7 +72,7 @@ void CMPCThemeStaticLink::OnPaint()
 
 HBRUSH CMPCThemeStaticLink::CtlColor(CDC* pDC, UINT nCtlColor)   //avoid overridden cstaticlink ctlcolor
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         return NULL;
     } else {
         return __super::CtlColor(pDC, nCtlColor);
@@ -82,7 +82,7 @@ HBRUSH CMPCThemeStaticLink::CtlColor(CDC* pDC, UINT nCtlColor)   //avoid overrid
 
 void CMPCThemeStaticLink::OnEnable(BOOL bEnable)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         SetRedraw(FALSE);
         __super::OnEnable(bEnable);
         SetRedraw(TRUE);

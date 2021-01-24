@@ -44,6 +44,8 @@ CPPageTweaks::CPPageTweaks()
     , m_fFastSeek(FALSE)
     , m_fShowChapters(TRUE)
     , m_fLCDSupport(FALSE)
+    , m_fSeekPreview(FALSE)
+    , m_iSeekPreviewSize(15)
 {
 }
 
@@ -67,6 +69,9 @@ void CPPageTweaks::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_COMBO2, m_FontSize);
     DDX_Control(pDX, IDC_COMBO4, m_FastSeekMethod);
     DDX_Check(pDX, IDC_FASTSEEK_CHECK, m_fFastSeek);
+    DDX_Check(pDX, IDC_SEEK_PREVIEW, m_fSeekPreview);
+    DDX_Text(pDX, IDC_EDIT4, m_iSeekPreviewSize);
+    DDX_Control(pDX, IDC_SPIN2, m_SeekPreviewSizeCtrl);
     DDX_Check(pDX, IDC_CHECK2, m_fShowChapters);
     DDX_Check(pDX, IDC_CHECK_LCD, m_fLCDSupport);
     DDX_Check(pDX, IDC_CHECK3, m_bHideWindowedMousePointer);
@@ -111,6 +116,10 @@ BOOL CPPageTweaks::OnInitDialog()
 
     m_nOSDSize = s.nOSDSize;
     m_strOSDFont = s.strOSDFont;
+
+    m_fSeekPreview = s.fSeekPreview;
+    m_iSeekPreviewSize = s.iSeekPreviewSize;
+    m_SeekPreviewSizeCtrl.SetRange32(10, 30);
 
     m_fFastSeek = s.bFastSeek;
     m_FastSeekMethod.AddString(ResStr(IDS_FASTSEEK_LATEST));
@@ -183,9 +192,6 @@ BOOL CPPageTweaks::OnApply()
     s.nOSDSize = m_nOSDSize;
     m_FontType.GetLBText(m_FontType.GetCurSel(), s.strOSDFont);
 
-    s.bFastSeek = !!m_fFastSeek;
-    s.eFastSeekMethod = static_cast<decltype(s.eFastSeekMethod)>(m_FastSeekMethod.GetCurSel());
-
     s.bHideWindowedMousePointer = !!m_bHideWindowedMousePointer;
 
     s.fShowChapters = !!m_fShowChapters;
@@ -197,6 +203,14 @@ BOOL CPPageTweaks::OnApply()
         pFrame->CreateThumbnailToolbar();
     }
     pFrame->UpdateThumbarButton();
+
+    s.fSeekPreview = !!m_fSeekPreview;
+    if (s.iSeekPreviewSize != m_iSeekPreviewSize) {
+        s.iSeekPreviewSize = m_iSeekPreviewSize;
+        pFrame->m_wndPreView.SetRelativeSize(m_iSeekPreviewSize);
+    }
+    s.bFastSeek = !!m_fFastSeek;
+    s.eFastSeekMethod = static_cast<decltype(s.eFastSeekMethod)>(m_FastSeekMethod.GetCurSel());
 
     // There is no main frame when the option dialog is displayed stand-alone
     if (CMainFrame* pMainFrame = AfxGetMainFrame()) {

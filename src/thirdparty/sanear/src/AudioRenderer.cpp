@@ -19,16 +19,16 @@ namespace SaneAudioRenderer
         try
         {
             if (!m_settings)
-                throw E_UNEXPECTED;
+                throw HResultException{ E_UNEXPECTED };
 
             if (static_cast<HANDLE>(m_flush) == NULL)
             {
-                throw E_OUTOFMEMORY;
+                throw HResultException{ E_OUTOFMEMORY };
             }
         }
-        catch (HRESULT ex)
+        catch (...)
         {
-            result = ex;
+            result = exception_to_hresult();
         }
     }
 
@@ -39,11 +39,12 @@ namespace SaneAudioRenderer
             Stop();
     }
 
-    void AudioRenderer::SetClock(IReferenceClock* pClock)
+    void AudioRenderer::SetClock(IReferenceClock* pClock, bool isDVD)
     {
         CAutoLock objectLock(this);
 
         m_graphClock = pClock;
+        m_isDVD = isDVD;
 
         if (m_graphClock && !IsEqualObject(m_graphClock, m_myClock.GetOwner()))
         {
@@ -138,14 +139,14 @@ namespace SaneAudioRenderer
                     }
                 }
             }
-            catch (HRESULT)
-            {
-                ClearDevice();
-            }
             catch (std::bad_alloc&)
             {
                 ClearDevice();
                 chunk = DspChunk();
+            }
+            catch (...)
+            {
+                ClearDevice();
             }
         }
 
@@ -205,7 +206,7 @@ namespace SaneAudioRenderer
                         {
                             remaining = m_device->Finish(pFilledEvent);
                         }
-                        catch (HRESULT)
+                        catch (...)
                         {
                             ClearDevice();
                         }
@@ -278,7 +279,7 @@ namespace SaneAudioRenderer
             return true;
 
         BOOL exclusive;
-        m_settings->GetOuputDevice(nullptr, &exclusive, nullptr);
+        m_settings->GetOutputDevice(nullptr, &exclusive, nullptr);
         BOOL bitstreamingAllowed = m_settings->GetAllowBitstreaming();
 
         if (!exclusive || !bitstreamingAllowed || live)
@@ -418,7 +419,7 @@ namespace SaneAudioRenderer
             {
                 LPWSTR pDeviceId = nullptr;
 
-                if (FAILED(m_settings->GetOuputDevice(&pDeviceId, &settingsDeviceExclusive, &settingsDeviceBuffer)))
+                if (FAILED(m_settings->GetOutputDevice(&pDeviceId, &settingsDeviceExclusive, &settingsDeviceBuffer)))
                     return;
 
                 settingsDeviceDefault = (!pDeviceId || !*pDeviceId);
@@ -568,7 +569,7 @@ namespace SaneAudioRenderer
                 m_clockCorrection = 0;
                 m_device->Start();
             }
-            catch (HRESULT)
+            catch (...)
             {
                 ClearDevice();
             }
@@ -600,7 +601,7 @@ namespace SaneAudioRenderer
                 {
                     PushReslavingJitter();
                 }
-                catch (HRESULT)
+                catch (...)
                 {
                     ClearDevice();
                 }
@@ -877,7 +878,7 @@ namespace SaneAudioRenderer
                     m_device->Push(chunk, pFilledEvent);
                     sleepDuration = m_device->GetBufferDuration() / 4;
                 }
-                catch (HRESULT)
+                catch (...)
                 {
                     ClearDevice();
                     sleepDuration = 0;

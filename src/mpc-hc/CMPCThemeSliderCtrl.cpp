@@ -17,7 +17,7 @@ CMPCThemeSliderCtrl::~CMPCThemeSliderCtrl()
 
 void CMPCThemeSliderCtrl::PreSubclassWindow()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CToolTipCtrl* pTip = GetToolTips();
         if (nullptr != pTip) {
             themedToolTip.SubclassWindow(pTip->m_hWnd);
@@ -40,8 +40,7 @@ void CMPCThemeSliderCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
     LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
     LRESULT lr = CDRF_DODEFAULT;
 
-    const CAppSettings& s = AfxGetAppSettings();
-    if (s.bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         switch (pNMCD->dwDrawStage) {
             case CDDS_PREPAINT:
                 lr = CDRF_NOTIFYITEMDRAW;
@@ -84,18 +83,16 @@ void CMPCThemeSliderCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
                     CRect r(pNMCD->rc);
                     r.DeflateRect(0, 0, 1, 0);
 
-                    if (s.bMPCThemeLoaded) {
-                        CBrush fb;
-                        if (m_bDrag) {
-                            dc.FillSolidRect(r, CMPCTheme::ScrollThumbDragColor);
-                        } else if (m_bHover) {
-                            dc.FillSolidRect(r, CMPCTheme::ScrollThumbHoverColor);
-                        } else {
-                            dc.FillSolidRect(r, CMPCTheme::ScrollThumbColor);
-                        }
-                        fb.CreateSolidBrush(CMPCTheme::NoBorderColor);
-                        dc.FrameRect(r, &fb);
+                    CBrush fb;
+                    if (m_bDrag) {
+                        dc.FillSolidRect(r, CMPCTheme::ScrollThumbDragColor);
+                    } else if (m_bHover) {
+                        dc.FillSolidRect(r, CMPCTheme::ScrollThumbHoverColor);
+                    } else {
+                        dc.FillSolidRect(r, CMPCTheme::ScrollThumbColor);
                     }
+                    fb.CreateSolidBrush(CMPCTheme::NoBorderColor);
+                    dc.FrameRect(r, &fb);
 
                     dc.Detach();
                     lr = CDRF_SKIPDEFAULT;

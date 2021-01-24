@@ -34,6 +34,13 @@ class OpenMediaData;
 
 class CMainFrame;
 
+struct CueTrackMeta {
+    CString title;
+    CString performer;
+    int trackID = 0;
+    REFERENCE_TIME time;
+};
+
 class CPlayerPlaylistBar : public CMPCThemePlayerBar, public CDropClient
 {
     DECLARE_DYNAMIC(CPlayerPlaylistBar)
@@ -60,9 +67,9 @@ private:
     void ResizeListColumn();
 
     void AddItem(CString fn, CAtlList<CString>* subs);
-    void AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs, CString label = _T(""), CString ydl_src = _T(""));
-    void ParsePlayList(CString fn, CAtlList<CString>* subs);
-    void ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>* subs, CString label = _T(""), CString ydl_src = _T(""));
+    void AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs, CString label = _T(""), CString ydl_src = _T(""), CString cue = _T(""));
+    void ParsePlayList(CString fn, CAtlList<CString>* subs, int redir_count = 0);
+    void ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>* subs, int redir_count = 0, CString label = _T(""), CString ydl_src = _T(""), CString cue = _T(""));
     void ResolveLinkFiles(CAtlList<CString>& fns);
 
     bool ParseBDMVPlayList(CString fn);
@@ -70,6 +77,7 @@ private:
     bool ParseMPCPlayList(CString fn);
     bool SaveMPCPlayList(CString fn, CTextFile::enc e, bool fRemovePath);
     bool ParseM3UPlayList(CString fn);
+    bool ParseCUESheet(CString fn);
 
     void SetupList();
     void UpdateList();
@@ -107,6 +115,7 @@ public:
     CPlaylist m_pl;
 
     INT_PTR GetCount() const;
+    int GetValidCount() const;
     int GetSelIdx() const;
     void SetSelIdx(int i);
     bool IsAtEnd();
@@ -121,13 +130,14 @@ public:
     void SetCurValid(bool fValid);
     void SetCurTime(REFERENCE_TIME rt);
     void Randomize();
+    void UpdateLabel(CString in);
 
     void Refresh();
     bool Empty();
 
-    void Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = nullptr);
-    void Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = nullptr, CString label = _T(""), CString ydl_src = _T(""));
-    void ReplaceCurrentItem(CAtlList<CString>& fns, CAtlList<CString>* subs = nullptr, CString label = _T(""), CString ydl_src = _T(""));
+    void Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = nullptr, CString label = _T(""), CString ydl_src = _T(""), CString cue = _T(""));
+    void Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = nullptr, CString label = _T(""), CString ydl_src = _T(""), CString cue = _T(""));
+    void ReplaceCurrentItem(CAtlList<CString>& fns, CAtlList<CString>* subs = nullptr, CString label = _T(""), CString ydl_src = _T(""), CString cue = _T(""));
 
     void Open(CStringW vdn, CStringW adn, int vinput, int vchannel, int ainput);
     void Append(CStringW vdn, CStringW adn, int vinput, int vchannel, int ainput);

@@ -175,6 +175,8 @@ extern "C" __declspec(dllexport) int GetIconIndex(LPCTSTR ext)
         iconIndex = IDI_MPC_ICON;
     } else if (_tcsicmp(ext, _T(".mpcpl")) == 0) {
         iconIndex = IDI_PLAYLIST_ICON;
+    } else if (_tcsicmp(ext, _T(".cue")) == 0) {
+        iconIndex = IDI_PLAYLIST_ICON;
     } else if (_tcsicmp(ext, _T(".mpe")) == 0) {
         iconIndex = IDI_MPEG_ICON;
     } else if (_tcsicmp(ext, _T(".mpeg")) == 0) {

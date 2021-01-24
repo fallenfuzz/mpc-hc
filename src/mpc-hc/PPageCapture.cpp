@@ -321,7 +321,7 @@ BEGIN_MESSAGE_MAP(CPPageCapture, CMPCThemePPageBase)
     ON_UPDATE_COMMAND_UI(IDC_STATIC1, OnUpdateAnalog)
     ON_UPDATE_COMMAND_UI(IDC_STATIC2, OnUpdateAnalog)
     ON_UPDATE_COMMAND_UI(IDC_STATIC3, OnUpdateAnalog)
-    ON_UPDATE_COMMAND_UI(IDC_COMBO4, OnUpdateDigital)
+    //ON_UPDATE_COMMAND_UI(IDC_COMBO4, OnUpdateDigital)
     ON_UPDATE_COMMAND_UI(IDC_COMBO5, OnUpdateDigital)
     ON_UPDATE_COMMAND_UI(IDC_STATIC4, OnUpdateDigital)
     ON_UPDATE_COMMAND_UI(IDC_STATIC5, OnUpdateDigital)
@@ -365,6 +365,12 @@ BOOL CPPageCapture::OnInitDialog()
         GetDlgItem(IDC_RADIO2)->EnableWindow(FALSE);
         GetDlgItem(IDC_RADIO1)->EnableWindow(FALSE);
     }
+
+    //we don't offer other providers anymore, but in case someone wants to know what is being used, we leave this here, disabled and defaulted
+    //note this setting is not used anywhere and Network Provider is hard-coded elsewhere in the code
+    m_cbDigitalNetworkProvider.AddString(_T("Microsoft Network Provider"));
+    m_cbDigitalNetworkProvider.SetCurSel(0);
+    GetDlgItem(IDC_COMBO4)->EnableWindow(FALSE);
 
     m_cbRebuildFilterGraph.AddString(ResStr(IDS_PPAGE_CAPTURE_FG0));
     m_cbRebuildFilterGraph.AddString(ResStr(IDS_PPAGE_CAPTURE_FG1));
@@ -459,9 +465,11 @@ BOOL CPPageCapture::OnToolTipNotify(UINT id, NMHDR* pNMH, LRESULT* pResult)
         case IDC_COMBO9:
             bRet = FillComboToolTip(m_cbAnalogCountry, pTTT);
             break;
+/*
         case IDC_COMBO4:
             bRet = FillComboToolTip(m_cbDigitalNetworkProvider, pTTT);
             break;
+*/
         case IDC_COMBO5:
             bRet = FillComboToolTip(m_cbDigitalTuner, pTTT);
             break;
@@ -628,36 +636,6 @@ void CPPageCapture::FindDigitalDevices()
 {
     const CAppSettings& s = AfxGetAppSettings();
     int iSel = 0;
-    bool bFound = false;
-
-    BeginEnumSysDev(KSCATEGORY_BDA_NETWORK_PROVIDER, pMoniker) {
-        CComPtr<IPropertyBag> pPB;
-        pMoniker->BindToStorage(0, 0, IID_PPV_ARGS(&pPB));
-
-        CComVariant var;
-        if (SUCCEEDED(pPB->Read(_T("FriendlyName"), &var, nullptr))) {
-            int i = m_cbDigitalNetworkProvider.AddString(CString(var.bstrVal));
-
-            CComHeapPtr<OLECHAR> strName;
-            if (SUCCEEDED(pMoniker->GetDisplayName(nullptr, nullptr, &strName))) {
-                m_providernames.Add(CString(strName));
-                if (s.strBDANetworkProvider == CString(strName)) {
-                    iSel = i;
-                    bFound = true;
-                } else if (!bFound && CString(var.bstrVal) == _T("Microsoft Network Provider")) {
-                    // Select Microsoft Network Provider by default, other network providers are deprecated.
-                    iSel = i;
-                }
-            }
-        }
-    }
-    EndEnumSysDev;
-    if (m_cbDigitalNetworkProvider.GetCount()) {
-        m_cbDigitalNetworkProvider.SetCurSel(iSel);
-    } else {
-        return;
-    }
-
 
     iSel = 0;
     BeginEnumSysDev(KSCATEGORY_BDA_NETWORK_TUNER, pMoniker) {
@@ -724,9 +702,11 @@ void CPPageCapture::SaveFoundDevices()
         s.iAnalogCountry = ((cc_t*)m_cbAnalogCountry.GetItemDataPtr(m_cbAnalogCountry.GetCurSel()))->code;
     }
 
+/*
     if (m_cbDigitalNetworkProvider.GetCurSel() >= 0) {
         s.strBDANetworkProvider = m_providernames[m_cbDigitalNetworkProvider.GetCurSel()];
     }
+*/
     if (m_cbDigitalTuner.GetCurSel() >= 0) {
         s.strBDATuner = m_tunernames[m_cbDigitalTuner.GetCurSel()];
     }

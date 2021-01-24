@@ -105,7 +105,7 @@ void CMPCThemeSpinButtonCtrl::drawSpinArrow(CDC& dc, COLORREF arrowClr, CRect ar
 
 void CMPCThemeSpinButtonCtrl::OnPaint()
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         CWnd* buddy = GetBuddy();
         bool hasBuddy = false;
         CMPCThemeEdit* buddyEdit;
@@ -219,7 +219,7 @@ void CMPCThemeSpinButtonCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 
 BOOL CMPCThemeSpinButtonCtrl::OnEraseBkgnd(CDC* pDC)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         return TRUE;
     } else {
         return __super::OnEraseBkgnd(pDC);

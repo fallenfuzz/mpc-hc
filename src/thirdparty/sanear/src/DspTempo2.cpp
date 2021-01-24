@@ -30,7 +30,7 @@ namespace SaneAudioRenderer
 
                 m_active = true;
             }
-            catch (std::bad_alloc&)
+            catch (...)
             {
             }
         }

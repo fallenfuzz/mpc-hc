@@ -21,8 +21,8 @@ namespace SaneAudioRenderer
 
         STDMETHODIMP_(UINT32) GetSerial() override;
 
-        STDMETHODIMP SetOuputDevice(LPCWSTR pDeviceId, BOOL bExclusive, UINT32 uBufferMS) override;
-        STDMETHODIMP GetOuputDevice(LPWSTR* ppDeviceId, BOOL* pbExclusive, UINT32* puBufferMS) override;
+        STDMETHODIMP SetOutputDevice(LPCWSTR pDeviceId, BOOL bExclusive, UINT32 uBufferMS) override;
+        STDMETHODIMP GetOutputDevice(LPWSTR* ppDeviceId, BOOL* pbExclusive, UINT32* puBufferMS) override;
 
         STDMETHODIMP_(void) SetAllowBitstreaming(BOOL bAllowBitstreaming) override;
         STDMETHODIMP_(BOOL) GetAllowBitstreaming() override;

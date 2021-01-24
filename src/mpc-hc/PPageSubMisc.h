@@ -60,7 +60,6 @@ protected:
     BOOL m_fDisableInternalSubtitles;
     BOOL m_bAutoDownloadSubtitles;
     CString m_strAutoDownloadSubtitlesExclude;
-    BOOL m_bAutoUploadSubtitles;
     BOOL m_bPreferHearingImpairedSubtitles;
     CString m_strSubtitlesProviders;
     CString m_strSubtitlesLanguageOrder;

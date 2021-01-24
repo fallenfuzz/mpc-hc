@@ -27,8 +27,6 @@
 #include <vd2/system/vdtypes.h>
 #include <vd2/system/atomic.h>
 #include <vd2/system/thread.h>
-#include <vd2/system/error.h>
-#include <vd2/system/filesys.h> // MPC-HC patch
 #include <windows.h>
 #include <process.h>
 #include <vd2/system/win32/intrin.h>

@@ -188,6 +188,7 @@ HRESULT CRFSFile::SyncRead(LONGLONG llPosition, DWORD lLength, BYTE* pBuffer, LO
     cdata.Test = true;
     cdata.FileArgs.AddString(filename);
     cdata.Threads = 1; 
+    cdata.Callback = NULL;
     CmdExtract cmd(&cdata);
 
     if (!rarArchive.Open(rarFilename)) {

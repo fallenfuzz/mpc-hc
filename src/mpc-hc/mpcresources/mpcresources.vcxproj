@@ -49,6 +49,14 @@
       <Configuration>Release Bosnian</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Bulgarian|Win32">
+      <Configuration>Release Bulgarian</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Bulgarian|x64">
+      <Configuration>Release Bulgarian</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release Catalan|Win32">
       <Configuration>Release Catalan</Configuration>
       <Platform>Win32</Platform>
@@ -233,6 +241,14 @@
       <Configuration>Release Portuguese (Brazil)</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Portuguese (Portugal)|Win32">
+      <Configuration>Release Portuguese (Portugal)</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Portuguese (Portugal)|x64">
+      <Configuration>Release Portuguese (Portugal)</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release Punjabi|Win32">
       <Configuration>Release Punjabi</Configuration>
       <Platform>Win32</Platform>
@@ -368,6 +384,7 @@
     <TargetName Condition="'$(Configuration)'=='Release Belarusian'">$(ProjectName).be</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Bengali'">$(ProjectName).bn</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Bosnian'">$(ProjectName).bs_BA</TargetName>
+    <TargetName Condition="'$(Configuration)'=='Release Bulgarian'">$(ProjectName).bg</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Catalan'">$(ProjectName).ca</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Chinese Simplified'">$(ProjectName).zh_CN</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Chinese Traditional'">$(ProjectName).zh_TW</TargetName>
@@ -391,6 +408,7 @@
     <TargetName Condition="'$(Configuration)'=='Release Malay'">$(ProjectName).ms_MY</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Polish'">$(ProjectName).pl</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Portuguese (Brazil)'">$(ProjectName).pt_BR</TargetName>
+    <TargetName Condition="'$(Configuration)'=='Release Portuguese (Portugal)'">$(ProjectName).pt_PT</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Punjabi'">$(ProjectName).pa</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Romanian'">$(ProjectName).ro</TargetName>
     <TargetName Condition="'$(Configuration)'=='Release Russian'">$(ProjectName).ru</TargetName>
@@ -437,6 +455,9 @@
     </ResourceCompile>
     <ResourceCompile Include="mpc-hc.bs_BA.rc">
       <ExcludedFromBuild Condition="'$(Configuration)'!='Release Bosnian'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="mpc-hc.bg.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)'!='Release Bulgarian'">true</ExcludedFromBuild>
     </ResourceCompile>
     <ResourceCompile Include="mpc-hc.ca.rc">
       <ExcludedFromBuild Condition="'$(Configuration)'!='Release Catalan'">true</ExcludedFromBuild>
@@ -512,6 +533,9 @@
     </ResourceCompile>
     <ResourceCompile Include="mpc-hc.pt_BR.rc">
       <ExcludedFromBuild Condition="'$(Configuration)'!='Release Portuguese (Brazil)'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="mpc-hc.pt_PT.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)'!='Release Portuguese (Portugal)'">true</ExcludedFromBuild>
     </ResourceCompile>
     <ResourceCompile Include="mpc-hc.ro.rc">
       <ExcludedFromBuild Condition="'$(Configuration)'!='Release Romanian'">true</ExcludedFromBuild>

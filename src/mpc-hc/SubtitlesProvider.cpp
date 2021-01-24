@@ -29,6 +29,8 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include <wincrypt.h>
 
+#pragma warning(disable: 4244)
+
 #define LOG SUBTITLES_LOG
 #define LOG_NONE    _T("()")
 #define LOG_INPUT   _T("(\"%S\")")
@@ -81,6 +83,11 @@ void OpenSubtitles::Initialize()
 
 SRESULT OpenSubtitles::Login(const std::string& sUserName, const std::string& sPassword)
 {
+    // OpenSubtitles currently only works with a user account
+    if (sUserName.empty()) {
+        return SR_FAILED;
+    }
+
     if (xmlrpc) {
         XmlRpcValue args, result;
         args[0] = sUserName;
@@ -88,6 +95,7 @@ SRESULT OpenSubtitles::Login(const std::string& sUserName, const std::string& sP
         args[2] = "en";
         const auto& strUA = UserAgent();
         args[3] = strUA.c_str(); // Test with "OSTestUserAgent"
+
         if (!xmlrpc->execute("LogIn", args, result)) {
             return SR_FAILED;
         }
@@ -95,10 +103,10 @@ SRESULT OpenSubtitles::Login(const std::string& sUserName, const std::string& sP
         if (result["status"].getType() == XmlRpcValue::Type::TypeString) {
             if (result["status"] == std::string("200 OK")) {
                 token = result["token"];
-            } else if (result["status"] == std::string("401 Unauthorized") && !UserName().empty()) {
+            } else if (result["status"] == std::string("401 Unauthorized") && !sUserName.empty()) {
                 // Notify user that User/Pass provided are invalid.
                 CString msg;
-                msg.FormatMessage(IDS_SUB_CREDENTIALS_ERROR, UTF8To16(Name().c_str()), UTF8To16(UserName().c_str()));
+                msg.FormatMessage(IDS_SUB_CREDENTIALS_ERROR, static_cast<LPCWSTR>(UTF8To16(Name().c_str())), static_cast<LPCWSTR>(UTF8To16(sUserName.c_str())));
                 AfxMessageBox(msg, MB_ICONERROR | MB_OK);
             }
         }
@@ -115,10 +123,10 @@ SRESULT OpenSubtitles::LogOut()
         args[0] = token;
         VERIFY(xmlrpc->execute("LogOut", args, result));
         token.clear();
+        LOG(LOG_NONE);
     }
     m_nLoggedIn = SPL_UNDEFINED;
 
-    LOG(LOG_NONE);
     return SR_SUCCEEDED;
 }
 
@@ -166,37 +174,75 @@ SRESULT OpenSubtitles::Search(const SubtitlesInfo& pFileInfo)
     }
 
     int nCount = result["data"].size();
-    for (int i = 0; i < nCount; ++i) {
-        CheckAbortAndReturn();
-        XmlRpcValue& data(result["data"][i]);
-        SubtitlesInfo pSubtitlesInfo;
-        pSubtitlesInfo.id = (const char*)data["IDSubtitleFile"];
-        pSubtitlesInfo.discNumber = data["SubActualCD"];
-        pSubtitlesInfo.discCount = data["SubSumCD"];
-        pSubtitlesInfo.fileExtension = (const char*)data["SubFormat"];
-        pSubtitlesInfo.languageCode = (const char*)data["ISO639"]; //"SubLanguageID"
-        pSubtitlesInfo.languageName = (const char*)data["LanguageName"];
-        pSubtitlesInfo.downloadCount = data["SubDownloadsCnt"];
+    bool searchedByFileName = false;
 
-        pSubtitlesInfo.fileName = (const char*)data["SubFileName"];
-        regexResult results;
-        stringMatch("\"([^\"]+)\" (.+)", (const char*)data["MovieName"], results);
-        if (!results.empty()) {
-            pSubtitlesInfo.title = results[0];
-            pSubtitlesInfo.title2 = results[1];
-        } else {
-            pSubtitlesInfo.title = (const char*)data["MovieName"];
+    if (nCount == 0 && movieInfo.hasMember("moviehash")) {
+        movieInfo.clear();
+    //    movieInfo["tag"] = std::string(pFileInfo.fileName); //sadly, tag support has been disabled on opensubtitles.org :-/
+        movieInfo["query"] = std::string(pFileInfo.fileName); //search by filename...as a query
+        movieInfo["sublanguageid"] = !languages.empty() ? JoinContainer(languages, ",") : "all";
+        if (!xmlrpc->execute("SearchSubtitles", args, result)) {
+            LOG(_T("search failed"));
+            return SR_FAILED;
         }
-        pSubtitlesInfo.year = (int)data["MovieYear"] == 0 ? -1 : (int)data["MovieYear"];
-        pSubtitlesInfo.seasonNumber = (int)data["SeriesSeason"] == 0 ? -1 : (int)data["SeriesSeason"];
-        pSubtitlesInfo.episodeNumber = (int)data["SeriesEpisode"] == 0 ? -1 : (int)data["SeriesEpisode"];
-        pSubtitlesInfo.hearingImpaired = data["SubHearingImpaired"];
-        pSubtitlesInfo.url = (const char*)data["SubtitlesLink"];
-        pSubtitlesInfo.releaseNames.emplace_back((const char*)data["MovieReleaseName"]);
-        pSubtitlesInfo.imdbid = (const char*)data["IDMovieImdb"];
-        pSubtitlesInfo.corrected = (int)data["SubBad"] ? -1 : 0;
-        Set(pSubtitlesInfo);
+        if (result["data"].getType() != XmlRpcValue::Type::TypeArray) {
+            LOG(_T("search failed (invalid data)"));
+            return SR_FAILED;
+        }
+        nCount = result["data"].size();
+        searchedByFileName = true;
     }
+
+    std::string fnameLower = pFileInfo.fileName;
+    std::transform(fnameLower.begin(), fnameLower.end(), fnameLower.begin(), [](unsigned char c) { return std::tolower(c); });
+
+    bool matchFound = false;
+    int maxPasses = searchedByFileName ? 2 : 1;
+    for (int passCount = 0; passCount < maxPasses && !matchFound; passCount++) {
+        for (int i = 0; i < nCount; ++i) {
+            CheckAbortAndReturn();
+            XmlRpcValue& data(result["data"][i]);
+            std::string subFileName = (const char*)data["SubFileName"];
+
+            if (searchedByFileName && 0 == passCount) {
+                std::string subFilePrefix = subFileName.substr(0, subFileName.find_last_of("."));
+                std::transform(subFilePrefix.begin(), subFilePrefix.end(), subFilePrefix.begin(), [](unsigned char c) { return std::tolower(c); });
+                if (fnameLower.compare(subFilePrefix) != 0) {
+                    continue;
+                }
+            }
+            matchFound = true;
+
+            SubtitlesInfo pSubtitlesInfo;
+            pSubtitlesInfo.id = (const char*)data["IDSubtitleFile"];
+            pSubtitlesInfo.discNumber = data["SubActualCD"];
+            pSubtitlesInfo.discCount = data["SubSumCD"];
+            pSubtitlesInfo.fileExtension = (const char*)data["SubFormat"];
+            pSubtitlesInfo.languageCode = (const char*)data["ISO639"]; //"SubLanguageID"
+            pSubtitlesInfo.languageName = (const char*)data["LanguageName"];
+            pSubtitlesInfo.downloadCount = data["SubDownloadsCnt"];
+
+            pSubtitlesInfo.fileName = subFileName;
+            regexResult results;
+            stringMatch("\"([^\"]+)\" (.+)", (const char*)data["MovieName"], results);
+            if (!results.empty()) {
+                pSubtitlesInfo.title = results[0];
+                pSubtitlesInfo.title2 = results[1];
+            } else {
+                pSubtitlesInfo.title = (const char*)data["MovieName"];
+            }
+            pSubtitlesInfo.year = (int)data["MovieYear"] == 0 ? -1 : (int)data["MovieYear"];
+            pSubtitlesInfo.seasonNumber = (int)data["SeriesSeason"] == 0 ? -1 : (int)data["SeriesSeason"];
+            pSubtitlesInfo.episodeNumber = (int)data["SeriesEpisode"] == 0 ? -1 : (int)data["SeriesEpisode"];
+            pSubtitlesInfo.hearingImpaired = data["SubHearingImpaired"];
+            pSubtitlesInfo.url = (const char*)data["SubtitlesLink"];
+            pSubtitlesInfo.releaseNames.emplace_back((const char*)data["MovieReleaseName"]);
+            pSubtitlesInfo.imdbid = (const char*)data["IDMovieImdb"];
+            pSubtitlesInfo.corrected = (int)data["SubBad"] ? -1 : 0;
+            Set(pSubtitlesInfo);
+        }
+    }
+
     LOG(std::to_wstring(nCount).c_str());
     return SR_SUCCEEDED;
 }
@@ -226,15 +272,19 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
     XmlRpcValue args, result;
     args[0] = token;
 
+    std::string uFileName = pSubtitlesInfo.fileName;
+    //uFileName = "test upload file name";
+
     //TODO: Ask how to obtain commented values !!!
     args[1]["cd1"]["subhash"] = StringToHash(pSubtitlesInfo.fileContents, CALG_MD5);
-    args[1]["cd1"]["subfilename"] = pSubtitlesInfo.fileName + ".srt";
+    args[1]["cd1"]["subfilename"] = uFileName + ".srt";
     args[1]["cd1"]["moviehash"] = pSubtitlesInfo.fileHash;
     args[1]["cd1"]["moviebytesize"] = std::to_string(pSubtitlesInfo.fileSize);
     //args[1]["cd1"]["movietimems"];
     //args[1]["cd1"]["movieframes"];
     //args[1]["cd1"]["moviefps"];
-    args[1]["cd1"]["moviefilename"] = pSubtitlesInfo.fileName + "." + pSubtitlesInfo.fileExtension;
+
+    args[1]["cd1"]["moviefilename"] = uFileName + "." + pSubtitlesInfo.fileExtension;
 
     CheckAbortAndReturn();
     if (!xmlrpc->execute("TryUploadSubtitles", args, result)) {
@@ -264,7 +314,12 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
                     return SR_FAILED;
                 }
 
-                if (_result["data"].getType() == XmlRpcValue::Type::TypeStruct) {
+                if (_result["data"].getType() == XmlRpcValue::Type::TypeStruct
+                    && _result["data"].hasMember(pSubtitlesInfo.fileHash)
+                    && _result["data"][pSubtitlesInfo.fileHash].getType() == XmlRpcValue::Type::TypeStruct
+                    && _result["data"][pSubtitlesInfo.fileHash].hasMember("MovieName")
+                    && _result["data"][pSubtitlesInfo.fileHash].hasMember("MovieImdbID")
+                    ) {
                     //regexResults results;
                     //stringMatch("\"(.+)\" (.+)", (const char*)data["MovieName"], results);
                     //if (!results.empty()) {
@@ -275,10 +330,11 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
                     //}
                     regexResults results;
                     stringMatch("\"(.+)\" .+|(.+)", StringReplace((const char*)_result["data"][pSubtitlesInfo.fileHash]["MovieName"], "and", "&"), results);
-                    std::string _title(results[0][0] + results[0][1]);
-
-                    if (_stricmp(title.c_str(), _title.c_str()) == 0 /*&& (pSubtitlesInfo.year == -1 || (pSubtitlesInfo.year != -1 && pSubtitlesInfo.year == atoi(_result["data"][pSubtitlesInfo.fileHash]["MovieYear"])))*/) {
-                        args[1]["baseinfo"]["idmovieimdb"] = _result["data"][pSubtitlesInfo.fileHash]["MovieImdbID"]; //imdbid
+                    if (results.size() > 0) {
+                        std::string _title(results[0][0] + results[0][1]);
+                        if (_stricmp(title.c_str(), _title.c_str()) == 0 /*&& (pSubtitlesInfo.year == -1 || (pSubtitlesInfo.year != -1 && pSubtitlesInfo.year == atoi(_result["data"][pSubtitlesInfo.fileHash]["MovieYear"])))*/) {
+                            args[1]["baseinfo"]["idmovieimdb"] = _result["data"][pSubtitlesInfo.fileHash]["MovieImdbID"]; //imdbid
+                        }
                     }
                 }
             }
@@ -291,16 +347,25 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
                     return SR_FAILED;
                 }
 
-                if (_result["data"].getType() == XmlRpcValue::Type::TypeArray) {
+                if (_result["data"].getType() == XmlRpcValue::Type::TypeArray
+                    && _result["data"].hasMember(pSubtitlesInfo.fileHash)
+                    && _result["data"][pSubtitlesInfo.fileHash].size() > 0
+                    ) {
                     int nCount = _result["data"][pSubtitlesInfo.fileHash].size();
                     for (int i = 0; i < nCount; ++i) {
                         regexResults results;
-                        stringMatch("\"(.+)\" .+|(.+)", StringReplace((const char*)_result["data"][pSubtitlesInfo.fileHash][i]["MovieName"], "and", "&"), results);
-                        std::string _title(results[0][0] + results[0][1]);
+                        if (_result["data"][pSubtitlesInfo.fileHash][i].hasMember("MovieName")
+                            && _result["data"][pSubtitlesInfo.fileHash][i].hasMember("MovieImdbID")
+                            ) {
+                            stringMatch("\"(.+)\" .+|(.+)", StringReplace((const char*)_result["data"][pSubtitlesInfo.fileHash][i]["MovieName"], "and", "&"), results);
+                            if (results.size() > 0) {
+                                std::string _title(results[0][0] + results[0][1]);
 
-                        if (_stricmp(title.c_str(), _title.c_str()) == 0 /*&& (pSubtitlesInfo.year == -1 || (pSubtitlesInfo.year != -1 && pSubtitlesInfo.year == atoi(_result["data"][pSubtitlesInfo.fileHash][i]["MovieYear"])))*/) {
-                            args[1]["baseinfo"]["idmovieimdb"] = _result["data"][pSubtitlesInfo.fileHash][i]["MovieImdbID"]; //imdbid
-                            break;
+                                if (_stricmp(title.c_str(), _title.c_str()) == 0 /*&& (pSubtitlesInfo.year == -1 || (pSubtitlesInfo.year != -1 && pSubtitlesInfo.year == atoi(_result["data"][pSubtitlesInfo.fileHash][i]["MovieYear"])))*/) {
+                                    args[1]["baseinfo"]["idmovieimdb"] = _result["data"][pSubtitlesInfo.fileHash][i]["MovieImdbID"]; //imdbid
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -317,16 +382,31 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
                     int nCount = _result["data"].size();
                     for (int i = 0; i < nCount; ++i) {
                         regexResults results;
-                        stringMatch("(.+) [(](\\d{4})[)]", StringReplace((const char*)_result["data"][i]["title"], "and", "&"), results);
-                        if (results.size() == 1) {
-                            std::string _title(results[0][0]);
+                        if (_result["data"][i].hasMember("title")) {
+                            stringMatch("(.+) [(](\\d{4})[)]", StringReplace((const char*)_result["data"][i]["title"], "and", "&"), results);
+                            if (results.size() == 1) {
+                                std::string _title(results[0][0]);
 
-                            if (_stricmp(title.c_str(), _title.c_str()) == 0 /*&& (pSubtitlesInfo.year == -1 || (pSubtitlesInfo.year != -1 && pSubtitlesInfo.year == atoi(results[0][1].c_str())))*/) {
-                                args[1]["baseinfo"]["idmovieimdb"] = _result["data"][i]["id"]; //imdbid
-                                break;
+                                if (_stricmp(title.c_str(), _title.c_str()) == 0 /*&& (pSubtitlesInfo.year == -1 || (pSubtitlesInfo.year != -1 && pSubtitlesInfo.year == atoi(results[0][1].c_str())))*/) {
+                                    args[1]["baseinfo"]["idmovieimdb"] = _result["data"][i]["id"]; //imdbid
+                                    break;
+                                }
                             }
                         }
                     }
+                }
+            }
+
+            if (!args[1]["baseinfo"]["idmovieimdb"].valid()) {
+                XmlRpcValue _args, _result;
+                _args[0] = token;
+                _args[1]["moviename"] = title;
+                _args[1]["movieyear"] = pSubtitlesInfo.year;
+                if (!xmlrpc->execute("InsertMovie", _args, _result)) {
+                    return SR_FAILED;
+                }
+                if (_result.getType() == XmlRpcValue::Type::TypeStruct && _result.hasMember("id")) {
+                    args[1]["baseinfo"]["idmovieimdb"] = _result["id"]; //imdbid
                 }
             }
         }
@@ -338,7 +418,7 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
             _args[1][0]["imdbid"] = args[1]["baseinfo"]["idmovieimdb"];
             //_args[1][0]["movietimems"];
             //_args[1][0]["moviefps"];
-            _args[1][0]["moviefilename"] = pSubtitlesInfo.fileName + "." + pSubtitlesInfo.fileExtension;
+            _args[1][0]["moviefilename"] = uFileName + "." + pSubtitlesInfo.fileExtension;
             if (!xmlrpc->execute("InsertMovieHash", _args, _result)) {
                 LOG(_T("InsertMovieHash fail"));
                 return SR_FAILED;
@@ -363,10 +443,23 @@ SRESULT OpenSubtitles::Upload(const SubtitlesInfo& pSubtitlesInfo)
                 LOG(_T("Upload failed"));
                 return SR_FAILED;
             }
-            LOG(LOG_OUTPUT, (LPCSTR)result["data"]);
-            LOG(_T("Upload succeeded"));
 
-            return SR_SUCCEEDED;
+            if (_result.getType() == XmlRpcValue::Type::TypeStruct) {
+                if (_result.hasMember("data")) {
+                    LOG(LOG_OUTPUT, (LPCSTR)result["data"]);
+                }
+                if (_result.hasMember("status")) {
+                    if (result["status"] == std::string("200 OK")) {
+                        LOG(_T("Upload succeeded"));
+                        return SR_SUCCEEDED;
+                    } else {
+                        CString t("Upload failed - ");
+                        CA2W status(result["status"]);
+                        t += status;
+                        LOG(t);
+                    }
+                }
+            }
         }
     }
     LOG(_T("Upload failed"));
@@ -661,7 +754,15 @@ SRESULT podnapisi::Search(const SubtitlesInfo& pFileInfo)
             }
         }
         const auto languages = LanguagesISO6391();
-        url += (!languages.empty() ? "&sL=" + JoinContainer(languages, ",") : "");
+        if (!languages.empty()) {
+            url += "&sL=" + JoinContainer(languages, ",");
+            // add alternative language codes used by the provider in case they differ from standard ISO code
+            for (auto it = languages.begin(); it != languages.end(); ++it) {
+                if ((*it).compare("pb") == 0) { // Portuguese Brazil
+                    url += ",pt-br";
+                }
+            }
+        }
         url += "&page=" + std::to_string(page);
         LOG(LOG_INPUT, url.c_str());
 

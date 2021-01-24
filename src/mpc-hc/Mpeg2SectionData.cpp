@@ -78,7 +78,7 @@ CStringW CMpeg2DataParser::ConvertString(BYTE* pBuffer, size_t uLength)
         28591,  // 12 - ??? - KSX1001-2004 - Korean Character Set
         20936,  // 13 - Chinese Simplified (GB2312-80)
         950,    // 14 - Chinese Traditional (Big5)
-        28591,  // 15 - ??? - UTF-8 encoding of ISO/IEC 10646 - Basic Multilingual Plane (BMP)
+        65001,  // 15 - UTF-8 encoding of ISO/IEC 10646 - Basic Multilingual Plane (BMP)
         28591,  // 16 - reserved
         28591,  // 17 - reserved
         28591,  // 18 - reserved
@@ -220,6 +220,8 @@ BDA_STREAM_TYPE CMpeg2DataParser::ConvertToDVBType(PES_STREAM_TYPE nType)
             return BDA_AC3;
         case AUDIO_STREAM_AC3_PLUS:
             return BDA_EAC3;
+        case AUDIO_STREAM_AAC:
+            return BDA_ADTS;
         case AUDIO_STREAM_AAC_LATM:
             return BDA_LATM;
         case SUBTITLE_STREAM:

@@ -241,8 +241,11 @@ static constexpr LPCTSTR log_format =
     _T("releaseGroup=\"%S\"\n")                                       \
     _T("discNumber=%d");
 
-HRESULT SubtitlesInfo::GetFileInfo(const std::wstring& sFileName /*= std::wstring()*/)
+HRESULT SubtitlesInfo::GetFileInfo(const std::string& sFileName /*= std::string()*/)
 {
+    /*  Calling with empty filename gets info about currently played file.
+        Calling with a filename gets info about a subtitle search result for scoring purposes.
+    */
     if (sFileName.empty()) {
         CMainFrame& MainFrame = *(CMainFrame*)(AfxGetMyApp()->GetMainWnd());
         if (CComQIPtr<IBaseFilter> pBF = MainFrame.m_pFSF) {
@@ -261,7 +264,6 @@ HRESULT SubtitlesInfo::GetFileInfo(const std::wstring& sFileName /*= std::wstrin
             }
             filePathW = name;
             filePath = UTF16To8(name);
-            //fileName = UTF16To8(name);
             CoTaskMemFree(name);
 
             LONGLONG size, available;
@@ -300,10 +302,8 @@ HRESULT SubtitlesInfo::GetFileInfo(const std::wstring& sFileName /*= std::wstrin
             }
         }
     } else {
-        filePath = UTF16To8(sFileName.c_str());
-        filePathW = sFileName;
+        filePath = sFileName;
     }
-
     auto fPath = UTF8To16(filePath.c_str());
     fileExtension = UTF16To8(PathUtils::FileExt(fPath).TrimLeft('.'));
     fileName = UTF16To8(PathUtils::FileName(fPath));
@@ -923,7 +923,7 @@ void SubtitlesThread::Set(SubtitlesInfo& pSubtitlesInfo)
     if (!_title.empty()) {
         pSubtitlesInfo.title.clear();
     }
-    pSubtitlesInfo.GetFileInfo(pSubtitlesInfo.filePathW);
+    pSubtitlesInfo.GetFileInfo(pSubtitlesInfo.fileName);
 
     //iter.score = 0; //LevenshteinDistance(m_pFileInfo.fileName, string_(subtitlesName)) * 100;
 

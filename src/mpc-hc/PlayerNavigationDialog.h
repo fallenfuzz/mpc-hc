@@ -77,4 +77,6 @@ protected:
     afx_msg void OnUpdateShowChannelInfoButton(CCmdUI* pCmdUI);
     afx_msg void OnTvRadioStations();
     afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+public:
+    afx_msg void OnSize(UINT nType, int cx, int cy);
 };

@@ -157,7 +157,7 @@ void CChildView::LoadImgInternal(HGDIOBJ hImg)
         s.strLogoFileName.Empty();             // clear logo file name
         UINT useLogoId = s.nLogoId;
         if ((UINT) - 1 == useLogoId) { //if the user has never chosen a logo, we can try loading a theme default logo
-            if (s.bMPCThemeLoaded) {
+            if (AppIsThemeLoaded()) {
                 useLogoId = CMPCThemeUtil::defaultLogo();
             } else {
                 useLogoId = DEF_LOGO;
@@ -197,6 +197,8 @@ void CChildView::OnPaint()
 
 BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 {
+    if (!pDC) return FALSE;
+
     CRect r;
 
     CImage img;
@@ -241,8 +243,9 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
                 SetStretchBltMode(hDC, STRETCH_HALFTONE);
                 img.StretchBlt(hDC, 0, 0, r.Width(), r.Height(), SRCCOPY);
                 m_resizedImg.ReleaseDC();
-
-                ColorProfileUtil::applyColorProfile(m_hWnd, m_resizedImg);
+                if (AfxGetAppSettings().fLogoColorProfileEnabled) {
+                    ColorProfileUtil::applyColorProfile(m_hWnd, m_resizedImg);
+                }
             }
 
             m_resizedImg.BitBlt(*pDC, r.TopLeft());

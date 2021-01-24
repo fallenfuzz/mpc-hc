@@ -34,10 +34,10 @@
 #pragma warning(disable: 4351) // new behavior: elements of array 'array' will be default initialized
 IMPLEMENT_DYNAMIC(CPPageAudioSwitcher, CMPCThemePPageBase)
 CPPageAudioSwitcher::CPPageAudioSwitcher(IFilterGraph* pFG)
-#ifdef MPCHC_LITE
-    : CMPCThemePPageBase(CPPageAudioSwitcher::IDD, IDS_AUDIOSWITCHER)
-#else
+#if 1
     : CMPCThemePPageBase(CPPageAudioSwitcher::IDD, CPPageAudioSwitcher::IDD)
+#else
+    : CMPCThemePPageBase(CPPageAudioSwitcher::IDD, IDS_AUDIOSWITCHER)
 #endif
     , m_pSpeakerToChannelMap()
     , m_dwChannelMask(0)
@@ -176,7 +176,7 @@ BOOL CPPageAudioSwitcher::OnInitDialog()
         //      m_list.SetColumnWidth(i, m_list.GetColumnWidth(i)*8/10);
     }
 
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         themedToolTip.Create(this, TTS_NOPREFIX | TTS_ALWAYSTIP);
         themedToolTip.Activate(TRUE);
         themedToolTip.SetDelayTime(TTDT_AUTOPOP, 10000);
@@ -271,7 +271,7 @@ void CPPageAudioSwitcher::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStru
 
     COLORREF frameClr, textClr, textDisabledClr, textNAClr;
     COLORREF oldBkColor = pDC->GetBkColor();
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         frameClr = CMPCTheme::AudioSwitcherGridColor;
         textClr = CMPCTheme::TextFGColor;
         textDisabledClr = CMPCTheme::ContentTextDisabledFGColorFade;
@@ -445,7 +445,7 @@ void CPPageAudioSwitcher::OnCancel()
 
 BOOL CPPageAudioSwitcher::PreTranslateMessage(MSG* pMsg)
 {
-    if (AfxGetAppSettings().bMPCThemeLoaded) {
+    if (AppIsThemeLoaded()) {
         if (IsWindow(themedToolTip)) {
             themedToolTip.RelayEvent(pMsg);
         }

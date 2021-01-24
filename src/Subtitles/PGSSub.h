@@ -147,12 +147,14 @@ public:
     STDMETHODIMP Render(SubPicDesc& spd, REFERENCE_TIME rt, double fps, RECT& bbox);
 
     bool Open(CString fn, CString name = _T(""), CString videoName = _T(""));
+    CString GetPath();
 
 private:
     static const WORD PGS_SYNC_CODE = 'PG';
 
     bool m_bStopParsing;
     std::thread m_parsingThread;
+    CString m_path;
 
     void ParseFile(CString fn);
 };

@@ -24,7 +24,6 @@
 #include "StatusLabel.h"
 #include "WinAPIUtils.h"
 
-
 // CStatusLabel
 
 IMPLEMENT_DYNAMIC(CStatusLabel, CStatic)
@@ -43,8 +42,11 @@ void CStatusLabel::ScaleFont(const DpiHelper& dpiHelper)
 {
     m_font.DeleteObject();
     LOGFONT lf;
+
     GetStatusFont(&lf);
-    lf.lfHeight = dpiHelper.ScaleSystemToOverrideY(lf.lfHeight);
+    if (!DpiHelper::CanUsePerMonitorV2()) {
+        lf.lfHeight = dpiHelper.ScaleSystemToOverrideY(lf.lfHeight);
+    }
     VERIFY(m_font.CreateFontIndirect(&lf));
 }
 

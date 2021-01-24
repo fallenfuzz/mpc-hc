@@ -26,7 +26,7 @@
 
 namespace
 {
-    static_assert(std::is_pod<Translations::LanguageResource>::value, "POD type is expected.");
+    static_assert(std::is_standard_layout<Translations::LanguageResource>::value, "POD type is expected.");
 
     constexpr Translations::LanguageResource languageResources[] = {
         { 1025,   _T("Arabic"),                   _T("Lang\\mpcresources.ar.dll")    },
@@ -35,6 +35,7 @@ namespace
         { 1059,   _T("Belarusian"),               _T("Lang\\mpcresources.be.dll")    },
         { 1093,   _T("Bengali"),                  _T("Lang\\mpcresources.bn.dll")    },
         { 5146,   _T("Bosnian"),                  _T("Lang\\mpcresources.bs_BA.dll") },
+        { 1026,   _T("Bulgarian"),                _T("Lang\\mpcresources.bg.dll")    },
         { 1027,   _T("Catalan"),                  _T("Lang\\mpcresources.ca.dll")    },
         { 2052,   _T("Chinese (Simplified)"),     _T("Lang\\mpcresources.zh_CN.dll") },
         { 1028,   _T("Chinese (Traditional)"),    _T("Lang\\mpcresources.zh_TW.dll") },
@@ -59,6 +60,7 @@ namespace
         { 1086,   _T("Malay"),                    _T("Lang\\mpcresources.ms_MY.dll") },
         { 1045,   _T("Polish"),                   _T("Lang\\mpcresources.pl.dll")    },
         { 1046,   _T("Portuguese (Brazil)"),      _T("Lang\\mpcresources.pt_BR.dll") },
+        { 2070,   _T("Portuguese (Portugal)"),    _T("Lang\\mpcresources.pt_PT.dll") },
         { 1094,   _T("Punjabi"),                  _T("Lang\\mpcresources.pa.dll")    },
         { 1048,   _T("Romanian"),                 _T("Lang\\mpcresources.ro.dll")    },
         { 1049,   _T("Russian"),                  _T("Lang\\mpcresources.ru.dll")    },

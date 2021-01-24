@@ -168,7 +168,9 @@ namespace DSObjects
         HRESULT TextureResizeBilinear(IDirect3DTexture9* pTexture, const Vector dst[4], const CRect& srcRect);
         HRESULT TextureResizeBicubic1pass(IDirect3DTexture9* pTexture, const Vector dst[4], const CRect& srcRect);
         //HRESULT TextureResizeBicubic2pass(IDirect3DTexture9* pTexture, const Vector dst[4], const CRect &srcRect);
-
+    protected:
+        HRESULT Resize(IDirect3DTexture9* pTexture, const CRect& srcRect, const CRect& destRect);
+    private:
         // Final pass
         HRESULT InitFinalPass();
         void    CleanupFinalPass();

@@ -19,6 +19,8 @@
 #define RFS_H
 
 #include "OutputPin.h"
+#include <vector>
+#include <string>
 
 #define RARFileSourceName   L"RAR File Source"
 
@@ -69,7 +71,7 @@ private:
 	LPWSTR m_file_name;
 	CRFSFile *m_file;
 
-	static const file_type_t s_file_types [];
+	static const std::vector<std::wstring> s_file_types;
 };
 
 #endif // RFS_H

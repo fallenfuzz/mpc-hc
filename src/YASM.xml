@@ -39,7 +39,7 @@
       Name="Defines"
       DisplayName="Definitions"
       Description="Specify pre-defined macros ('macro' or 'macro = value')"
-      Separator=";"
+      CommandLineValueSeparator=";"
       Switch="-D [value]" />
     <StringListProperty
       Name="Inputs"
@@ -122,7 +122,7 @@
       Name="IncludePaths"
       DisplayName="Include Paths"
       Description="Adds directory path to the search path for include files. The search path defaults to only including the directory in which the source file resides."
-      Separator=";"
+      CommandLineValueSeparator=";"
       Switch="-I &quot;[value]&quot;" />
     <StringProperty
       Subtype="AdditionalOptions"

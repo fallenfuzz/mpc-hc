@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "PPageFileInfoRes.h"
+#include "PathUtils.h"
 
 
 // CPPageFileInfoRes dialog
@@ -31,6 +32,7 @@ CPPageFileInfoRes::CPPageFileInfoRes(CString path, IFilterGraph* pFG, IFileSourc
     : CMPCThemePPageBase(CPPageFileInfoRes::IDD, CPPageFileInfoRes::IDD)
     , m_hIcon(nullptr)
     , m_fn(path)
+    , m_displayFn(path)
 {
     if (pFSF) {
         CComHeapPtr<OLECHAR> pFN;
@@ -43,6 +45,12 @@ CPPageFileInfoRes::CPPageFileInfoRes(CString path, IFilterGraph* pFG, IFileSourc
     int i = std::max(m_fn.ReverseFind('\\'), m_fn.ReverseFind('/'));
     if (i >= 0 && i < m_fn.GetLength() - 1) {
         m_fn = m_fn.Mid(i + 1);
+    }
+
+    if (PathUtils::IsURL(path)) {
+        m_displayFn = UrlDecodeWithUTF8(ShortenURL(m_fn));
+    } else {
+        m_displayFn = m_fn;
     }
 
     BeginEnumFilters(pFG, pEF, pBF) {
@@ -73,7 +81,7 @@ void CPPageFileInfoRes::DoDataExchange(CDataExchange* pDX)
 {
     __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_DEFAULTICON, m_icon);
-    DDX_Text(pDX, IDC_EDIT1, m_fn);
+    DDX_Text(pDX, IDC_EDIT1, m_displayFn);
     DDX_Control(pDX, IDC_LIST1, m_list);
 }
 

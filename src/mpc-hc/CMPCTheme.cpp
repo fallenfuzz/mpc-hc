@@ -15,6 +15,7 @@ const COLORREF CMPCTheme::HighLightColor = GetSysColor(COLOR_HIGHLIGHT);
 const COLORREF CMPCTheme::MenuSelectedColor = COLORREF(RGB(65, 65, 65));
 const COLORREF CMPCTheme::MenuSeparatorColor = COLORREF(RGB(128, 128, 128));
 const COLORREF CMPCTheme::MenuItemDisabledColor = COLORREF(RGB(109, 109, 109));
+const COLORREF CMPCTheme::MainMenuBorderColor = COLORREF(RGB(32, 32, 32));
 
 const COLORREF CMPCTheme::ShadowColor = COLORREF(RGB(25, 25, 25));
 const COLORREF CMPCTheme::TextFGColor = COLORREF(RGB(255, 255, 255));
@@ -90,6 +91,7 @@ const COLORREF CMPCTheme::StaticEtchedColor = COLORREF(RGB(65, 65, 65));
 
 const COLORREF CMPCTheme::ListCtrlDisabledBGColor = COLORREF(RGB(40, 40, 40));
 const COLORREF CMPCTheme::ListCtrlGridColor = COLORREF(RGB(43, 43, 43));
+const COLORREF CMPCTheme::ListCtrlErrorColor = COLORREF(RGB(242, 13, 13));
 const COLORREF CMPCTheme::HeaderCtrlGridColor = COLORREF(RGB(99, 99, 99));
 const COLORREF CMPCTheme::AudioSwitcherGridColor = COLORREF(RGB(99, 99, 99));
 
